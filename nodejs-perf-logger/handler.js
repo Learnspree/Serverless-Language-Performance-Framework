@@ -1,5 +1,9 @@
 'use strict';
 
+// Note: Portions of below code taken from or adapted from https://github.com/theburningmonk/lambda-logging-metrics-demo
+// Those portions are Copyright (c) 2017 Yan Cui (MIT License)
+// See https://hackernoon.com/tips-and-tricks-for-logging-and-monitoring-aws-lambda-functions-885af6da29a5
+
 const zlib = require('zlib');
 
 // logGroup looks like this:
@@ -24,26 +28,18 @@ let parseFloatWith = (regex, input) => {
 // a typical report message looks like this:
 //    "REPORT RequestId: 3897a7c2-8ac6-11e7-8e57-bb793172ae75\tDuration: 2.89 ms\tBilled Duration: 100 ms \tMemory Size: 1024 MB\tMax Memory Used: 20 MB\t\n"
 let usageMetrics = function (payload) {  
-    // TODO change to work with entire payload not just message
-    console.log('payload: ', JSON.stringify(payload));
-    console.log('logGroup: ', JSON.stringify(payload.logGroup))
-    let payloadParts = payload.split("\t");
-    let messageParts = payloadParts[0].split("\t", 5);
+    let messageParts = payload.logEvents[0].message.split('\t');
 
-    let billedDurationValue = 200; // parseFloatWith(/Billed Duration: (.*) ms/i, messageParts[2]);
-    let memorySizeValue     = 300; // parseFloatWith(/Memory Size: (.*) MB/i, messageParts[3]);
-    let memoryUsedValue     = 400; // parseFloatWith(/Max Memory Used: (.*) MB/i, messageParts[4]);
-    
-    // TODO - change to get from payload
-    //let dimensions     = [
-    //  { Name: "FunctionName", Value: functionName },
-    //  { Name: "FunctionVersion", Value: version }
-    //];
+    let billedDurationValue = parseFloatWith(/Billed Duration: (.*) ms/i, messageParts[2]);
+    let memorySizeValue     = parseFloatWith(/Memory Size: (.*) MB/i, messageParts[3]);
+    let memoryUsedValue     = parseFloatWith(/Max Memory Used: (.*) MB/i, messageParts[4]);
 
     return {
       billedDuration : billedDurationValue,
       memorySize : memorySizeValue,
-      memoryUsed : memoryUsedValue
+      memoryUsed : memoryUsedValue,
+      functionName : functionName(payload.logGroup),
+      functionVersion : lambdaVersion(payload.logStream)
     };
 }
 
@@ -57,10 +53,6 @@ module.exports.logger = (event, context, callback) => {
       }
 
       const parsed = JSON.parse(res.toString('utf8'));
-
-      // code from https://hackernoon.com/tips-and-tricks-for-logging-and-monitoring-aws-lambda-functions-885af6da29a5
-      // github: https://github.com/theburningmonk/lambda-logging-metrics-demo/blob/master/lib/parse.js
-
       const metrics = usageMetrics(parsed);
       console.log('metrics: ', JSON.stringify(metrics));
 
