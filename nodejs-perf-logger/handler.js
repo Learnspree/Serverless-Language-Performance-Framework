@@ -26,12 +26,13 @@ let parseFloatWith = (regex, input) => {
 let usageMetrics = function (payload) {  
     // TODO change to work with entire payload not just message
     console.log('payload: ', JSON.stringify(payload));
+    console.log('logGroup: ', JSON.stringify(payload.logGroup))
     let payloadParts = payload.split("\t");
     let messageParts = payloadParts[0].split("\t", 5);
 
-    let billedDurationValue = parseFloatWith(/Billed Duration: (.*) ms/i, messageParts[2]);
-    let memorySizeValue     = parseFloatWith(/Memory Size: (.*) MB/i, messageParts[3]);
-    let memoryUsedValue     = parseFloatWith(/Max Memory Used: (.*) MB/i, messageParts[4]);
+    let billedDurationValue = 200; // parseFloatWith(/Billed Duration: (.*) ms/i, messageParts[2]);
+    let memorySizeValue     = 300; // parseFloatWith(/Memory Size: (.*) MB/i, messageParts[3]);
+    let memoryUsedValue     = 400; // parseFloatWith(/Max Memory Used: (.*) MB/i, messageParts[4]);
     
     // TODO - change to get from payload
     //let dimensions     = [
@@ -56,7 +57,6 @@ module.exports.logger = (event, context, callback) => {
       }
 
       const parsed = JSON.parse(res.toString('utf8'));
-      console.log('Decoded payload:', JSON.stringify(parsed));
 
       // code from https://hackernoon.com/tips-and-tricks-for-logging-and-monitoring-aws-lambda-functions-885af6da29a5
       // github: https://github.com/theburningmonk/lambda-logging-metrics-demo/blob/master/lib/parse.js
