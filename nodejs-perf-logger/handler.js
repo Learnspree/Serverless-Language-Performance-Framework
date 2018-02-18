@@ -30,16 +30,20 @@ let parseFloatWith = (regex, input) => {
 let usageMetrics = function (payload) {  
     let messageParts = payload.logEvents[0].message.split('\t');
 
+    let actualDurationValue = parseFloatWith(/Duration: (.*) ms/i, messageParts[1]);
     let billedDurationValue = parseFloatWith(/Billed Duration: (.*) ms/i, messageParts[2]);
     let memorySizeValue     = parseFloatWith(/Memory Size: (.*) MB/i, messageParts[3]);
     let memoryUsedValue     = parseFloatWith(/Max Memory Used: (.*) MB/i, messageParts[4]);
 
     return {
+      duration : actualDurationValue,
       billedDuration : billedDurationValue,
       memorySize : memorySizeValue,
       memoryUsed : memoryUsedValue,
       functionName : functionName(payload.logGroup),
-      functionVersion : lambdaVersion(payload.logStream)
+      functionVersion : lambdaVersion(payload.logStream),
+      durationUnits : 'ms',
+      memoryUnits : 'MB'
     };
 }
 
