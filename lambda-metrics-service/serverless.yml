@@ -20,7 +20,8 @@ service: lambda-metrics-service
 provider:
   name: aws
   runtime: dotnetcore2.0
-
+  memorySize: 128
+  
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
