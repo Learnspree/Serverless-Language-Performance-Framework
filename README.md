@@ -1,7 +1,7 @@
 # Serverless-Language-Performance-Framework
 Related to MSc Applied IT Architecture Thesis @ Institute of Technology, Tallaght
 
-This framework uses the serverless framework (from [http://www.serverless.com]) to test the relative performance and cost of different language implementations in AWS Lambda and ultimately other serverless platforms.
+This framework uses the serverless framework (see http://www.serverless.com) to test the relative performance and cost of different language implementations in AWS Lambda and ultimately other serverless platforms.
 
 ## Setup
 Install AWS CLI and Serverless Framework (version 1.26.0 used).
@@ -22,4 +22,7 @@ Test **logger** function via serverless framework local invoke using:
 serverless invoke local --function logger -p lib/test-logger-input-raw.json
 ```
 
-Test **metrics** function via aws console (serverless framework does not allow local .NET C# testing like for NodeJS). Use "test-metrics-service.json" file contents to configure a test event there.
+Test **metrics** function (note: cannot use `serverless invoke local` for .NET functions): 
+```bash
+serverless invoke -f lambdaMetrics -p lib/test-metrics-service.json
+```
