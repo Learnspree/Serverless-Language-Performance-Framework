@@ -4,7 +4,9 @@ This framework uses the serverless framework (from [http://www.serverless.com]) 
 
 ## Setup
 Install AWS CLI and Serverless Framework (version 1.26.0 used).
-All development primarly done so far on MAC OS.
+Install NodeJS/NPM (instructions/links TODO)
+Install .NET Core 2.0 (https://www.microsoft.com/net/learn/get-started/macos)
+**Note:** All development primarly done so far on MAC OS.
 
 Dynamo DB Tables can be created from the files in "dynamo-db-tables" directory using the commands:
 * aws dynamodb create-table --cli-input-json file://create-table-metrics.json --region <region> --profile <aws cli profile>
