@@ -1,11 +1,15 @@
 # Serverless-Language-Performance-Framework
 Related to MSc Applied IT Architecture Thesis @ Institute of Technology, Tallaght
+
 This framework uses the serverless framework (from [http://www.serverless.com]) to test the relative performance and cost of different language implementations in AWS Lambda and ultimately other serverless platforms.
 
 ## Setup
 Install AWS CLI and Serverless Framework (version 1.26.0 used).
+
 Install NodeJS/NPM (instructions/links TODO)
+
 Install .NET Core 2.0 (https://www.microsoft.com/net/learn/get-started/macos)
+
 **Note:** All development primarly done so far on MAC OS.
 
 Dynamo DB Tables can be created from the files in "dynamo-db-tables" directory using the commands:
@@ -13,5 +17,9 @@ Dynamo DB Tables can be created from the files in "dynamo-db-tables" directory u
 * aws dynamodb create-table --cli-input-json file://create-table-platforms.json --region <region> --profile <aws cli profile>
 
 ## Testing
-Test via serverless framework local invoke using:
+Test **logger** function via serverless framework local invoke using:
+```bash
 serverless invoke local --function logger -p lib/test-logger-input-raw.json
+```
+
+Test **metrics** function via aws console (serverless framework does not allow local .NET C# testing like for NodeJS). Use "test-metrics-service.json" file contents to configure a test event there.
