@@ -1,0 +1,11 @@
+{
+    "FunctionName": "my-service",
+    "FunctionVersion": "$LATEST",
+    "Timestamp": "1518951734310",
+    "Duration": 154,
+    "BilledDuration": 200,
+    "MemorySize": 128,
+    "MemoryUsed": 18,
+    "LanguageRuntime": ".NET Core 2.0",
+    "ServerlessPlatformName": "AWS Lambda"
+}
