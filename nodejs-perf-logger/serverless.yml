@@ -58,14 +58,14 @@ provider:
 functions:
   logger:
     handler: handler.logger
-
+    events:
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/my-service-dev-hello'
+          filter: 'REPORT'
+          
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
-    events:
-      - cloudwatchLog:
-        logGroup: '/aws/lambda/my-service-dev-hello'
-        filter: 'REPORT'
 #      - http:
 #          path: users/create
 #          method: get
