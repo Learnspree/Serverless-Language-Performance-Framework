@@ -1,0 +1,10 @@
+{
+    "duration": 14.89,
+    "billedDuration": 100,
+    "memorySize": 128,
+    "memoryUsed": 19,
+    "functionName": "my-service-dev-hello",
+    "functionVersion": "$LATEST",
+    "durationUnits": "ms",
+    "memoryUnits": "MB"
+}

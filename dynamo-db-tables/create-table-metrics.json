@@ -1,0 +1,15 @@
+{
+    "TableName": "ServerlessFunctionMetrics",
+    "KeySchema": [
+      { "AttributeName": "FunctionName", "KeyType": "HASH" },
+      { "AttributeName": "Timestamp", "KeyType": "RANGE" }
+    ],
+    "AttributeDefinitions": [
+      { "AttributeName": "FunctionName", "AttributeType": "S" },
+      { "AttributeName": "Timestamp", "AttributeType": "S" }
+    ],
+    "ProvisionedThroughput": {
+      "ReadCapacityUnits": 5,
+      "WriteCapacityUnits": 5
+    }
+}
