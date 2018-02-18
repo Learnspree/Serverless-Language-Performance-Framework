@@ -3,37 +3,60 @@ using System;
 
 [assembly:LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
-namespace AwsDotnetCsharp
+namespace ServerlessPerformanceFramework
 {
     public class Handler
     {
-       public Response Hello(Request request)
+       public AddMetricsResponse LambdaMetrics(AddMetricsRequest request)
        {
-           return new Response("Go Serverless v1.0! Your function executed successfully!", request);
+           // default to successful response until we plug in DynamoDB integration
+           return new AddMetricsResponse("Lambda Metrics data persisted in DynamoDB successfully.", request, 0);
        }
     }
 
-    public class Response
+    public class AddMetricsResponse
     {
       public string Message {get; set;}
-      public Request Request {get; set;}
+      public AddMetricsRequest Request {get; set;}
+      public int Status {get; set;}
 
-      public Response(string message, Request request){
+      public AddMetricsResponse(string message, AddMetricsRequest request, int status){
         Message = message;
         Request = request;
+        Status = status;
       }
     }
 
-    public class Request
+    public class AddMetricsRequest
     {
-      public string Key1 {get; set;}
-      public string Key2 {get; set;}
-      public string Key3 {get; set;}
+      public string FunctionName {get; set;}
+      public string FunctionVersion {get; set;}
+      public string Timestamp {get; set;}
+      public int Duration {get; set;}
+      public int BilledDuration {get; set;}
+      public int MemorySize {get; set;}
+      public int MemoryUsed {get; set;}
+      public string LanguageRuntime {get; set;}
+      public string ServerlessPlatformName {get; set;}
 
-      public Request(string key1, string key2, string key3){
-        Key1 = key1;
-        Key2 = key2;
-        Key3 = key3;
+      public AddMetricsRequest(string functionName, 
+        string functionVersion, 
+        string timestamp,
+        int duration,
+        int billedDuration,
+        int memorySize,
+        int memoryUsed,
+        string runtime,
+        string platform) {
+          FunctionName = functionName;
+          FunctionVersion = functionVersion;
+          Timestamp = timestamp;
+          Duration = duration;
+          BilledDuration = billedDuration;
+          MemorySize = memorySize;
+          MemoryUsed = memoryUsed;
+          LanguageRuntime = runtime;
+          ServerlessPlatformName = platform;
       }
     }
 }

@@ -21,7 +21,7 @@ provider:
   name: aws
   runtime: dotnetcore2.0
   memorySize: 128
-  
+
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -54,8 +54,8 @@ package:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: CsharpHandlers::AwsDotnetCsharp.Handler::Hello
+  lambdaMetrics:
+    handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::LambdaMetrics
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
