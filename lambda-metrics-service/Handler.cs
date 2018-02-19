@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 [assembly:LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
@@ -10,18 +11,20 @@ namespace ServerlessPerformanceFramework
 {
     public class Handler
     {
-       public AddMetricsResponse LambdaMetrics(AddMetricsRequest request)
+       public async Task<AddMetricsResponse> LambdaMetrics(AddMetricsRequest request)
        {
            // default to successful response until we plug in DynamoDB integration
+           await CreateItem(request);
            return new AddMetricsResponse("Lambda Metrics data persisted in DynamoDB successfully.", request, 0);
        }
 
-       private void CreateItem(AddMetricsRequest metrics)
+       private async Task CreateItem(AddMetricsRequest metrics)
        {
             // TODO - remove hardocded values and take from metrics object
 
             AmazonDynamoDBClient client = new AmazonDynamoDBClient();
 
+/*
             var request = new PutItemRequest
             {
                 TableName = "ServerlessFunctionMetrics",
@@ -55,8 +58,39 @@ namespace ServerlessPerformanceFramework
                       S = "AWS"
                   }}
             }
+            };*/
+            var items = new Dictionary<string, AttributeValue>()
+            {
+                { "FunctionName", new AttributeValue {
+                      S = "my-service"
+                  }},
+                { "Timestamp", new AttributeValue {
+                      S = "0000000000"
+                  }},
+                { "FunctionVersion", new AttributeValue {
+                      S = "$LATEST"
+                  }},
+                { "Duration", new AttributeValue {
+                      N = "20.00"
+                  }},
+                { "BilledDuration", new AttributeValue {
+                      N = "30.00"
+                  }},
+                { "MemorySize", new AttributeValue {
+                      N = "30.00"
+                  }},
+                { "MemoryUsed", new AttributeValue {
+                      N = "30.00"
+                  }},
+                { "LanguageRuntime", new AttributeValue {
+                      S = "Java"
+                  }},
+                { "ServerlessPlatformName", new AttributeValue {
+                      S = "AWS"
+                  }}
             };
-            client.PutItem(request);
+
+            await client.PutItemAsync("ServerlessFunctionMetrics", items);
         }
     }
 
