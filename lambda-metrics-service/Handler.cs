@@ -2,6 +2,7 @@ using Amazon.Lambda.Core;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using System;
+using Amazon.Runtime;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,92 +14,62 @@ namespace ServerlessPerformanceFramework
     {
        public async Task<AddMetricsResponse> LambdaMetrics(AddMetricsRequest request)
        {
-           // default to successful response until we plug in DynamoDB integration
-           Console.WriteLine("Start Lambda Metrics");
            Task<int> createItemTask = CreateItem(request);
            int result = await createItemTask;
-           Console.WriteLine("End Lambda Metrics");
-           return new AddMetricsResponse("Lambda Metrics data persisted in DynamoDB " + (result == 0 ? "successfully" : "failure"), request, result);
+           return new AddMetricsResponse("Lambda metrics data persisted with result: " + result, request, result);
        }
 
        private async Task<int> CreateItem(AddMetricsRequest metrics)
        {
-            // TODO - remove hardocded values and take from metrics object
-            Console.WriteLine("Start CreateItem");
-            AmazonDynamoDBClient client = new AmazonDynamoDBClient();
-
-/*
-            var request = new PutItemRequest
+            try 
             {
-                TableName = "ServerlessFunctionMetrics",
-                Item = new Dictionary<string, AttributeValue>()
-            {
-                { "FunctionName", new AttributeValue {
-                      S = "my-service"
-                  }},
-                { "Timestamp", new AttributeValue {
-                      S = "0000000000"
-                  }},
-                { "FunctionVersion", new AttributeValue {
-                      S = "$LATEST"
-                  }},
-                { "Duration", new AttributeValue {
-                      N = "20.00"
-                  }},
-                { "BilledDuration", new AttributeValue {
-                      N = "30.00"
-                  }},
-                { "MemorySize", new AttributeValue {
-                      N = "30.00"
-                  }},
-                { "MemoryUsed", new AttributeValue {
-                      N = "30.00"
-                  }},
-                { "LanguageRuntime", new AttributeValue {
-                      S = "Java"
-                  }},
-                { "ServerlessPlatformName", new AttributeValue {
-                      S = "AWS"
-                  }}
+                var putItemData = CreatePutItemData(metrics);
+                AmazonDynamoDBClient client = new AmazonDynamoDBClient();
+                Task<PutItemResponse> putTask = client.PutItemAsync("ServerlessFunctionMetrics", putItemData);
+                var response = await putTask;
+                return (int)response.HttpStatusCode;
             }
-            };*/
+            catch (AmazonDynamoDBException e) { Console.WriteLine(e.Message); }
+            catch (AmazonServiceException e) { Console.WriteLine(e.Message); }
+            catch (Exception e) { Console.WriteLine(e.Message); }
+
+            return 0;
+        }
+    
+        private Dictionary<string, AttributeValue> CreatePutItemData(AddMetricsRequest metrics) 
+        {
             var items = new Dictionary<string, AttributeValue>()
             {
                 { "FunctionName", new AttributeValue {
-                      S = "my-service"
+                      S = metrics.FunctionName
                   }},
                 { "Timestamp", new AttributeValue {
-                      S = "0000000000"
+                      S = metrics.Timestamp
                   }},
                 { "FunctionVersion", new AttributeValue {
-                      S = "$LATEST"
+                      S = metrics.FunctionVersion
                   }},
                 { "Duration", new AttributeValue {
-                      N = "20.00"
+                      N = metrics.Duration
                   }},
                 { "BilledDuration", new AttributeValue {
-                      N = "30.00"
+                      N = metrics.BilledDuration
                   }},
                 { "MemorySize", new AttributeValue {
-                      N = "30.00"
+                      N = metrics.MemorySize
                   }},
                 { "MemoryUsed", new AttributeValue {
-                      N = "30.00"
+                      N = metrics.MemoryUsed
                   }},
                 { "LanguageRuntime", new AttributeValue {
-                      S = "Java"
+                      S = metrics.LanguageRuntime
                   }},
                 { "ServerlessPlatformName", new AttributeValue {
-                      S = "AWS"
+                      S = metrics.ServerlessPlatformName
                   }}
             };
 
-            Console.WriteLine("Calling PutItemAsync");
-            Task<PutItemResponse> putTask = client.PutItemAsync("ServerlessFunctionMetrics", items);
-            Console.WriteLine("Calling await PutItem");
-            var response = await putTask;
-            Console.WriteLine("End CreateItem");
-            return (int)response.HttpStatusCode;
+            return items;
         }
     }
 
@@ -120,20 +91,20 @@ namespace ServerlessPerformanceFramework
       public string FunctionName {get; set;}
       public string FunctionVersion {get; set;}
       public string Timestamp {get; set;}
-      public int Duration {get; set;}
-      public int BilledDuration {get; set;}
-      public int MemorySize {get; set;}
-      public int MemoryUsed {get; set;}
+      public string Duration {get; set;}
+      public string BilledDuration {get; set;}
+      public string MemorySize {get; set;}
+      public string MemoryUsed {get; set;}
       public string LanguageRuntime {get; set;}
       public string ServerlessPlatformName {get; set;}
 
       public AddMetricsRequest(string functionName, 
         string functionVersion, 
         string timestamp,
-        int duration,
-        int billedDuration,
-        int memorySize,
-        int memoryUsed,
+        string duration,
+        string billedDuration,
+        string memorySize,
+        string memoryUsed,
         string runtime,
         string platform) {
           FunctionName = functionName;
