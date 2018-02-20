@@ -1,0 +1,11 @@
+{
+    "ServerlessFunctionMetrics": {
+        "Keys": [
+            {
+                "FunctionName": {"S": "lambdaMetrics"},
+                "ServerlessPlatformName": {"S": "AWS Lambda"}
+            }
+        ],
+        "ProjectionExpression":"Duration"
+    }
+}
