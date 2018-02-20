@@ -14,14 +14,17 @@ namespace ServerlessPerformanceFramework
        public async Task<AddMetricsResponse> LambdaMetrics(AddMetricsRequest request)
        {
            // default to successful response until we plug in DynamoDB integration
-           await CreateItem(request);
-           return new AddMetricsResponse("Lambda Metrics data persisted in DynamoDB successfully.", request, 0);
+           Console.WriteLine("Start Lambda Metrics");
+           Task<int> createItemTask = CreateItem(request);
+           int result = await createItemTask;
+           Console.WriteLine("End Lambda Metrics");
+           return new AddMetricsResponse("Lambda Metrics data persisted in DynamoDB " + (result == 0 ? "successfully" : "failure"), request, result);
        }
 
-       private async Task CreateItem(AddMetricsRequest metrics)
+       private async Task<int> CreateItem(AddMetricsRequest metrics)
        {
             // TODO - remove hardocded values and take from metrics object
-
+            Console.WriteLine("Start CreateItem");
             AmazonDynamoDBClient client = new AmazonDynamoDBClient();
 
 /*
@@ -90,7 +93,12 @@ namespace ServerlessPerformanceFramework
                   }}
             };
 
-            await client.PutItemAsync("ServerlessFunctionMetrics", items);
+            Console.WriteLine("Calling PutItemAsync");
+            Task<PutItemResponse> putTask = client.PutItemAsync("ServerlessFunctionMetrics", items);
+            Console.WriteLine("Calling await PutItem");
+            var response = await putTask;
+            Console.WriteLine("End CreateItem");
+            return (int)response.HttpStatusCode;
         }
     }
 
