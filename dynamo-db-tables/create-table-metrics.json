@@ -6,7 +6,7 @@
     ],
     "AttributeDefinitions": [
       { "AttributeName": "FunctionName", "AttributeType": "S" },
-      { "AttributeName": "Timestamp", "AttributeType": "S" }
+      { "AttributeName": "ServerlessPlatformName", "AttributeType": "S" }
     ],
     "ProvisionedThroughput": {
       "ReadCapacityUnits": 1,
