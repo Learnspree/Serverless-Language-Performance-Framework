@@ -2,10 +2,11 @@
     "ServerlessFunctionMetrics": {
         "Keys": [
             {
-                "FunctionName": {"S": "lambdaMetrics"},
+                "FunctionName": {"S": "my-service"},
                 "ServerlessPlatformName": {"S": "AWS Lambda"}
             }
         ],
-        "ProjectionExpression":"Duration"
+        "ProjectionExpression":"BilledDuration,MemorySize,FunctionName,FunctionVersion,MemoryUsed,LanguageRuntime,ServerlessPlatformName,#D",
+	"ExpressionAttributeNames": {"#D":"Duration"}
     }
 }
