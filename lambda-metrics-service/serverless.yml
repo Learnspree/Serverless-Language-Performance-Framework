@@ -21,6 +21,8 @@ provider:
   name: aws
   runtime: dotnetcore2.0
   memorySize: 128
+  role: arn:aws:iam::662198257344:role/service-role/APIDynamoLambda   # assumes existing IAM role allowing Dynamo access
+  timeout: 12 
 
 # you can overwrite defaults here
 #  stage: dev
