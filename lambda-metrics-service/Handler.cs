@@ -1,10 +1,14 @@
+using System;
+using System.Net;
 using Amazon.Lambda.Core;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using System;
 using Amazon.Runtime;
+using Amazon.Lambda.APIGatewayEvents;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json; 
+using Newtonsoft.Json.Serialization;
 
 [assembly:LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
@@ -12,11 +16,37 @@ namespace ServerlessPerformanceFramework
 {
     public class Handler
     {
-       public async Task<AddMetricsResponse> LambdaMetrics(AddMetricsRequest request)
+       //public async Task<AddMetricsResponse> LambdaMetrics(AddMetricsRequest request)
+       public async Task<APIGatewayProxyResponse> LambdaMetrics(APIGatewayProxyRequest request, ILambdaContext context)
        {
+            // Log entries show up in CloudWatch
+            context.Logger.LogLine("Example log entry\n");
+
+            JsonSerializerSettings serSettings = new JsonSerializerSettings();
+            serSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            AddMetricsRequest metricsRequest = JsonConvert.DeserializeObject<AddMetricsRequest>(request.Body, serSettings);
+
+            context.Logger.LogLine("metricsRequestObjectCreated");
+
+           Task<int> createItemTask = CreateItem(metricsRequest);
+           int result = await createItemTask;
+           //return new AddMetricsResponse("Lambda metrics data persisted with result: " + result, request, result);
+
+            // TODO - change Body to just return the response code
+            var response = new APIGatewayProxyResponse
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                Body =  JsonConvert.SerializeObject(metricsRequest),
+                Headers = new Dictionary<string, string> {{ "Content-Type", "application/json" }}
+            };
+
+            return response;
+
+           /*
            Task<int> createItemTask = CreateItem(request);
            int result = await createItemTask;
            return new AddMetricsResponse("Lambda metrics data persisted with result: " + result, request, result);
+           */
        }
 
        private async Task<int> CreateItem(AddMetricsRequest metrics)
@@ -72,7 +102,7 @@ namespace ServerlessPerformanceFramework
             return items;
         }
     }
-
+/*
     public class AddMetricsResponse
     {
       public string Message {get; set;}
@@ -84,7 +114,7 @@ namespace ServerlessPerformanceFramework
         Request = request;
         Status = status;
       }
-    }
+    }*/
 
     public class AddMetricsRequest
     {
