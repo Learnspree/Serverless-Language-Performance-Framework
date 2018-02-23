@@ -16,37 +16,23 @@ namespace ServerlessPerformanceFramework
 {
     public class Handler
     {
-       //public async Task<AddMetricsResponse> LambdaMetrics(AddMetricsRequest request)
        public async Task<APIGatewayProxyResponse> LambdaMetrics(APIGatewayProxyRequest request, ILambdaContext context)
        {
-            // Log entries show up in CloudWatch
-            context.Logger.LogLine("Example log entry\n");
-
             JsonSerializerSettings serSettings = new JsonSerializerSettings();
             serSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             AddMetricsRequest metricsRequest = JsonConvert.DeserializeObject<AddMetricsRequest>(request.Body, serSettings);
 
-            context.Logger.LogLine("metricsRequestObjectCreated");
+            Task<int> createItemTask = CreateItem(metricsRequest);
+            int result = await createItemTask;
 
-           Task<int> createItemTask = CreateItem(metricsRequest);
-           int result = await createItemTask;
-           //return new AddMetricsResponse("Lambda metrics data persisted with result: " + result, request, result);
-
-            // TODO - change Body to just return the response code
             var response = new APIGatewayProxyResponse
             {
-                StatusCode = (int)HttpStatusCode.OK,
-                Body =  JsonConvert.SerializeObject(metricsRequest),
+                StatusCode = (result == 0) ? (int)HttpStatusCode.OK : (int)HttpStatusCode.InternalServerError,
+                Body =  $"{{Success: {result} }}",
                 Headers = new Dictionary<string, string> {{ "Content-Type", "application/json" }}
             };
 
             return response;
-
-           /*
-           Task<int> createItemTask = CreateItem(request);
-           int result = await createItemTask;
-           return new AddMetricsResponse("Lambda metrics data persisted with result: " + result, request, result);
-           */
        }
 
        private async Task<int> CreateItem(AddMetricsRequest metrics)
@@ -57,7 +43,9 @@ namespace ServerlessPerformanceFramework
                 AmazonDynamoDBClient client = new AmazonDynamoDBClient();
                 Task<PutItemResponse> putTask = client.PutItemAsync("ServerlessFunctionMetrics", putItemData);
                 var response = await putTask;
-                return (int)response.HttpStatusCode;
+
+                // return 0 for success, otherwise failure of -1
+                return response.HttpStatusCode == HttpStatusCode.OK ? 0 : -1;
             }
             catch (AmazonDynamoDBException e) { Console.WriteLine(e.Message); }
             catch (AmazonServiceException e) { Console.WriteLine(e.Message); }
@@ -102,19 +90,6 @@ namespace ServerlessPerformanceFramework
             return items;
         }
     }
-/*
-    public class AddMetricsResponse
-    {
-      public string Message {get; set;}
-      public AddMetricsRequest Request {get; set;}
-      public int Status {get; set;}
-
-      public AddMetricsResponse(string message, AddMetricsRequest request, int status){
-        Message = message;
-        Request = request;
-        Status = status;
-      }
-    }*/
 
     public class AddMetricsRequest
     {
