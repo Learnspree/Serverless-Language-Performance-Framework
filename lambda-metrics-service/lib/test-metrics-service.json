@@ -1,8 +1,8 @@
 {
     "FunctionName": "my-service",
     "FunctionVersion": "$LATEST",
-    "Timestamp": "1518951734310",
-    "Duration": 154,
+    "Timestamp": "1518951734319",
+    "Duration": 934,
     "BilledDuration": 200,
     "MemorySize": 128,
     "MemoryUsed": 18,
