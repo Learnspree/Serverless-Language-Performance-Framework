@@ -18,9 +18,11 @@ namespace ServerlessPerformanceFramework
     {
        public async Task<APIGatewayProxyResponse> LambdaMetrics(APIGatewayProxyRequest request, ILambdaContext context)
        {
+            // Uncomment for debugging: Console.WriteLine(request.Body);
             JsonSerializerSettings serSettings = new JsonSerializerSettings();
-            serSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            serSettings.ContractResolver = new DefaultContractResolver();
             AddMetricsRequest metricsRequest = JsonConvert.DeserializeObject<AddMetricsRequest>(request.Body, serSettings);
+            SetLanguageRuntime(metricsRequest);
 
             Task<int> createItemTask = CreateItem(metricsRequest);
             int result = await createItemTask;
@@ -33,6 +35,30 @@ namespace ServerlessPerformanceFramework
             };
 
             return response;
+       }
+
+       private void SetLanguageRuntime(AddMetricsRequest metrics)
+       {
+            // Detect language runtime from naming convention (ending in "-<languageruntimename>") if missing
+            if (metrics.LanguageRuntime == null)
+            {
+                var unknownRuntime = "unknown";
+
+                var lastHyphenIndex = metrics.FunctionName.LastIndexOf("-");
+                if ((lastHyphenIndex == -1) || (lastHyphenIndex >= metrics.FunctionName.Length))
+                {
+                    // no hyphen or the name ended in hyphen - doesn't follow convention
+                    metrics.LanguageRuntime = unknownRuntime;
+                    return;
+                }
+               
+                var languageRuntimeName = metrics.FunctionName.Substring(lastHyphenIndex + 1);
+                // verify the languageruntime name was actually provided and is in the accepted list
+                // otherwise default to "unknown"
+                // TODO - make this list configurable as environment variable
+                List<string> acceptedRuntimes = new List<string> { "python27", "python33", "go", ".netcore2", "java8", "node610"}; 
+                metrics.LanguageRuntime = (acceptedRuntimes.Contains(languageRuntimeName)) ? languageRuntimeName : unknownRuntime;
+            }
        }
 
        private async Task<int> CreateItem(AddMetricsRequest metrics)
@@ -58,6 +84,9 @@ namespace ServerlessPerformanceFramework
         {
             var items = new Dictionary<string, AttributeValue>()
             {
+                { "RequestId", new AttributeValue {
+                      S = metrics.RequestId
+                  }},
                 { "FunctionName", new AttributeValue {
                       S = metrics.FunctionName
                   }},
@@ -93,6 +122,7 @@ namespace ServerlessPerformanceFramework
 
     public class AddMetricsRequest
     {
+      public string RequestId { get; set; }
       public string FunctionName {get; set;}
       public string FunctionVersion {get; set;}
       public string Timestamp {get; set;}
@@ -103,7 +133,9 @@ namespace ServerlessPerformanceFramework
       public string LanguageRuntime {get; set;}
       public string ServerlessPlatformName {get; set;}
 
-      public AddMetricsRequest(string functionName, 
+      public AddMetricsRequest(
+        string requestId,
+        string functionName, 
         string functionVersion, 
         string timestamp,
         string duration,
@@ -112,6 +144,7 @@ namespace ServerlessPerformanceFramework
         string memoryUsed,
         string runtime,
         string platform) {
+          RequestId = requestId;
           FunctionName = functionName;
           FunctionVersion = functionVersion;
           Timestamp = timestamp;
