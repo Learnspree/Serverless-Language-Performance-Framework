@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: nodejs-perf-logger
+service: aws-service-node610
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -21,12 +21,11 @@ provider:
   name: aws
   runtime: nodejs6.10
   memorySize: 128
-  timeout: 12
-  region: us-east-1
-  stage: dev
-  versionFunctions: true # Optional function versioning
 
-  
+# you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
+
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
 #    - Effect: "Allow"
@@ -48,25 +47,22 @@ provider:
 #    variable1: value1
 
 # you can add packaging information here
-package:
-  include:
-    - node_modules/**
-
+#package:
 #  include:
 #    - include-me.js
 #    - include-me-dir/**
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
 
 functions:
-  logger:
-    handler: handler.logger
-    events:
-      - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-service-node610-dev-test-node610'
-          filter: 'REPORT'
-          
+  test-node610:
+    handler: handler.test-node610
+
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
+#    events:
 #      - http:
 #          path: users/create
 #          method: get
@@ -87,6 +83,7 @@ functions:
 #            detail:
 #              state:
 #                - pending
+#      - cloudwatchLog: '/aws/lambda/hello'
 #      - cognitoUserPool:
 #          pool: MyUserPool
 #          trigger: PreSignUp
