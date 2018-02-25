@@ -78,7 +78,7 @@ aws apigateway get-rest-apis
 curl -v -X POST -d@lib/test-metrics-service.json https://<aws-restapi-id>.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
 
 # example:
-curl -v -X POST -d@lib/test-metrics-service.json https://cjwam2lsp6.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
+curl -v -X POST -d@lib/test-metrics-service.json https://ybt41omi9i.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
 ```
 
 Full end-to-end test measuring sample target function:
