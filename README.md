@@ -72,10 +72,10 @@ serverless invoke local --function logger -p lib/test-logger-input-raw.json
 ```
 
 Test **metrics** function (note: test example is via API Gateway - not Lambda directly - using `curl` below): 
-```bash
-cd lambda-metrics-service
-aws apigateway get-rest-apis
-curl -v -X POST -d@lib/test-metrics-service.json https://<aws-restapi-id>.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
+```shell
+1. cd lambda-metrics-service
+2. aws apigateway get-rest-apis
+3. curl -v -X POST -d@lib/test-metrics-service.json https://<aws-restapi-id>.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
 
 # example:
 curl -v -X POST -d@lib/test-metrics-service.json https://ybt41omi9i.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
@@ -83,9 +83,9 @@ curl -v -X POST -d@lib/test-metrics-service.json https://ybt41omi9i.execute-api.
 
 Full end-to-end test measuring sample target function:
 ```bash
-cd my-service
-serverless deploy -v --aws-profile <aws-cli-profile>
-serverless invoke -f hello -l --aws-profile <aws-cli-profile>
+1. cd my-service
+2. serverless deploy -v --aws-profile <aws-cli-profile>
+3. serverless invoke -f hello -l --aws-profile <aws-cli-profile>
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
 # Check DynamoDB table "ServerlessFunctionMetrics" to validate.
