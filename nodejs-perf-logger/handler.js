@@ -1,10 +1,8 @@
 'use strict';
 
-// Note: Portions of below code taken from or adapted from https://github.com/theburningmonk/lambda-logging-metrics-demo
-// Those portions are Copyright (c) 2017 Yan Cui (MIT License)
-// See https://hackernoon.com/tips-and-tricks-for-logging-and-monitoring-aws-lambda-functions-885af6da29a5
-
+// Note: Portions of CloudWatch logs parsing code from https://github.com/theburningmonk/lambda-logging-metrics-demo (Copyright (c) 2017 Yan Cui (MIT License))
 const zlib = require('zlib');
+const request = require('request');
 
 // logGroup looks like this:
 //    "logGroup": "/aws/lambda/service-env-funcName"
@@ -60,12 +58,27 @@ module.exports.logger = (event, context, callback) => {
       const metrics = usageMetrics(parsed);
       console.log('metrics: ', JSON.stringify(metrics));
 
+      // call the API to store data
+      let responseCode = 200;
+      request.post(
+          'https://cjwam2lsp6.execute-api.us-east-1.amazonaws.com/dev/metrics',
+          { json: metrics },
+          function (error, response, body) {
+              responseCode = response.statusCode;
+              if (!error && response.statusCode == 200) {
+                  console.log("SUCCESS")
+              }
+              else {
+                console.log("An error occurred - " + error);
+              }
+          }
+      );
+    
       const response = {
-        statusCode: 200,
+        statusCode: responseCode,
         body: JSON.stringify({
-          message: metrics,
-          input: event
-        }),
+          message: metrics
+        })
       };
     
       callback(null, response);

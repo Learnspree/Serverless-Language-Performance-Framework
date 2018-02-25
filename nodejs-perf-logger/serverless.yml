@@ -47,13 +47,13 @@ provider:
 #    variable1: value1
 
 # you can add packaging information here
-#package:
+package:
+  include:
+    - node_modules/**
+
 #  include:
 #    - include-me.js
 #    - include-me-dir/**
-#  exclude:
-#    - exclude-me.js
-#    - exclude-me-dir/**
 
 functions:
   logger:
