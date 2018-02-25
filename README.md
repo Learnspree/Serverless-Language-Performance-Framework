@@ -46,7 +46,7 @@ aws dynamodb create-table --cli-input-json file://create-table-metrics.json --re
 
 ## Build
 ```bash
-# Modify nodejs-perf-logger/serverless.yml to change the source cloud-watch-log as a trigger to measure performance of your target function. Default example below:
+# Optionally modify nodejs-perf-logger/serverless.yml to change the source cloud-watch-log as a trigger to measure performance of your target function. Default example below:
     events:
       - cloudwatchLog:
           logGroup: '/aws/lambda/my-service-dev-hello'
@@ -54,7 +54,9 @@ aws dynamodb create-table --cli-input-json file://create-table-metrics.json --re
 
 # Deploy the AWS CloudWatch Logs Lambda Performance Metric Parser Function
 cd nodejs-perf-logger
-serverless deploy -v --aws-profile <aws cli profile>
+npm install request
+serverless package --package aws-artifacts
+serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile>
 
 # Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table created earlier)
 cd lambda-metrics-service
@@ -68,7 +70,7 @@ serverless deploy -v --aws-profile <aws cli profile>
 ## Validation
 Test **logger** function via serverless framework local invoke using:
 ```bash
-serverless invoke local --function logger -p lib/test-logger-input-raw.json
+serverless invoke <optionally run locally with local option> --function logger -p lib/test-logger-input-raw.json
 ```
 
 Test **metrics** function (note: test example is via API Gateway - not Lambda directly - using `curl` below): 
