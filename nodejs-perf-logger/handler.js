@@ -41,7 +41,8 @@ let usageMetrics = function (payload) {
       functionName : functionName(payload.logGroup),
       functionVersion : lambdaVersion(payload.logStream),
       durationUnits : 'ms',
-      memoryUnits : 'MB'
+      memoryUnits : 'MB',
+      serverlessPlatformName : 'AWS Lambda'
     };
 }
 
