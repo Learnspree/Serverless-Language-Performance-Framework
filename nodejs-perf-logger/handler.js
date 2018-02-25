@@ -48,6 +48,9 @@ let usageMetrics = function (payload) {
       memoryUsed : memoryUsedValue,
       functionName : functionName(payload.logGroup),
       functionVersion : lambdaVersion(payload.logStream),
+
+      // following values hardcoded for now as we know we're running in AWS Lambda. 
+      // TODO - change these to environment variables for more flexibility
       durationUnits : 'ms',
       memoryUnits : 'MB',
       serverlessPlatformName : 'AWS Lambda'
