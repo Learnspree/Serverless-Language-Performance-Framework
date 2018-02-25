@@ -23,17 +23,25 @@ let parseFloatWith = (regex, input) => {
   return parseFloat(res[1]);
 }
 
+let parseRegex = (regex, input) => {
+  let res = regex.exec(input);
+  return res[1];
+}
+
 // a typical report message looks like this:
 //    "REPORT RequestId: 3897a7c2-8ac6-11e7-8e57-bb793172ae75\tDuration: 2.89 ms\tBilled Duration: 100 ms \tMemory Size: 1024 MB\tMax Memory Used: 20 MB\t\n"
 let usageMetrics = function (payload) {  
     let messageParts = payload.logEvents[0].message.split('\t');
 
+    let uniqueRequestId     = parseRegex(/RequestId: (.*)/i, messageParts[0]);
     let actualDurationValue = parseFloatWith(/Duration: (.*) ms/i, messageParts[1]);
     let billedDurationValue = parseFloatWith(/Billed Duration: (.*) ms/i, messageParts[2]);
     let memorySizeValue     = parseFloatWith(/Memory Size: (.*) MB/i, messageParts[3]);
     let memoryUsedValue     = parseFloatWith(/Max Memory Used: (.*) MB/i, messageParts[4]);
 
     return {
+      timestamp : Date.now(), // TODO - better to get timestamp as input from executing function via custom cloudwatch log entry
+      requestId : uniqueRequestId,
       duration : actualDurationValue,
       billedDuration : billedDurationValue,
       memorySize : memorySizeValue,

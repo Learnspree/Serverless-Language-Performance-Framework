@@ -92,7 +92,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/nodejs-perf-logger/dev/1519566995952-2018-02-25T13:56:35.952Z/nodejs-perf-logger.zip"
+          "S3Key": "serverless/nodejs-perf-logger/dev/1519580093068-2018-02-25T17:34:53.068Z/nodejs-perf-logger.zip"
         },
         "FunctionName": "nodejs-perf-logger-dev-logger",
         "Handler": "handler.logger",
@@ -104,21 +104,21 @@
           ]
         },
         "Runtime": "nodejs6.10",
-        "Timeout": 6
+        "Timeout": 12
       },
       "DependsOn": [
         "LoggerLogGroup",
         "IamRoleLambdaExecution"
       ]
     },
-    "LoggerLambdaVersionGfyTLEoNrHR7b4Bxet86E3fosOklJIqA0lphgkQ3ZhY": {
+    "LoggerLambdaVersionryZbWF9lMlV7ITNccw9mCTGOxVHUeUR674Qb3jYHXg": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "LoggerLambdaFunction"
         },
-        "CodeSha256": "W6fH0Q/kikhHQAnXjgSYX6m0x0lyLlYf4W7ljLCJM6Q="
+        "CodeSha256": "DaicyIGyHR9RZqk7MgdvgebkQqr3vX0BJaaonxsZ89k="
       }
     },
     "LoggerLogsSubscriptionFilterCloudWatchLog1": {
@@ -187,7 +187,7 @@
     "LoggerLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "LoggerLambdaVersionGfyTLEoNrHR7b4Bxet86E3fosOklJIqA0lphgkQ3ZhY"
+        "Ref": "LoggerLambdaVersionryZbWF9lMlV7ITNccw9mCTGOxVHUeUR674Qb3jYHXg"
       }
     }
   }
