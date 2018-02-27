@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: my-service
+service: awsservicenode610
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -56,8 +56,8 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+  awsnode610:
+    handler: handler.emptytestnode610
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

@@ -61,7 +61,7 @@ functions:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/my-service-dev-hello'
+          logGroup: '/aws/lambda/awsservicenode610-dev-awsnode610'
           filter: 'REPORT'
           
 #    The following are a few example events you can configure
