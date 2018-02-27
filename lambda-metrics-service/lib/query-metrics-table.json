@@ -1,12 +1,3 @@
 {
-    "ServerlessFunctionMetrics": {
-        "Keys": [
-            {
-                "FunctionName": {"S": "my-service"},
-                "ServerlessPlatformName": {"S": "AWS Lambda"}
-            }
-        ],
-        "ProjectionExpression":"BilledDuration,MemorySize,FunctionName,FunctionVersion,MemoryUsed,LanguageRuntime,ServerlessPlatformName,#D",
-	"ExpressionAttributeNames": {"#D":"Duration"}
-    }
+  ":v1": {"S": "awsservicenode610-dev-awsnode610"}
 }

@@ -39,25 +39,22 @@ namespace ServerlessPerformanceFramework
 
        private void SetLanguageRuntime(AddMetricsRequest metrics)
        {
-            // Detect language runtime from naming convention (ending in "-<languageruntimename>") if missing
+            // Detect language runtime from naming convention (ending in "<languageruntimename>") if missing
             if (metrics.LanguageRuntime == null)
             {
-                var unknownRuntime = "unknown";
-
-                var lastHyphenIndex = metrics.FunctionName.LastIndexOf("-");
-                if ((lastHyphenIndex == -1) || (lastHyphenIndex >= metrics.FunctionName.Length))
-                {
-                    // no hyphen or the name ended in hyphen - doesn't follow convention
-                    metrics.LanguageRuntime = unknownRuntime;
-                    return;
-                }
-               
-                var languageRuntimeName = metrics.FunctionName.Substring(lastHyphenIndex + 1);
+                metrics.LanguageRuntime = "unknown";
                 // verify the languageruntime name was actually provided and is in the accepted list
                 // otherwise default to "unknown"
                 // TODO - make this list configurable as environment variable
-                List<string> acceptedRuntimes = new List<string> { "python27", "python33", "go", ".netcore2", "java8", "node610"}; 
-                metrics.LanguageRuntime = (acceptedRuntimes.Contains(languageRuntimeName)) ? languageRuntimeName : unknownRuntime;
+                List<string> acceptedRuntimes = new List<string> { "python27", "python33", "go1", ".netcore2", "java8", "node610"}; 
+                foreach (String runtime in acceptedRuntimes)
+                {
+                    if (metrics.FunctionName.EndsWith(runtime))
+                    {
+                        metrics.LanguageRuntime = runtime;
+                        break;
+                    }
+                }
             }
        }
 

@@ -73,7 +73,7 @@ module.exports.logger = (event, context, callback) => {
       // call the API to store data
       let responseCode = 200;
       request.post(
-          'https://cjwam2lsp6.execute-api.us-east-1.amazonaws.com/dev/metrics',
+          'https://n2tkynzvv7.execute-api.us-east-1.amazonaws.com/dev/metrics',
           { json: metrics },
           function (error, response, body) {
               responseCode = response.statusCode;
