@@ -38,7 +38,7 @@ See table above for versions and links
 6. Configure AWS Credentials for Serverless Framework *(see links above)*
 7. Install .NET Core 2.0.5
 8. Install required nuget packages for .NET Core *(commands in "build" section below for this)*
-7. Deploy DynamoDB tables used by this framework:
+9. Deploy DynamoDB tables used by this framework:
 
 ```bash
 aws dynamodb create-table --cli-input-json file://create-table-metrics.json --region <region> --profile <aws cli profile>
@@ -54,7 +54,7 @@ aws dynamodb create-table --cli-input-json file://create-table-metrics.json --re
 
 # Deploy the AWS CloudWatch Logs Lambda Performance Metric Parser Function
 cd nodejs-perf-logger
-npm install request
+npm install request # just a one-off command - don't need to do this every build
 serverless package --package aws-artifacts
 serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile>
 

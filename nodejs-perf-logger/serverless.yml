@@ -21,7 +21,7 @@ provider:
   name: aws
   runtime: nodejs6.10
   memorySize: 128
-  timeout: 12
+  timeout: 120
   region: us-east-1
   stage: dev
   versionFunctions: true # Optional function versioning

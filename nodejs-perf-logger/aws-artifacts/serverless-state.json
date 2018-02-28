@@ -11,7 +11,7 @@
       "name": "aws",
       "runtime": "nodejs6.10",
       "memorySize": 128,
-      "timeout": 12,
+      "timeout": 120,
       "versionFunctions": true,
       "remoteFunctionData": null,
       "compiledCloudFormationTemplate": {
@@ -108,7 +108,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/nodejs-perf-logger/dev/1519580093068-2018-02-25T17:34:53.068Z/nodejs-perf-logger.zip"
+                "S3Key": "serverless/nodejs-perf-logger/dev/1519853268302-2018-02-28T21:27:48.302Z/nodejs-perf-logger.zip"
               },
               "FunctionName": "nodejs-perf-logger-dev-logger",
               "Handler": "handler.logger",
@@ -120,28 +120,28 @@
                 ]
               },
               "Runtime": "nodejs6.10",
-              "Timeout": 12
+              "Timeout": 120
             },
             "DependsOn": [
               "LoggerLogGroup",
               "IamRoleLambdaExecution"
             ]
           },
-          "LoggerLambdaVersionryZbWF9lMlV7ITNccw9mCTGOxVHUeUR674Qb3jYHXg": {
+          "LoggerLambdaVersionF1IoeMvfJopsDAZWlmWkVMLRiWJJzRBHyIgga8cc": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "LoggerLambdaFunction"
               },
-              "CodeSha256": "DaicyIGyHR9RZqk7MgdvgebkQqr3vX0BJaaonxsZ89k="
+              "CodeSha256": "AmEGy0G1Z5BAcln80Ambf4PFnjpb72cSTOaqkfmJbzk="
             }
           },
           "LoggerLogsSubscriptionFilterCloudWatchLog1": {
             "Type": "AWS::Logs::SubscriptionFilter",
             "DependsOn": "LoggerLambdaPermissionLogsSubscriptionFilterCloudWatchLog1",
             "Properties": {
-              "LogGroupName": "/aws/lambda/my-service-dev-hello",
+              "LogGroupName": "/aws/lambda/awsservicenode610-dev-awsnode610",
               "FilterPattern": "REPORT",
               "DestinationArn": {
                 "Fn::GetAtt": [
@@ -186,7 +186,7 @@
                       "Ref": "AWS::AccountId"
                     },
                     ":log-group:",
-                    "/aws/lambda/my-service-dev-hello",
+                    "/aws/lambda/awsservicenode610-dev-awsnode610",
                     ":*"
                   ]
                 ]
@@ -203,7 +203,7 @@
           "LoggerLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "LoggerLambdaVersionryZbWF9lMlV7ITNccw9mCTGOxVHUeUR674Qb3jYHXg"
+              "Ref": "LoggerLambdaVersionF1IoeMvfJopsDAZWlmWkVMLRiWJJzRBHyIgga8cc"
             }
           }
         }
@@ -232,7 +232,7 @@
         "events": [
           {
             "cloudwatchLog": {
-              "logGroup": "/aws/lambda/my-service-dev-hello",
+              "logGroup": "/aws/lambda/awsservicenode610-dev-awsnode610",
               "filter": "REPORT"
             }
           }
@@ -245,7 +245,7 @@
     "artifact": "/Users/davidjackson/Google Drive/IT Architecture Masters/Thesis/Practical Work/serverless_com/nodejs-perf-logger/.serverless/nodejs-perf-logger.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/nodejs-perf-logger/dev/1519580093068-2018-02-25T17:34:53.068Z",
+    "artifactDirectoryName": "serverless/nodejs-perf-logger/dev/1519853268302-2018-02-28T21:27:48.302Z",
     "artifact": "nodejs-perf-logger.zip"
   }
 }
