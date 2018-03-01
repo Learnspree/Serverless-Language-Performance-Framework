@@ -46,10 +46,10 @@ aws dynamodb create-table --cli-input-json file://create-table-metrics.json --re
 
 ## Build
 ```bash
-# Optionally modify nodejs-perf-logger/serverless.yml to change the source cloud-watch-log as a trigger to measure performance of your target function. Default example below:
+# Optionally modify nodejs-perf-logger/serverless.yml to change the source cloud-watch-log as a trigger to measure performance of a different target function. Default example below:
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/my-service-dev-hello'
+          logGroup: '/aws/lambda/awsservicenode610-dev-awsnode610'
           filter: 'REPORT'
 
 # Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table created earlier)
@@ -58,21 +58,21 @@ dotnet add package AWSSDK.DynamoDBv2 --version 3.3.6
 dotnet add package Amazon.Lambda.APIGatewayEvents
 ./build-macos.sh
 serverless deploy -v --aws-profile <aws cli profile>
+# Note - take a note of the API URL that is output from the deploy command. You'll need it to set up the logger below.
 
 # Deploy the AWS CloudWatch Logs Lambda Performance Metric Parser Function
 cd nodejs-perf-logger
 npm install request # just a one-off command - don't need to do this every build
-npm install zlib # just one-off command also
-serverless package --package aws-artifacts
-serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile> --postmetricsurl <api URL from lambda-metrics-service deploy step above>
+serverless package --package aws-artifacts --postmetricsurl <api url>
+serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile> --postmetricsurl <api url>
 
 ```
-
 
 ## Validation
 Test **logger** function via serverless framework local invoke using:
 ```bash
-serverless invoke <optionally run locally with local option> --function logger -p lib/test-logger-input-raw.json
+serverless invoke --function logger -p lib/test-logger-input-raw.json --postmetricsurl <api url>
+# Note - optionally run locally with local option
 ```
 
 Test **metrics** function (note: test example is via API Gateway - not Lambda directly - using `curl` below): 
