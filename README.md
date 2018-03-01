@@ -52,18 +52,20 @@ aws dynamodb create-table --cli-input-json file://create-table-metrics.json --re
           logGroup: '/aws/lambda/my-service-dev-hello'
           filter: 'REPORT'
 
-# Deploy the AWS CloudWatch Logs Lambda Performance Metric Parser Function
-cd nodejs-perf-logger
-npm install request # just a one-off command - don't need to do this every build
-serverless package --package aws-artifacts
-serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile>
-
 # Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table created earlier)
 cd lambda-metrics-service
 dotnet add package AWSSDK.DynamoDBv2 --version 3.3.6
 dotnet add package Amazon.Lambda.APIGatewayEvents
 ./build-macos.sh
 serverless deploy -v --aws-profile <aws cli profile>
+
+# Deploy the AWS CloudWatch Logs Lambda Performance Metric Parser Function
+cd nodejs-perf-logger
+npm install request # just a one-off command - don't need to do this every build
+npm install zlib # just one-off command also
+serverless package --package aws-artifacts
+serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile> --postmetricsurl <api URL from lambda-metrics-service deploy step above>
+
 ```
 
 

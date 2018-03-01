@@ -21,12 +21,12 @@ let functionVersion = function (logStream) {
 let parseFloatWith = (regex, input) => {
   let res = regex.exec(input);
   return parseFloat(res[1]);
-}
+};
 
 let parseRegex = (regex, input) => {
   let res = regex.exec(input);
   return res[1];
-}
+};
 
 // a typical report message looks like this:
 //    "REPORT RequestId: 3897a7c2-8ac6-11e7-8e57-bb793172ae75\tDuration: 2.89 ms\tBilled Duration: 100 ms \tMemory Size: 1024 MB\tMax Memory Used: 20 MB\t\n"
@@ -55,7 +55,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
       memoryUnits : 'MB',
       serverlessPlatformName : 'AWS Lambda'
     };
-}
+};
 
 module.exports.logger = (event, context, callback) => {
      
@@ -91,7 +91,7 @@ module.exports.logger = (event, context, callback) => {
                 failureCount++;
               }
           });
-      })
+      });
       
       // For Debugging - uncomment:
       // console.log(`${successCount} logs saved, ${failureCount} logs failed to save. Check logs for any failures.`);
