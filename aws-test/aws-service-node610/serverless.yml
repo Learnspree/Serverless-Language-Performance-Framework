@@ -58,7 +58,20 @@ provider:
 functions:
   awsnode610:
     handler: handler.emptytestnode610
-
+    events:
+      - schedule: 
+          rate: rate(1 minute)
+          name: instance-one
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: instance-two
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: instance-three
+          enabled: false
+          
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
