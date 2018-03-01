@@ -81,7 +81,7 @@ module.exports.logger = (event, context, callback) => {
         // TODO - make this asynchronous call as we don't really care about the response too much.
         // Otherwise it's sitting idle waiting for the response     
         request.post(
-          'https://ogvj3zr5x0.execute-api.us-east-1.amazonaws.com/dev/metrics',
+          process.env.POST_METRICS_URL,
           { json: metrics },
           function (error, response, body) {
               if (!error && response.statusCode == 200) {

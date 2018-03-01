@@ -92,8 +92,8 @@ functions:
 #          trigger: PreSignUp
 
 #    Define function environment variables here
-#    environment:
-#      variable2: value2
+    environment:
+      POST_METRICS_URL: ${opt:postmetricsurl, 'https://<PUT YOUR API URL HERE>.execute-api.us-east-1.amazonaws.com/dev/metrics'}
 
 # you can add CloudFormation resource templates here
 #resources:
