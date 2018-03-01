@@ -21,12 +21,12 @@ let functionVersion = function (logStream) {
 let parseFloatWith = (regex, input) => {
   let res = regex.exec(input);
   return parseFloat(res[1]);
-}
+};
 
 let parseRegex = (regex, input) => {
   let res = regex.exec(input);
   return res[1];
-}
+};
 
 // a typical report message looks like this:
 //    "REPORT RequestId: 3897a7c2-8ac6-11e7-8e57-bb793172ae75\tDuration: 2.89 ms\tBilled Duration: 100 ms \tMemory Size: 1024 MB\tMax Memory Used: 20 MB\t\n"
@@ -55,7 +55,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
       memoryUnits : 'MB',
       serverlessPlatformName : 'AWS Lambda'
     };
-}
+};
 
 module.exports.logger = (event, context, callback) => {
      
@@ -81,7 +81,7 @@ module.exports.logger = (event, context, callback) => {
         // TODO - make this asynchronous call as we don't really care about the response too much.
         // Otherwise it's sitting idle waiting for the response     
         request.post(
-          'https://ogvj3zr5x0.execute-api.us-east-1.amazonaws.com/dev/metrics',
+          process.env.POST_METRICS_URL,
           { json: metrics },
           function (error, response, body) {
               if (!error && response.statusCode == 200) {
@@ -91,7 +91,7 @@ module.exports.logger = (event, context, callback) => {
                 failureCount++;
               }
           });
-      })
+      });
       
       // For Debugging - uncomment:
       // console.log(`${successCount} logs saved, ${failureCount} logs failed to save. Check logs for any failures.`);
