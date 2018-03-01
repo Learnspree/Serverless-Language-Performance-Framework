@@ -44,22 +44,34 @@ See table above for versions and links
 aws dynamodb create-table --cli-input-json file://create-table-metrics.json --region <region> --profile <aws cli profile>
 ```
 
-## Build
+## Build & Deploy
+Build and deploy the individual target test functions. These are contained in the folder "/<cloud-provider>-test/".
+For example, the AWS test for node610 is located in "/aws-test/aws-service-node610":
 ```bash
-# Optionally modify nodejs-perf-logger/serverless.yml to change the source cloud-watch-log as a trigger to measure performance of a different target function. Default example below:
+cd /aws-test/aws-service-node610
+serverless deploy -v --aws-profile serverless
+```
+
+Optionally modify nodejs-perf-logger/serverless.yml to change the source cloud-watch-log as a trigger to measure performance of a different target function. Default example below:
+
+```bash
     events:
       - cloudwatchLog:
           logGroup: '/aws/lambda/awsservicenode610-dev-awsnode610'
           filter: 'REPORT'
+```
 
-# Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table created earlier)
+Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table created earlier)
+```bash
 cd lambda-metrics-service
 dotnet add package AWSSDK.DynamoDBv2 --version 3.3.6
 dotnet add package Amazon.Lambda.APIGatewayEvents
 ./build-macos.sh
 serverless deploy -v --aws-profile <aws cli profile>
 # Note - take a note of the API URL that is output from the deploy command. You'll need it to set up the logger below.
+```
 
+```bash
 # Deploy the AWS CloudWatch Logs Lambda Performance Metric Parser Function
 cd nodejs-perf-logger
 npm install request # just a one-off command - don't need to do this every build
@@ -87,9 +99,8 @@ curl -v -X POST -d@lib/test-metrics-service.json https://ybt41omi9i.execute-api.
 
 Full end-to-end test measuring sample target function:
 ```bash
-1. cd my-service
-2. serverless deploy -v --aws-profile <aws-cli-profile>
-3. serverless invoke -f hello -l --aws-profile <aws-cli-profile>
+cd /aws-test/aws-service-node610
+serverless invoke -f awsnode610 -l --aws-profile <aws-cli-profile>
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
 # Check DynamoDB table "ServerlessFunctionMetrics" to validate.
