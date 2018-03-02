@@ -11,6 +11,15 @@ provider:
 functions:
   awsnode610:
     handler: handler.emptytestnode610
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-node610-hourly
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: warmstart-node610-minute
+          enabled: false
 
 # Sample event schedule below but commenting this out
 # as various schedules will be needed depending on the test scenario
