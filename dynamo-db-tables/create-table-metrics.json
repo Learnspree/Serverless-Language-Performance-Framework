@@ -1,12 +1,10 @@
 {
     "TableName": "ServerlessFunctionMetrics",
     "KeySchema": [
-      { "AttributeName": "FunctionName", "KeyType": "HASH" },
-      { "AttributeName": "RequestId", "KeyType": "RANGE" }
+      { "AttributeName": "FunctionName", "KeyType": "HASH" }
     ],
     "AttributeDefinitions": [
-      { "AttributeName": "FunctionName", "AttributeType": "S" },
-      { "AttributeName": "RequestId", "AttributeType": "S" }
+      { "AttributeName": "FunctionName", "AttributeType": "S" }
     ],
     "ProvisionedThroughput": {
       "ReadCapacityUnits": 1,
