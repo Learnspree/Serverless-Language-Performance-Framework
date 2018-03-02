@@ -104,4 +104,7 @@ serverless invoke -f awsnode610 -l --aws-profile <aws-cli-profile>
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
 # Check DynamoDB table "ServerlessFunctionMetrics" to validate.
+aws dynamodb query --table-name ServerlessFunctionMetrics \
+    --key-condition-expression "FunctionName = :v1" \
+    --expression-attribute-values file://query-metrics-table.json
 ```
