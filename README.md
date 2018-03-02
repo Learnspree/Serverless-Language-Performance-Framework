@@ -34,7 +34,7 @@ See table above for versions and links
 2. Install Node *(via `brew install node`)*
 3. Install AWS CLI 
 4. Configure AWS Credentials for AWS CLI *(see links above)*
-5. Install Serverless Framework *(via `npm install serverless`)*
+5. Install Serverless Framework *(via `npm install -g serverless`)*
 6. Configure AWS Credentials for Serverless Framework *(see links above)*
 7. Install .NET Core 2.0.5
 8. Install required nuget packages for .NET Core *(commands in "build" section below for this)*
