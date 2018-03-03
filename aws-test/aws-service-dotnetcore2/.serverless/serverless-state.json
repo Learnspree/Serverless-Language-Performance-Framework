@@ -1,0 +1,278 @@
+{
+  "service": {
+    "service": "awsservicedotnet2",
+    "serviceObject": {
+      "name": "awsservicedotnet2"
+    },
+    "provider": {
+      "stage": "dev",
+      "region": "us-east-1",
+      "variableSyntax": "\\${([ ~:a-zA-Z0-9._'\",\\-\\/\\(\\)]+?)}",
+      "name": "aws",
+      "runtime": "dotnetcore2.0",
+      "memorySize": 128,
+      "timeout": 6,
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket"
+          },
+          "Awsdotnet2LogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/awsservicedotnet2-dev-awsdotnet2"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "dev",
+                        "awsservicedotnet2",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/awsservicedotnet2-dev-awsdotnet2:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/awsservicedotnet2-dev-awsdotnet2:*:*"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "awsservicedotnet2",
+                    "dev",
+                    "us-east-1",
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "Awsdotnet2LambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/awsservicedotnet2/dev/1520092894076-2018-03-03T16:01:34.076Z/deploy-package.zip"
+              },
+              "FunctionName": "awsservicedotnet2-dev-awsdotnet2",
+              "Handler": "CsharpHandlers::ServerlessPerformanceFramework.Handler::EmptyTestDotNetCore2",
+              "MemorySize": 128,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "dotnetcore2.0",
+              "Timeout": 6
+            },
+            "DependsOn": [
+              "Awsdotnet2LogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "Awsdotnet2LambdaVersionUH2rDwytAcSxmfEr9o963ufvS5pqFQb6yJYuSbO0TNw": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "Awsdotnet2LambdaFunction"
+              },
+              "CodeSha256": "lfguyWcXz06jwVpEmbRyFrJjGfv87HOr7Z8XsrZWZcg="
+            }
+          },
+          "Awsdotnet2EventsRuleSchedule1": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+              "ScheduleExpression": "rate(1 hour)",
+              "State": "DISABLED",
+              "Name": "coldstart-dotnet2-hourly",
+              "Targets": [
+                {
+                  "Arn": {
+                    "Fn::GetAtt": [
+                      "Awsdotnet2LambdaFunction",
+                      "Arn"
+                    ]
+                  },
+                  "Id": "awsdotnet2Schedule"
+                }
+              ]
+            }
+          },
+          "Awsdotnet2LambdaPermissionEventsRuleSchedule1": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "Awsdotnet2LambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "events.amazonaws.com",
+              "SourceArn": {
+                "Fn::GetAtt": [
+                  "Awsdotnet2EventsRuleSchedule1",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          "Awsdotnet2EventsRuleSchedule2": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+              "ScheduleExpression": "rate(1 minute)",
+              "State": "DISABLED",
+              "Name": "warmstart-dotnet2-minute",
+              "Targets": [
+                {
+                  "Arn": {
+                    "Fn::GetAtt": [
+                      "Awsdotnet2LambdaFunction",
+                      "Arn"
+                    ]
+                  },
+                  "Id": "awsdotnet2Schedule"
+                }
+              ]
+            }
+          },
+          "Awsdotnet2LambdaPermissionEventsRuleSchedule2": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "Awsdotnet2LambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "events.amazonaws.com",
+              "SourceArn": {
+                "Fn::GetAtt": [
+                  "Awsdotnet2EventsRuleSchedule2",
+                  "Arn"
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          },
+          "Awsdotnet2LambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "Awsdotnet2LambdaVersionUH2rDwytAcSxmfEr9o963ufvS5pqFQb6yJYuSbO0TNw"
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket"
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "functions": {
+      "awsdotnet2": {
+        "handler": "CsharpHandlers::ServerlessPerformanceFramework.Handler::EmptyTestDotNetCore2",
+        "events": [
+          {
+            "schedule": {
+              "rate": "rate(1 hour)",
+              "name": "coldstart-dotnet2-hourly",
+              "enabled": false
+            }
+          },
+          {
+            "schedule": {
+              "rate": "rate(1 minute)",
+              "name": "warmstart-dotnet2-minute",
+              "enabled": false
+            }
+          }
+        ],
+        "name": "awsservicedotnet2-dev-awsdotnet2",
+        "package": {},
+        "vpc": {}
+      }
+    }
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/awsservicedotnet2/dev/1520092894076-2018-03-03T16:01:34.076Z",
+    "artifact": "deploy-package.zip"
+  }
+}
