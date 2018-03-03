@@ -19,7 +19,7 @@ Development of this performance testing framework used the following packages an
 | MacOS                  | Sierra (10.12.6)   |                                            |
 | Brew (Homebrew)        | 1.5.4              | https://brew.sh                            |
 | AWS CLI                | 1.14.32            | https://aws.amazon.com/cli                 |
-| Serverless Framework   | 1.26.0             | https://serverless.com/framework/docs/getting-started/|
+| Serverless Framework   | 1.26.1             | https://serverless.com/framework/docs/getting-started/|
 | Node                   | 9.5.0              | https://nodejs.org/en/                     |
 | NPM                    | 5.6.0              | https://www.npmjs.com                      |
 | .NET Core Framework    | 2.0.5              | https://www.microsoft.com/net/learn/get-started/macos|
