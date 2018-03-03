@@ -28,6 +28,9 @@ functions:
       - cloudwatchLog:
           logGroup: '/aws/lambda/awsservicedotnet2-dev-awsdotnet2'
           filter: 'REPORT'
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/awsservicepython3-dev-awspython3'
+          filter: 'REPORT'
           
 # Define function environment variables here
     environment:
