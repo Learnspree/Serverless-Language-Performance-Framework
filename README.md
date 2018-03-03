@@ -110,6 +110,7 @@ Test **metrics** function (note: test example is via API Gateway - not Lambda di
 curl -v -X POST -d@lib/test-metrics-service.json https://ybt41omi9i.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
 ```
 
+### End-to-End Test
 Full end-to-end test measuring sample target function:
 ```bash
 cd /aws-test/aws-service-node610
@@ -120,4 +121,42 @@ serverless invoke -f awsnode610 -l --aws-profile <aws-cli-profile>
 aws dynamodb query --table-name ServerlessFunctionMetrics \
     --key-condition-expression "FunctionName = :v1" \
     --expression-attribute-values file://query-metrics-table.json
+```
+
+## Initiate Full Scheduled Test
+Start a scheduled test by enabling the appropriate filters on the test target functions you want to measure.
+For example, to start a "cold-start" test on the aws-node610 test function, use the AWS CLI:
+
+```bash
+aws events enable-rule --name coldstart-node610-hourly --profile <aws profile>
+```
+
+## Cancel Scheduled Testing
+Don't forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful!
+
+```bash
+aws events disable-rule --name coldstart-node610-hourly --profile <aws profile>
+```
+
+## Cleanup
+To remove all cloud-formation stacks created in your AWS account (by the serverless framework) for the performance testing, follow these commands to remove all functions:
+
+```bash
+cd lambda-metrics-service
+serverless remove --aws-profile <aws profile>
+
+cd nodejs-perf-logger
+serverless remove --aws-profile <aws profile>
+
+# run the following commands for each test-target function you created for testing
+# by default, for AWS these all exist in /aws-test/ folder:
+cd aws-test/<test-target-function>
+serverless remove --aws-profile <aws profile>
+```
+### Dynamo DB Table Removal (Optional)
+Optionally, remove the dynamodb metrics table
+**WARNING!!** This will remove all your test results!
+
+```bash
+aws dynamodb delete-table --table-name ServerlessFunctionMetrics --profile <aws-profile>
 ```
