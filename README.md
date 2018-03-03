@@ -51,8 +51,21 @@ For example, the AWS test for node610 is located in "/aws-test/aws-service-node6
 cd /aws-test/aws-service-node610
 serverless deploy -v --aws-profile serverless
 ```
+This function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "serverless.yml" file. These batch triggers will be disabled by default. Enable one-at-a-time to ensure accurate cold or warm-start testing. Example below:
 
-Optionally modify nodejs-perf-logger/serverless.yml to change the source cloud-watch-log as a trigger to measure performance of a different target function. Default example below:
+```
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-node610-hourly
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: warmstart-node610-minute
+          enabled: false
+```
+
+Optionally modify nodejs-perf-logger/serverless.yml to change the source cloud-watch-logs that are a trigger to measure performance of each target function. Example below:
 
 ```bash
     events:
