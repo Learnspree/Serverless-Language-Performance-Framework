@@ -1,6 +1,8 @@
 # package directories
 node_modules
 jspm_packages
+aws-artifacts
 
 # Serverless directories
 .serverless
+

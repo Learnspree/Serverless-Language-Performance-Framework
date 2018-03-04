@@ -1,21 +1,7 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
-# For full config options, check the docs:
-#    docs.serverless.com
-#
-# Happy Coding!
+# This function is part of the AWS performance testing framework. It is triggered from cloud-watch
+# logs of any specified target functions (via their cloud watch logs) under "events:" below.
 
 service: nodejs-perf-logger
-
-# You can pin your service to only deploy with a specific Serverless version
-# Check out our docs for more details
-# frameworkVersion: "=X.X.X"
 
 provider:
   name: aws
@@ -27,34 +13,10 @@ provider:
   versionFunctions: true # Optional function versioning
 
   
-# you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:PutObject"
-#      Resource:
-#        Fn::Join:
-#          - ""
-#          - - "arn:aws:s3:::"
-#            - "Ref" : "ServerlessDeploymentBucket"
-#            - "/*"
-
-# you can define service wide environment variables here
-#  environment:
-#    variable1: value1
-
-# you can add packaging information here
+# packaging information here
 package:
   include:
     - node_modules/**
-
-#  include:
-#    - include-me.js
-#    - include-me-dir/**
 
 functions:
   logger:
@@ -63,46 +25,20 @@ functions:
       - cloudwatchLog:
           logGroup: '/aws/lambda/awsservicenode610-dev-awsnode610'
           filter: 'REPORT'
-          
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
-#      - http:
-#          path: users/create
-#          method: get
-#      - s3: ${env:BUCKET}
-#      - schedule: rate(10 minutes)
-#      - sns: greeter-topic
-#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
-#      - alexaSkill
-#      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
-#      - iot:
-#          sql: "SELECT * FROM 'some_topic'"
-#      - cloudwatchEvent:
-#          event:
-#            source:
-#              - "aws.ec2"
-#            detail-type:
-#              - "EC2 Instance State-change Notification"
-#            detail:
-#              state:
-#                - pending
-#      - cognitoUserPool:
-#          pool: MyUserPool
-#          trigger: PreSignUp
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/awsservicedotnet2-dev-awsdotnet2'
+          filter: 'REPORT'
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/awsservicepython3-dev-awspython3'
+          filter: 'REPORT'
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-service-java8-dev-emptyJava8Function'
+          filter: 'REPORT'
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-service-go-dev-go-empty-function'
+          filter: 'REPORT'
 
-#    Define function environment variables here
+# Define function environment variables here
     environment:
       POST_METRICS_URL: ${opt:postmetricsurl}
 
-# you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"

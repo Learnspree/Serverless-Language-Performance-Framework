@@ -1,0 +1,28 @@
+# Serverless Performance Test Framework 
+# GOlang empty function
+
+service: aws-service-go
+
+provider:
+  name: aws
+  runtime: go1.x
+  memorySize: 128
+
+package:
+ exclude:
+   - ./**
+ include:
+   - ./bin/**
+
+functions:
+  go-empty-function:
+    handler: bin/go-empty-function
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-golang-hourly
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: warmstart-golang-minute
+          enabled: false

@@ -1,0 +1,25 @@
+# Serverless Performance Framework
+# Empty Python3 test-target function
+
+service: awsservicepython3
+
+provider:
+  name: aws
+  runtime: python3.6
+  memorySize: 128
+  timeout: 6
+
+functions:
+  awspython3:
+    handler: handler.awsemptypython3
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-python3-hourly
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: warmstart-python3-minute
+          enabled: false
+
+

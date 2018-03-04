@@ -1,0 +1,30 @@
+# This function is part of the AWS performance testing framework. It is triggered from cloud-watch
+# logs of any specified target functions (via their cloud watch logs) under "events:" below.
+service: aws-service-java8
+
+provider:
+  name: aws
+  runtime: java8
+  memorySize: 128
+  timeout: 6
+  region: us-east-1
+  stage: dev
+  versionFunctions: true # Optional function versioning
+
+# you can add packaging information here
+package:
+  artifact: target/awsjava8empty-dev.jar
+
+functions:
+  emptyJava8Function:
+    handler: com.learnspree.EmptyJava8Handler
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-java8-hourly
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: warmstart-java8-minute
+          enabled: false
+

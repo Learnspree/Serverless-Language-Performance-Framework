@@ -14,16 +14,19 @@ Use of this framework requires a valid AWS (Amazon Web Services) account.
 ## Requirements
 Development of this performance testing framework used the following packages and versions:
 
-| Package                | Version            | Link                                       |
-|------------------------|--------------------|--------------------------------------------|
-| MacOS                  | Sierra (10.12.6)   |                                            |
-| Brew (Homebrew)        | 1.5.4              | https://brew.sh                            |
-| AWS CLI                | 1.14.32            | https://aws.amazon.com/cli                 |
-| Serverless Framework   | 1.26.1             | https://serverless.com/framework/docs/getting-started/|
-| Node                   | 9.5.0              | https://nodejs.org/en/                     |
-| NPM                    | 5.6.0              | https://www.npmjs.com                      |
-| .NET Core Framework    | 2.0.5              | https://www.microsoft.com/net/learn/get-started/macos|
-| .NET SDK / CLI         | 2.1.4              | https://www.microsoft.com/net/learn/get-started/macos|
+| Package                | Version              | Link                                       |
+|------------------------|----------------------|--------------------------------------------|
+| MacOS                  | Sierra (10.12.6)     |                                            |
+| Brew (Homebrew)        | 1.5.4                | https://brew.sh                            |
+| AWS CLI                | 1.14.32              | https://aws.amazon.com/cli                 |
+| Serverless Framework   | 1.26.1               | https://serverless.com/framework/docs/getting-started/|
+| Node                   | 9.5.0                | https://nodejs.org/en/                     |
+| NPM                    | 5.6.0                | https://www.npmjs.com                      |
+| .NET Core Framework    | 2.0.5                | https://www.microsoft.com/net/learn/get-started/macos|
+| .NET SDK / CLI         | 2.1.4                | https://www.microsoft.com/net/learn/get-started/macos|
+| Java                   | Oracle jdk1.8.0_101  | http://www.oracle.com/technetwork/java/javaee/overview/index.html|
+| Apache Maven (for Java)| 3.5.2                | https://maven.apache.org/                  |
+| Golang                 | 1.10                 | https://golang.org/doc/install             |
 
 
 ## Setup
@@ -38,7 +41,10 @@ See table above for versions and links
 6. Configure AWS Credentials for Serverless Framework *(see links above)*
 7. Install .NET Core 2.0.5
 8. Install required nuget packages for .NET Core *(commands in "build" section below for this)*
-9. Deploy DynamoDB tables used by this framework:
+9. Install Java JDK 1.8
+10. Install Maven (3.x)
+11. Install Golang (1.x)
+12. Deploy DynamoDB tables used by this framework:
 
 ```bash
 aws dynamodb create-table --cli-input-json file://create-table-metrics.json --region <region> --profile <aws cli profile>
@@ -49,9 +55,33 @@ Build and deploy the individual target test functions. These are contained in th
 For example, the AWS test for node610 is located in "/aws-test/aws-service-node610":
 ```bash
 cd /aws-test/aws-service-node610
-serverless deploy -v --aws-profile serverless
+serverless deploy -v --aws-profile <profile>
 ```
-This function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "serverless.yml" file. These batch triggers will be disabled by default. Enable one-at-a-time to ensure accurate cold or warm-start testing. Example below:
+For the python test function:
+```bash
+cd /aws-test/aws-service-python3
+serverless deploy -v --aws-profile <profile>
+```
+For the java test function, located in "/aws-test/aws-service-java8":
+```bash
+cd /aws-test/aws-service-java8
+mvn clean install 
+serverless deploy -v --aws-profile <profile>
+```
+For the .net core 2 test function, located in "/aws-test/aws-service-dotnet2":
+```bash
+cd /aws-test/aws-service-dotnet2
+./build-macos.sh  # Different scripts exist for Windows or Linux
+serverless deploy -v --aws-profile <profile>
+```
+For the golang test function, located in "/aws-test/aws-service-go":
+```bash
+cd /aws-test/aws-service-go
+make
+serverless deploy -v --aws-profile <profile>
+```
+
+Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "serverless.yml" file. These batch triggers will be disabled by default. Enable one-at-a-time to ensure accurate cold or warm-start testing. Example below:
 
 ```
     events:
@@ -65,7 +95,7 @@ This function will by default be setup with two cloud-watch-batch based triggers
           enabled: false
 ```
 
-Optionally modify nodejs-perf-logger/serverless.yml to change the source cloud-watch-logs that are a trigger to measure performance of each target function. Example below:
+View "n/odejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 6.10 function:
 
 ```bash
     events:
@@ -118,9 +148,10 @@ serverless invoke -f awsnode610 -l --aws-profile <aws-cli-profile>
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
 # Check DynamoDB table "ServerlessFunctionMetrics" to validate.
+# Example below to query for aws-java function but similar JSON files exist for other test functions queries.
 aws dynamodb query --table-name ServerlessFunctionMetrics \
     --key-condition-expression "FunctionName = :v1" \
-    --expression-attribute-values file://query-metrics-table.json
+    --expression-attribute-values file://query-metrics-table-java.json
 ```
 
 ## Initiate Full Scheduled Test
