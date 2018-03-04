@@ -25,7 +25,8 @@ Development of this performance testing framework used the following packages an
 | .NET Core Framework    | 2.0.5                | https://www.microsoft.com/net/learn/get-started/macos|
 | .NET SDK / CLI         | 2.1.4                | https://www.microsoft.com/net/learn/get-started/macos|
 | Java                   | Oracle jdk1.8.0_101  | http://www.oracle.com/technetwork/java/javaee/overview/index.html|
-| Apache Maven (for Java)| 3.5.2                | https://maven.apache.org/|
+| Apache Maven (for Java)| 3.5.2                | https://maven.apache.org/                  |
+| Golang                 | 1.10                 | https://golang.org/doc/install             |
 
 
 ## Setup
@@ -40,7 +41,10 @@ See table above for versions and links
 6. Configure AWS Credentials for Serverless Framework *(see links above)*
 7. Install .NET Core 2.0.5
 8. Install required nuget packages for .NET Core *(commands in "build" section below for this)*
-9. Deploy DynamoDB tables used by this framework:
+9. Install Java JDK 1.8
+10. Install Maven (3.x)
+11. Install Golang (1.x)
+12. Deploy DynamoDB tables used by this framework:
 
 ```bash
 aws dynamodb create-table --cli-input-json file://create-table-metrics.json --region <region> --profile <aws cli profile>
@@ -68,6 +72,12 @@ For the .net core 2 test function, located in "/aws-test/aws-service-dotnet2":
 ```bash
 cd /aws-test/aws-service-dotnet2
 ./build-macos.sh  # Different scripts exist for Windows or Linux
+serverless deploy -v --aws-profile <profile>
+```
+For the golang test function, located in "/aws-test/aws-service-go":
+```bash
+cd /aws-test/aws-service-go
+make
 serverless deploy -v --aws-profile <profile>
 ```
 

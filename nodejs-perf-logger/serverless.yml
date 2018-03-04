@@ -34,6 +34,9 @@ functions:
       - cloudwatchLog:
           logGroup: '/aws/lambda/aws-service-java8-dev-emptyJava8Function'
           filter: 'REPORT'
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-service-go-dev-go-empty-function'
+          filter: 'REPORT'
 
 # Define function environment variables here
     environment:
