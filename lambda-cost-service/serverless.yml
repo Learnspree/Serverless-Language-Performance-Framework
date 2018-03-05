@@ -1,5 +1,7 @@
 # Serverless Performance Test Framework
 # Cost calculations service based on provided performance data
+# This function is de-coupled from the lambda-metrics-service so that re-calculation of costs is 
+# possible if pricing models change
 
 service: lambda-cost-service
 
@@ -21,6 +23,13 @@ provider:
         - dynamodb:Query
         - dynamodb:Scan
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*/index/*"
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeStream
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:ListStreams
+      Resource: ${opt:dynamodbstreamarn}
 
 
 # packaging information here
@@ -32,8 +41,8 @@ functions:
   cost-metrics:
     handler: handler.costmetrics
     events:
-      - sns: performance-metrics-topic
+      - stream: ${opt:dynamodbstreamarn}
 
 # Define function environment variables here
     environment:
-      DYNAMODB_COSTMETRICS_TABLE: "ServerlessCostMetrics"
+      DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics"
