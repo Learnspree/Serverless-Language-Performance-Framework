@@ -13,23 +13,23 @@ provider:
 
 # you can add statements to the Lambda function's IAM Role here
   iamRoleStatements:
-    - Effect: Allow
+    - Effect: "Allow"
       Action:
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
+        - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*"
-    - Effect: Allow
+    - Effect: "Allow"
       Action:
-        - dynamodb:Query
-        - dynamodb:Scan
+        - "dynamodb:Query"
+        - "dynamodb:Scan"
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*/index/*"
-    - Effect: Allow
+    - Effect: "Allow"
       Action:
-        - dynamodb:DescribeStream
-        - dynamodb:GetRecords
-        - dynamodb:GetShardIterator
-        - dynamodb:ListStreams
-      Resource: ${opt:dynamodbstreamarn}
+        - "dynamodb:DescribeStream"
+        - "dynamodb:GetRecords"
+        - "dynamodb:GetShardIterator"
+        - "dynamodb:ListStreams"
+      Resource: "${opt:dynamodbstreamarn}"
 
 
 # packaging information here

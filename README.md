@@ -98,7 +98,7 @@ Each target function will by default be setup with two cloud-watch-batch based t
           enabled: false
 ```
 
-View "n/odejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 6.10 function:
+View "/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 6.10 function:
 
 ```bash
     events:
@@ -124,6 +124,12 @@ npm install request # just a one-off command - don't need to do this every build
 serverless package --package aws-artifacts --postmetricsurl <api url>
 serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile> --postmetricsurl <api url>
 
+```
+
+```bash
+# Deploy the cost-metrics calculation function - triggers off inserts into the performance metrics DynamoDB table
+cd lambda-cost-service
+serverless deploy -v --aws-profile serverless --dynamodbstreamarn <ARN of ServerlessFunctionMetrics Stream from earlier create-table step>
 ```
 
 ## Validation

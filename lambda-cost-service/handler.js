@@ -10,8 +10,9 @@ module.exports.costmetrics = (event, context, callback) => {
 
   // get data from dynamo-db stream records
   event.Records.forEach(function(record) {
-    console.log(record.requestId);
-    console.log(record.billedDuration);
+    // TODO - change below to add ".S" and ".N" to console outputs - want the values, not the "S" or "N" designations of the dynamodb table
+    console.log(record.dynamodb.NewImage.RequestId);
+    console.log(record.dynamodb.NewImage.BilledDuration);
     console.log('DynamoDB Record: %j', record.dynamodb);
   });
     // TODO - parse the data I need from message to do cost calculation
