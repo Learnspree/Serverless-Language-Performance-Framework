@@ -13,7 +13,7 @@ module.exports.costmetrics = (event, context, callback) => {
     console.log(record.requestId);
     console.log(record.billedDuration);
     console.log('DynamoDB Record: %j', record.dynamodb);
-
+  });
     // TODO - parse the data I need from message to do cost calculation
     // - BilledDuration, MemorySize
     // - Combine with environment-variables specifying GB/second cost and invocation cost
