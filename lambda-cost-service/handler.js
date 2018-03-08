@@ -8,30 +8,32 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 module.exports.costmetrics = (event, context, callback) => {
 
-  // get data from dynamo-db stream records
+  let gbSecondCost = parseFloat(process.env.AWS_LAMBDA_GBSECOND_COST);
+  let invokeCost = parseFloat(process.env.AWS_LAMBDA_INVOKE_COST);
+
+  // calculate and record cost for each updated record
+  // TODO - note all calcs are currently assuming AWS Lambda
   event.Records.forEach(function(record) {
-    // TODO - change below to add ".S" and ".N" to console outputs - want the values, not the "S" or "N" designations of the dynamodb table
-    console.log(record.dynamodb.NewImage.RequestId);
-    console.log(record.dynamodb.NewImage.BilledDuration);
-    console.log('DynamoDB Record: %j', record.dynamodb);
-  });
-    // TODO - parse the data I need from message to do cost calculation
-    // - BilledDuration, MemorySize
-    // - Combine with environment-variables specifying GB/second cost and invocation cost
-    // - Calculate the cost using values above
+
+    //console.log('DynamoDB Record: %j', record.dynamodb);
+    let requestIdValue = record.dynamodb.NewImage.RequestId.S;
+    let billedDurationValue = record.dynamodb.NewImage.BilledDuration.N;
+    let memorySizeValue = record.dynamodb.NewImage.MemorySize.N;
+
+    let billedGigabits = memorySizeValue / 1024;
+    let billedSeconds = billedDurationValue / 1000;
+    let gigabitSeconds = billedGigabits * billedSeconds;  
+    let gigabitSecondsCost = gigabitSeconds * gbSecondCost;
+    let functionCostValue = invokeCost + gigabitSecondsCost;
     
-    /* TODO - uncomment this code after proving dynamo-db stream is connected and 
-       console.log messages above are working as expected */
-    /*   
     // Create dynamo-db insert params from calculated data above
     const params = {
       TableName: process.env.DYNAMODB_COSTMETRICS_TABLE,
       Item: {
-        requestId : uniqueRequestId,
-        billedDuration : billedDurationValue,
-        memorySize : memorySizeValue,
-        functionName : functionNameValue,
-        functionCost : functionCostValue
+        RequestId : requestIdValue,
+        BilledDuration : billedDurationValue,
+        MemorySize : memorySizeValue,
+        FunctionCost : functionCostValue
       }
     };
 
@@ -41,8 +43,8 @@ module.exports.costmetrics = (event, context, callback) => {
       if (error) {
         console.error(error);
       }
-    });    
-  });*/
+    });
+  });
 
   callback(null, "Cost Metrics Lambda Finished");
 };

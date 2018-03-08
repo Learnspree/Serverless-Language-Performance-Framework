@@ -46,3 +46,5 @@ functions:
 # Define function environment variables here
     environment:
       DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics"
+      AWS_LAMBDA_GBSECOND_COST: "0.00001667"
+      AWS_LAMBDA_INVOKE_COST: "0.0000002"
