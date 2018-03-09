@@ -52,3 +52,7 @@ functions:
           path: metrics
           method: post
 
+# Define function environment variables here
+    environment:
+      ACCEPTED_RUNTIMES: "python3,go,dotnet2,java8,node610"
+
