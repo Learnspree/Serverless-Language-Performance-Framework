@@ -19,6 +19,7 @@ module.exports.costmetrics = (event, context, callback) => {
     let requestIdValue = record.dynamodb.NewImage.RequestId.S;
     let billedDurationValue = record.dynamodb.NewImage.BilledDuration.N;
     let memorySizeValue = record.dynamodb.NewImage.MemorySize.N;
+    let languageRuntimeValue = record.dynamodb.NewImage.LanguageRuntime.S;
 
     let billedGigabits = memorySizeValue / 1024;
     let billedSeconds = billedDurationValue / 1000;
@@ -31,9 +32,11 @@ module.exports.costmetrics = (event, context, callback) => {
       TableName: process.env.DYNAMODB_COSTMETRICS_TABLE,
       Item: {
         RequestId : requestIdValue,
+        LanguageRuntime : languageRuntimeValue,
         BilledDuration : billedDurationValue,
         MemorySize : memorySizeValue,
-        FunctionCost : functionCostValue
+        FunctionCost : functionCostValue,
+        FunctionCostPerMillionRequests : functionCostValue * 1000000
       }
     };
 
