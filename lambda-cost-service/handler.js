@@ -15,7 +15,7 @@ module.exports.costmetrics = (event, context, callback) => {
   // TODO - note all calcs are currently assuming AWS Lambda
   event.Records.forEach(function(record) {
 
-    //console.log('DynamoDB Record: %j', record.dynamodb);
+    console.log('DynamoDB Record: %j', record.dynamodb);
     let requestIdValue = record.dynamodb.NewImage.RequestId.S;
     let billedDurationValue = record.dynamodb.NewImage.BilledDuration.N;
     let memorySizeValue = record.dynamodb.NewImage.MemorySize.N;
