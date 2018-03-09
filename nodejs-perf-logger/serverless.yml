@@ -32,10 +32,10 @@ functions:
           logGroup: '/aws/lambda/awsservicepython3-dev-awspython3'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-service-java8-dev-emptyJava8Function'
+          logGroup: '/aws/lambda/aws-service-java8-dev-aws-empty-java8'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-service-go-dev-go-empty-function'
+          logGroup: '/aws/lambda/aws-service-go-dev-aws-empty-go'
           filter: 'REPORT'
 
 # Define function environment variables here

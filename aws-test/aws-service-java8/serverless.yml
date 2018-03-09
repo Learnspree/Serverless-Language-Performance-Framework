@@ -16,7 +16,7 @@ package:
   artifact: target/awsjava8empty-dev.jar
 
 functions:
-  emptyJava8Function:
+  aws-empty-java8:
     handler: com.learnspree.EmptyJava8Handler
     events:
       - schedule: 

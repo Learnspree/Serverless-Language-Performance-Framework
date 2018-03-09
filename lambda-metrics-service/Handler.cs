@@ -46,7 +46,7 @@ namespace ServerlessPerformanceFramework
                 // verify the languageruntime name was actually provided and is in the accepted list
                 // otherwise default to "unknown"
                 // TODO - make this list configurable as environment variable
-                List<string> acceptedRuntimes = new List<string> { "python27", "python33", "go1", ".netcore2", "java8", "node610"}; 
+                List<string> acceptedRuntimes = new List<string> { "python3", "go", "dotnetcore2", "java8", "node610"}; 
                 foreach (String runtime in acceptedRuntimes)
                 {
                     if (metrics.FunctionName.EndsWith(runtime))
