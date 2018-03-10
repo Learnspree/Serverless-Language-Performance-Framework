@@ -1,0 +1,50 @@
+# Serverless Performance Test Framework
+# Cost calculations service based on provided performance data
+# This function is de-coupled from the lambda-metrics-service so that re-calculation of costs is 
+# possible if pricing models change
+
+service: lambda-cost-service
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  memorySize: 128
+  timeout: 12
+
+# you can add statements to the Lambda function's IAM Role here
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*"
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:Query"
+        - "dynamodb:Scan"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*/index/*"
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:DescribeStream"
+        - "dynamodb:GetRecords"
+        - "dynamodb:GetShardIterator"
+        - "dynamodb:ListStreams"
+      Resource: "${opt:dynamodbstreamarn}"
+
+
+# packaging information here
+package:
+  include:
+    - node_modules/**
+
+functions:
+  cost-metrics:
+    handler: handler.costmetrics
+    events:
+      - stream: ${opt:dynamodbstreamarn}
+
+# Define function environment variables here
+    environment:
+      DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics"
+      AWS_LAMBDA_GBSECOND_COST: "0.00001667"
+      AWS_LAMBDA_INVOKE_COST: "0.0000002"

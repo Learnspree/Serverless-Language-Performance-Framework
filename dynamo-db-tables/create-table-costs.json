@@ -1,0 +1,13 @@
+{
+    "TableName": "ServerlessFunctionCostMetrics",
+    "KeySchema": [
+      { "AttributeName": "RequestId", "KeyType": "HASH" }
+    ],
+    "AttributeDefinitions": [
+      { "AttributeName": "RequestId", "AttributeType": "S" }
+    ],
+    "ProvisionedThroughput": {
+      "ReadCapacityUnits": 1,
+      "WriteCapacityUnits": 5
+    }
+}

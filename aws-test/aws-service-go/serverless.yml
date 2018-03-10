@@ -15,7 +15,7 @@ package:
    - ./bin/**
 
 functions:
-  go-empty-function:
+  aws-empty-go:
     handler: bin/go-empty-function
     events:
       - schedule: 

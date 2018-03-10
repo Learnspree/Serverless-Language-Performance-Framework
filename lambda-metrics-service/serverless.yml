@@ -7,15 +7,11 @@
 
 service: lambda-metrics-service
 
-# You can pin your service to only deploy with a specific Serverless version
-# Check out our docs for more details
-# frameworkVersion: "=X.X.X"
-
 provider:
   name: aws
   runtime: dotnetcore2.0
   memorySize: 128
-  timeout: 12 
+  timeout: 120 
   stage: dev
   region: us-east-1
 
@@ -43,9 +39,6 @@ provider:
 # you can add packaging information here
 package:
   artifact: bin/release/netcoreapp2.0/deploy-package.zip
-#  exclude:
-#    - exclude-me.js
-#    - exclude-me-dir/**
 
 functions:
   lambdaMetrics:
@@ -59,18 +52,7 @@ functions:
           path: metrics
           method: post
 
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
+# Define function environment variables here
+    environment:
+      ACCEPTED_RUNTIMES: "python3,go,dotnet2,java8,node610"
 
-# you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
