@@ -171,17 +171,33 @@ For example, to start a "cold-start" test on the aws-node610 test function, use 
 aws events enable-rule --name coldstart-node610-hourly --profile <aws profile>
 ```
 
+All cold-start rules (also existing are scripts for all warm start rules):
+```bash
+cd /bin
+./enable-all-coldstart-rules.sh
+```
+
 ## Cancel Scheduled Testing
 Don't forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful!
 
+Individual rules:
 ```bash
 aws events disable-rule --name coldstart-node610-hourly --profile <aws profile>
+```
+
+All rules (also existing are scripts for all cold or warm start rules):
+```bash
+cd /bin
+./disable-all-rules.sh
 ```
 
 ## Cleanup
 To remove all cloud-formation stacks created in your AWS account (by the serverless framework) for the performance testing, follow these commands to remove all functions:
 
 ```bash
+cd lambda-cost-service
+serverless remove --aws-profile <aws profile>
+
 cd lambda-metrics-service
 serverless remove --aws-profile <aws profile>
 
@@ -199,4 +215,5 @@ Optionally, remove the dynamodb metrics table
 
 ```bash
 aws dynamodb delete-table --table-name ServerlessFunctionMetrics --profile <aws-profile>
+aws dynamodb delete-table --table-name ServerlessFunctionCostMetrics --profile <aws-profile>
 ```
