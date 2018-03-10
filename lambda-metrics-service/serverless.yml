@@ -11,7 +11,7 @@ provider:
   name: aws
   runtime: dotnetcore2.0
   memorySize: 128
-  timeout: 12 
+  timeout: 120 
   stage: dev
   region: us-east-1
 
