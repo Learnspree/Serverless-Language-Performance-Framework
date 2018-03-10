@@ -47,7 +47,7 @@ See table above for versions and links
 12. Deploy DynamoDB tables used by this framework:
 
 ```bash
-aws dynamodb create-table --cli-input-json file://create-table-metrics.json --region <region> --profile <aws cli profile> --stream-specification StreamEnabled=true,StreamViewType=NEW_IMAGE
+aws dynamodb create-table --cli-input-json file://create-table-metrics.json --region us-east-1 --profile <aws cli profile> --stream-specification StreamEnabled=true,StreamViewType=NEW_IMAGE
 
 aws dynamodb create-table --cli-input-json file://create-table-costs.json --region us-east-1 --profile <aws cli profile> 
 ```
