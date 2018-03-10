@@ -6,6 +6,14 @@
 const AWS = require('aws-sdk'); 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
+let emptyIfStringMetricNull = function (stringMetricValue) {
+  return (stringMetricValue == null) ? "" : stringMetricValue.S;
+};
+
+let zeroIfNumericMetricNull = function (numericMetricValue) {
+  return (numericMetricValue == null) ? "" : numericMetricValue.N;
+};
+
 module.exports.costmetrics = (event, context, callback) => {
 
   let gbSecondCost = parseFloat(process.env.AWS_LAMBDA_GBSECOND_COST);
@@ -13,13 +21,24 @@ module.exports.costmetrics = (event, context, callback) => {
 
   // calculate and record cost for each updated record
   // TODO - note all calcs are currently assuming AWS Lambda
+
+  console.log('Total Records in Cost Lambda: ' + event.Records.length);
   event.Records.forEach(function(record) {
 
     console.log('DynamoDB Record: %j', record.dynamodb);
-    let requestIdValue = record.dynamodb.NewImage.RequestId.S;
-    let billedDurationValue = record.dynamodb.NewImage.BilledDuration.N;
-    let memorySizeValue = record.dynamodb.NewImage.MemorySize.N;
-    let languageRuntimeValue = record.dynamodb.NewImage.LanguageRuntime.S;
+
+    if (record == null || 
+        record.dynamodb == null ||
+        record.dynamodb.NewImage == null)
+    {
+      // skip this record - there's no data
+      return;
+    }
+
+    let requestIdValue = emptyIfStringMetricNull(record.dynamodb.NewImage.RequestId);
+    let billedDurationValue = zeroIfNumericMetricNull(record.dynamodb.NewImage.BilledDuration);
+    let memorySizeValue = zeroIfNumericMetricNull(record.dynamodb.NewImage.MemorySize);
+    let languageRuntimeValue = emptyIfStringMetricNull(record.dynamodb.NewImage.LanguageRuntime);
 
     let billedGigabits = memorySizeValue / 1024;
     let billedSeconds = billedDurationValue / 1000;
