@@ -1,11 +1,11 @@
 {
-    "FunctionName": "my-service",
+    "FunctionName": "aws-service-java8-dev-aws-empty-java8",
     "FunctionVersion": "$LATEST",
     "Timestamp": "1518951734319",
-    "Duration": 934,
+    "Duration": 132,
     "BilledDuration": 200,
     "MemorySize": 128,
     "MemoryUsed": 18,
-    "LanguageRuntime": ".NET Core 2.0",
+    "LanguageRuntime": "java8",
     "ServerlessPlatformName": "AWS Lambda"
 }
