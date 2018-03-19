@@ -149,6 +149,12 @@ cd /azure-test/aws-service-nodejs
 npm install
 serverless deploy -v --aws-profile <profile>
 ```
+```bash
+# Deploy the Azure Logs Performance Metric Parser Function
+cd azure-common/azure-perf-logger
+npm install request # just a one-off command - don't need to do this every build
+serverless deploy --postmetricsurl <url> # e.g. https://f4fkn6ulhj.execute-api.us-east-1.amazonaws.com/dev/metrics
+```
 
 ## Validation
 Test **logger** function via serverless framework local invoke using:

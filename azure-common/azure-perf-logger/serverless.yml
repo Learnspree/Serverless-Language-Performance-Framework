@@ -1,0 +1,42 @@
+# Logger function to take metrics and deliver them to the performance metrics framework via API call
+
+service: azure-perf-logger
+
+provider:
+  name: azure
+  location: East US
+
+plugins:
+  - serverless-azure-functions
+
+# you can add packaging information here
+package:
+  include:
+    - node_modules/**
+
+functions:
+  logger:
+    handler: handler.logger
+    events:
+      - http: true
+        x-azure-settings:
+          authLevel : anonymous
+      - http: true
+        x-azure-settings:
+          direction: out
+          name: res
+
+# The following are a few examples of other events you can configure:
+#
+# events:
+#   - queue: YourQueueName
+#     x-azure-settings:
+#       connection : StorageAppSettingName
+#   - blob:
+#     x-azure-settings:
+#       name: bindingName
+#       direction: in
+
+# Define function environment variables here
+    environment:
+      POST_METRICS_URL: ${opt:postmetricsurl}
