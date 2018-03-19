@@ -58,12 +58,13 @@ aws dynamodb create-table --cli-input-json file://create-table-costs.json --regi
 If you want to additionally test Azure Functions (in addition to AWS Lambda) then follow these additional steps:
 1. Setup Microsoft Azure Account
 2. Install Azure CLI *(See link above or for macOS just use `brew update && brew install azure-cli`)*
-3. Follow instructions to setup Azure CLI [credentials](https://serverless.com/framework/docs/providers/azure/guide/credentials/) to work with Serverless Framework 
-4. Follow instructions to [setup](https://serverless.com/framework/docs/providers/azure/guide/quick-start/) Serverless Framework for Azure.
+3. Install Azure Serverless Framework Plugin via `npm install -g serverless-azure-functions`
+4. Follow instructions to setup Azure CLI [credentials](https://serverless.com/framework/docs/providers/azure/guide/credentials/) to work with Serverless Framework 
+5. Follow instructions to [setup](https://serverless.com/framework/docs/providers/azure/guide/quick-start/) Serverless Framework for Azure.
 
 
-## Build & Deploy
-Build and deploy the individual target test functions. These are contained in the folder "/<cloud-provider>-test/".
+## Build & Deploy - AWS
+Build and deploy the individual target test functions. These are contained in the folder "/aws-test/".
 For example, the AWS test for node610 is located in "/aws-test/aws-service-node610":
 ```bash
 cd /aws-test/aws-service-node610
@@ -139,6 +140,14 @@ serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile> --pos
 # Deploy the cost-metrics calculation function - triggers off inserts into the performance metrics DynamoDB table
 cd lambda-cost-service
 serverless deploy -v --aws-profile serverless --dynamodbstreamarn <ARN of ServerlessFunctionMetrics Stream from earlier create-table step>
+```
+## Build and Deploy - Azure
+Build and deploy the individual target test functions. These are contained in the folder "/azure-test/".
+For example, the Azure Functions test for nodeJS is located in "/azure-test/azure-service-nodejs":
+```bash
+cd /azure-test/aws-service-nodejs
+npm install
+serverless deploy -v --aws-profile <profile>
 ```
 
 ## Validation
