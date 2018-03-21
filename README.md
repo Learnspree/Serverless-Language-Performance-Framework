@@ -158,7 +158,7 @@ serverless deploy -v
 cd azure-common/azure-perf-logger
 npm install request # just a one-off command - don't need to do this every build
 serverless package
-serverless deploy --package .serverless
+serverless deploy 
 ```
 
 ## Validation

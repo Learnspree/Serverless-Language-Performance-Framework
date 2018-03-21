@@ -1,5 +1,7 @@
 'use strict';
 
+const request = require('request');
+
 /* eslint-disable no-param-reassign */
 
 let usageMetrics = function () {  
