@@ -28,7 +28,8 @@ module.exports.logger = function (context) {
   // TODO - make this asynchronous call as we don't really care about the response too much.
   // Otherwise it's sitting idle waiting for the response     
   request.post(
-    process.env.POST_METRICS_URL,
+    //process.env.POST_METRICS_URL,
+    "https://f4fkn6ulhj.execute-api.us-east-1.amazonaws.com/dev/metrics",
     { json: usageMetrics() },
     function (error, response, body) {
       context.log('API call completed');

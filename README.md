@@ -28,6 +28,8 @@ Development of this performance testing framework used the following packages an
 | Apache Maven (for Java)| 3.5.2                | https://maven.apache.org/                  |
 | Golang                 | 1.10                 | https://golang.org/doc/install             |
 | Azure CLI              | 2.0.29               | https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest|
+| Azure Functions VSCode | 0.7.0 (Preview)      | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
+| Azure Functions Core Tools | 2.0.1-beta.24    | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
 
 
 ## Setup AWS Lambda Testing
@@ -59,8 +61,10 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 1. Setup Microsoft Azure Account
 2. Install Azure CLI *(See link above or for macOS just use `brew update && brew install azure-cli`)*
 3. Install Azure Serverless Framework Plugin via `npm install -g serverless-azure-functions`
-4. Follow instructions to setup Azure CLI [credentials](https://serverless.com/framework/docs/providers/azure/guide/credentials/) to work with Serverless Framework 
-5. Follow instructions to [setup](https://serverless.com/framework/docs/providers/azure/guide/quick-start/) Serverless Framework for Azure.
+4. Install VSCode Azure Functions Plugin (see link above)
+4. Install Azure Core Tools via `npm install -g azure-functions-core-tools@core --unsafe-perm true` (MacOS - Windows command differs (see VSCode links above)
+5. Follow instructions to setup Azure CLI [credentials](https://serverless.com/framework/docs/providers/azure/guide/credentials/) to work with Serverless Framework 
+6. Follow instructions to [setup](https://serverless.com/framework/docs/providers/azure/guide/quick-start/) Serverless Framework for Azure.
 
 
 ## Build & Deploy - AWS
@@ -147,13 +151,14 @@ For example, the Azure Functions test for nodeJS is located in "/azure-test/azur
 ```bash
 cd /azure-test/aws-service-nodejs
 npm install
-serverless deploy -v --aws-profile <profile>
+serverless deploy -v 
 ```
 ```bash
 # Deploy the Azure Logs Performance Metric Parser Function
 cd azure-common/azure-perf-logger
 npm install request # just a one-off command - don't need to do this every build
-serverless deploy --postmetricsurl <url> # e.g. https://f4fkn6ulhj.execute-api.us-east-1.amazonaws.com/dev/metrics
+serverless package
+serverless deploy --package .serverless
 ```
 
 ## Validation

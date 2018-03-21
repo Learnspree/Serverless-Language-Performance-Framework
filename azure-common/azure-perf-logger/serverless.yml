@@ -38,5 +38,5 @@ functions:
 #       direction: in
 
 # Define function environment variables here
-    environment:
-      POST_METRICS_URL: ${opt:postmetricsurl}
+#    environment:
+#      POST_METRICS_URL: ${opt:postmetricsurl}
