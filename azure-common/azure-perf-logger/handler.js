@@ -23,8 +23,9 @@ let usageMetrics = function () {
   };
 };
 
-module.exports.logger = function (context) {
+module.exports.logger = function (context, metricsBlob) {
   context.log('Begin Logger Function');
+  context.log("Received metrics: ${metricsBlob}");
 
   // call the API to store data 
   // TODO - make this asynchronous call as we don't really care about the response too much.

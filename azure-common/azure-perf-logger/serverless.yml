@@ -18,13 +18,11 @@ functions:
   logger:
     handler: handler.logger
     events:
-      - http: true
+      - blob:
         x-azure-settings:
-          authLevel : anonymous
-      - http: true
-        x-azure-settings:
-          direction: out
-          name: res
+          name: metricsBlob
+          path: nodejs-perf-metrics/{name}
+          connection: ${opt:storageaccountconnectionstring}
 
 # The following are a few examples of other events you can configure:
 #
