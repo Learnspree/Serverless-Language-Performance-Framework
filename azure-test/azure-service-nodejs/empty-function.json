@@ -2,15 +2,10 @@
     "disabled": false,
     "bindings": [
         {
-            "type": "httpTrigger",
+            "type": "timerTrigger",
             "direction": "in",
-            "name": "req",
-            "authLevel": "anonymous"
-        },
-        {
-            "type": "http",
-            "direction": "out",
-            "name": "res"
+            "name": "nodeJSEmptyFunctionTimer",
+            "schedule": "0 0 0/1 1/1 * ? *"
         }
     ],
     "entryPoint": "empty",
