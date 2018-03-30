@@ -153,6 +153,15 @@ cd /azure-test/aws-service-nodejs
 npm install
 serverless deploy -v 
 ```
+
+Setup "Continuous Export" of the application-insights data for the test function just deployed.
+To do this, follow the steps in this Azure Portal [Guide](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-export-telemetry).
+
+Note - choose following options when creating the continuous export (if storage account/container does not exist, the portal wizard will guide you through the steps to create them):
+* Destination Storage Account Name = "azureperfmetrics"
+* Destination Storage Account Container = "nodejs-perf-metrics"
+* Data Types To Export: Turn ON "Request" data, turn OFF all others.
+
 ```bash
 # Deploy the Azure Logs Performance Metric Parser Function
 cd azure-common/azure-perf-logger
