@@ -166,8 +166,10 @@ Note - choose following options when creating the continuous export (if storage 
 # Deploy the Azure Logs Performance Metric Parser Function
 cd azure-common/azure-perf-logger
 npm install request # just a one-off command - don't need to do this every build
-serverless package
-serverless deploy 
+serverless package 
+
+# Connection String for azure storage: see access-keys in azure storage account created above>
+serverless deploy -v 
 ```
 
 ## Validation

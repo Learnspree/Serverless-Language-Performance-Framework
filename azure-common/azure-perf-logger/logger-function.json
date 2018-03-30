@@ -2,15 +2,11 @@
     "disabled": false,
     "bindings": [
         {
-            "type": "httpTrigger",
+            "type": "blobTrigger",
             "direction": "in",
-            "name": "req",
-            "authLevel": "anonymous"
-        },
-        {
-            "type": "http",
-            "direction": "out",
-            "name": "res"
+            "name": "metricsBlob",
+            "path": "nodejs-perf-metrics/{name}",
+            "connection": "DefaultEndpointsProtocol=https"
         }
     ],
     "entryPoint": "logger",
