@@ -4,17 +4,28 @@ const request = require('request');
 
 /* eslint-disable no-param-reassign */
 
-let usageMetrics = function () {  
+let usageMetrics = function (context, metricsData) {  
   
+  context.log('Id: ' + metricsData.request[0].id);
+  context.log('Duration: ' + metricsData.request[0].durationMetric.value);
+  context.log('Function Name: ' + metricsData.context.device.roleName);
+  context.log('Time: ' + metricsData.context.data.eventTime);
+
+  let functionNameParts = metricsData.context.device.roleName.split('-');
+  let languageRuntimeValue = functionNameParts[functionNameParts.length - 1];
+  context.log('Language Runtime: ' + languageRuntimeValue);
+
   return {
-    timestamp : Date.now(), // TODO - better to get timestamp as input from executing function via custom cloudwatch log entry
-    requestId : "32423-23432kl-23432",
-    duration : 10,
-    billedDuration : 100,
-    memorySize : 128,
-    memoryUsed : 23,
-    functionName : "empty Azure NodeJS",
-    functionVersion : "1",
+    timestamp : metricsData.context.data.eventTime, 
+    requestId : metricsData.request[0].id,
+    // TODO - divide duration as it's not in ms
+    duration : metricsData.request[0].durationMetric.value,
+    billedDuration : -1,
+    memorySize : -1,
+    memoryUsed : -1,
+    functionName : metricsData.context.device.roleName,
+    functionVersion : "#LATEST",
+    languageRuntime : languageRuntimeValue,
 
     // following values hardcoded for now as we know we're running in Azure. 
     durationUnits : 'ms',
@@ -117,7 +128,7 @@ module.exports.logger = function (context, metricsBlob) {
   request.post(
     //process.env.POST_METRICS_URL,
     "https://f4fkn6ulhj.execute-api.us-east-1.amazonaws.com/dev/metrics",
-    { json: usageMetrics() },
+    { json: usageMetrics(context, metricsBlob) },
     function (error, response, body) {
       context.log('API call completed');
   });
