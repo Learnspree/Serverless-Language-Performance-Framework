@@ -6,7 +6,7 @@
             "direction": "in",
             "name": "metricsBlob",
             "path": "nodejs-perf-metrics/{name}",
-            "connection": "DefaultEndpointsProtocol=https"
+            "connection": "AzurePerfLoggerStorage"
         }
     ],
     "entryPoint": "logger",
