@@ -40,8 +40,8 @@ let usageMetrics = function (context, metricsData) {
     // Divide duration as it's not in "ticks", not milliseconds. 10,000 ticks per ms.
     duration : durationValue / 10000,
     billedDuration : -1, // Not immediately available as in AWS - OK not necessary. Cost Lambda will calculate this.
-    memorySize : -1, // TODO
-    memoryUsed : -1, // TODO
+    memorySize : -1, // TODO - assign same value as memory used as azure is dynamic not preset like AWS
+    memoryUsed : -1, // TODO - use https://docs.microsoft.com/en-us/rest/api/monitor/ to call API to get memory. See https://stackoverflow.com/questions/41128329/how-can-i-programmatically-access-azure-functions-usage-metrics
     functionName : functionNameValue,
     functionVersion : "#LATEST", // Just default for now
     languageRuntime : languageRuntimeValue,
