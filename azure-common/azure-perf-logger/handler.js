@@ -15,7 +15,7 @@ let usageMetrics = function (context, metricsData) {
   let languageRuntimeValue = functionNameParts[functionNameParts.length - 1];
   context.log('Language Runtime: ' + languageRuntimeValue);
 
-  return {
+  let metricsInput = {
     timestamp : metricsData.context.data.eventTime, 
     requestId : metricsData.request[0].id,
     // TODO - divide duration as it's not in ms
@@ -32,6 +32,10 @@ let usageMetrics = function (context, metricsData) {
     memoryUnits : 'MB',
     serverlessPlatformName : 'Azure Functions'
   };
+
+  context.log('Metrics Data: ' + JSON.stringify(metricsInput));
+
+  return metricsInput;
 };
 
 module.exports.logger = function (context, metricsBlob) {
