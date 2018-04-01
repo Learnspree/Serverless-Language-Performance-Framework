@@ -37,13 +37,13 @@ let usageMetrics = function (context, metricsData) {
   let metricsInput = {
     timestamp : eventTimestamp, 
     requestId : requestIdValue,
-    // TODO - divide duration as it's not in ms
-    duration : durationValue,
-    billedDuration : -1,
-    memorySize : -1,
-    memoryUsed : -1,
+    // Divide duration as it's not in "ticks", not milliseconds. 10,000 ticks per ms.
+    duration : durationValue / 10000,
+    billedDuration : -1, // Not immediately available as in AWS - OK not necessary. Cost Lambda will calculate this.
+    memorySize : -1, // TODO
+    memoryUsed : -1, // TODO
     functionName : functionNameValue,
-    functionVersion : "#LATEST",
+    functionVersion : "#LATEST", // Just default for now
     languageRuntime : languageRuntimeValue,
 
     // following values hardcoded for now as we know we're running in Azure. 
