@@ -5,11 +5,11 @@ const request = require('request');
 /* eslint-disable no-param-reassign */
 
 let emptyIfStringMetricNull = function (stringMetricValue) {
-    return (stringMetricValue == null) ? "" : stringMetricValue.S;
+    return (stringMetricValue == null) ? "" : stringMetricValue;
 };
   
 let zeroIfNumericMetricNull = function (numericMetricValue) {
-return (numericMetricValue == null) ? "" : numericMetricValue.N;
+return (numericMetricValue == null) ? "" : numericMetricValue;
 };
 
 let usageMetrics = function (context, metricsData) {  
@@ -22,14 +22,17 @@ let usageMetrics = function (context, metricsData) {
   let durationValue = zeroIfNumericMetricNull(metricsData.request[0].durationMetric.value);
   let functionNameValue = emptyIfStringMetricNull(metricsData.context.device.roleName);
   let eventTimestamp = emptyIfStringMetricNull(metricsData.context.data.eventTime);
-  let functionNameParts = emptyIfStringMetricNull(metricsData.context.device.roleName.split('-'));
-  let languageRuntimeValue = emptyIfStringMetricNull(functionNameParts[functionNameParts.length - 1]);
 
-  context.log('Language Runtime: ' + languageRuntimeValue);
   context.log('Id: ' + requestIdValue);
   context.log('Duration: ' + durationValue);
   context.log('Function Name: ' + functionNameValue);
   context.log('Time: ' + eventTimestamp);
+
+  // Function Name -> Language Runtime last segment
+  let functionNameParts = functionNameValue.split('-');
+  let languageRuntimeValue = emptyIfStringMetricNull(functionNameParts[functionNameParts.length - 1]);
+  context.log('Language Runtime: ' + languageRuntimeValue);
+
 
   let metricsInput = {
     timestamp : eventTimestamp, 
