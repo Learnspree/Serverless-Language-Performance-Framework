@@ -20,13 +20,17 @@ let usageMetrics = function (context, metricsData) {
 
   let requestIdValue = emptyIfStringMetricNull(metricsData.request[0].id);
   let durationValue = zeroIfNumericMetricNull(metricsData.request[0].durationMetric.value);
+  // Divide duration as it's not in "ticks", not milliseconds. 10,000 ticks per ms.
+  let durationValueMilliseconds = durationValue / 10000;
+  let billedDurationValue = Math.ceil(number/100)*100;
   let functionNameValue = emptyIfStringMetricNull(metricsData.context.device.roleName);
   let eventTimestamp = emptyIfStringMetricNull(metricsData.context.data.eventTime);
 
   context.log('Id: ' + requestIdValue);
-  context.log('Duration: ' + durationValue);
+  context.log('Duration: ' + durationValueMilliseconds);
   context.log('Function Name: ' + functionNameValue);
   context.log('Time: ' + eventTimestamp);
+  context.log('Billed Duration: ' + billedDurationValue);
 
   // Function Name -> Language Runtime last segment
   let functionNameParts = functionNameValue.split('-');
@@ -37,11 +41,10 @@ let usageMetrics = function (context, metricsData) {
   let metricsInput = {
     timestamp : eventTimestamp, 
     requestId : requestIdValue,
-    // Divide duration as it's not in "ticks", not milliseconds. 10,000 ticks per ms.
-    duration : durationValue / 10000,
-    billedDuration : -1, // Not immediately available as in AWS - OK not necessary. Cost Lambda will calculate this.
-    memorySize : -1, // TODO - assign same value as memory used as azure is dynamic not preset like AWS
-    memoryUsed : -1, // TODO - use https://docs.microsoft.com/en-us/rest/api/monitor/ to call API to get memory. See https://stackoverflow.com/questions/41128329/how-can-i-programmatically-access-azure-functions-usage-metrics
+    duration : durationValueMilliseconds,
+    billedDuration : billedDurationValue, // Azure bills in 100ms blocks
+    memorySize : 128, // TODO - Defaulting to 128MB block minimum. TODO assign same value as memory used as azure is dynamic not preset like AWS
+    memoryUsed : 128, // TODO - use https://docs.microsoft.com/en-us/rest/api/monitor/ to call API to get memory. See https://stackoverflow.com/questions/41128329/how-can-i-programmatically-access-azure-functions-usage-metrics
     functionName : functionNameValue,
     functionVersion : "#LATEST", // Just default for now
     languageRuntime : languageRuntimeValue,
