@@ -12,6 +12,28 @@ let zeroIfNumericMetricNull = function (numericMetricValue) {
 return (numericMetricValue == null) ? "" : numericMetricValue;
 };
 
+let memoryUsage = function (context, metricsData) {
+    if (metricsData == null || metricsData.request == null || metricsData.context == null) {
+      context.log('Invalid Metrics Data in memoryUsage()');
+      return -1;
+    } 
+
+    /*
+    // COMMENTING OUT UNTIL GET THIS WORKING
+
+    // call the API for Azure Monitoring Data   
+    request.get(
+      "https://management.azure.com/subscriptions/1ad4a40f-7ad8-4789-8cdc-945e47748810/resourceGroups/azure-service-nodejs-rg/providers/Microsoft.Web/sites/azure-service-nodejs/providers/microsoft.insights/metrics?$filter=aggregationType eq 'Maximum' and startTime eq 2018-04-02T15:36:00Z and endTime eq 2018-04-02T16:38:00Z and timeGrain eq duration'PT1M'&api-version=2016-09-01",
+      { json: true },
+      function (error, response, body) {
+        if (err) { context.log('Monitor API call error'); }
+        context.log('Monitor API call completed');
+    });*/
+
+    // Default to 128
+    return 128;
+}
+
 let usageMetrics = function (context, metricsData) {  
   
   if (metricsData == null || metricsData.request == null || metricsData.context == null) {
@@ -38,14 +60,17 @@ let usageMetrics = function (context, metricsData) {
   let languageRuntimeValue = emptyIfStringMetricNull(functionNameParts[functionNameParts.length - 1]);
   context.log('Language Runtime: ' + languageRuntimeValue);
 
+  // get memory usage via insights API (not provided in request data)
+  let maxMemoryUsed = memoryUsage(context, metricsData);
+  context.log('memory used: ' + maxMemoryUsed);
 
   let metricsInput = {
     timestamp : eventTimestamp, 
     requestId : requestIdValue,
     duration : durationValueMilliseconds,
     billedDuration : billedDurationValue, // Azure bills in 100ms blocks
-    memorySize : 128, // TODO - Defaulting to 128MB block minimum. TODO assign same value as memory used as azure is dynamic not preset like AWS
-    memoryUsed : 128, // TODO - use https://docs.microsoft.com/en-us/rest/api/monitor/ to call API to get memory. See https://stackoverflow.com/questions/41128329/how-can-i-programmatically-access-azure-functions-usage-metrics
+    memorySize : maxMemoryUsed, // Assign same value as memory used as azure is dynamic not preset like AWS
+    memoryUsed : maxMemoryUsed,  
     functionName : functionNameValue,
     functionVersion : "#LATEST", // Just default for now
     languageRuntime : languageRuntimeValue,
