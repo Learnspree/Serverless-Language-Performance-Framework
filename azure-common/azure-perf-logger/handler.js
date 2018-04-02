@@ -15,6 +15,7 @@ return (numericMetricValue == null) ? "" : numericMetricValue;
 let usageMetrics = function (context, metricsData) {  
   
   if (metricsData == null || metricsData.request == null || metricsData.context == null) {
+      context.log('Invalid Metrics Data');
       return null;
   }
 
@@ -65,17 +66,20 @@ module.exports.logger = function (context, metricsBlob) {
   context.log("Received metrics: " + JSON.stringify(metricsBlob));
 
   let metricsDataPayload = usageMetrics(context, metricsBlob);
-
-  // call the API to store data 
-  // TODO - make this asynchronous call as we don't really care about the response too much.
-  // Otherwise it's sitting idle waiting for the response     
-  request.post(
-    //process.env.POST_METRICS_URL,
-    "https://f4fkn6ulhj.execute-api.us-east-1.amazonaws.com/dev/metrics",
-    { json: metricsDataPayload },
-    function (error, response, body) {
-      context.log('API call completed');
-  });
+  if (metricsDataPayload != null) 
+  {
+    // call the API to store data 
+    // TODO - make this asynchronous call as we don't really care about the response too much.
+    // Otherwise it's sitting idle waiting for the response     
+    request.post(
+      //process.env.POST_METRICS_URL,
+      "https://f4fkn6ulhj.execute-api.us-east-1.amazonaws.com/dev/metrics",
+      { json: metricsDataPayload },
+      function (error, response, body) {
+        context.log('API call completed');
+    });
+  }
+  
 
   context.res = {
     // status: 200, /* Defaults to 200 */
