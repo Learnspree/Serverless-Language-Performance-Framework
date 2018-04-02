@@ -22,7 +22,7 @@ let usageMetrics = function (context, metricsData) {
   let durationValue = zeroIfNumericMetricNull(metricsData.request[0].durationMetric.value);
   // Divide duration as it's not in "ticks", not milliseconds. 10,000 ticks per ms.
   let durationValueMilliseconds = durationValue / 10000;
-  let billedDurationValue = Math.ceil(number/100)*100;
+  let billedDurationValue = Math.ceil(durationValueMilliseconds/100)*100;
   let functionNameValue = emptyIfStringMetricNull(metricsData.context.device.roleName);
   let eventTimestamp = emptyIfStringMetricNull(metricsData.context.data.eventTime);
 
