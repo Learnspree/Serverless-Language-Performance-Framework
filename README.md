@@ -137,13 +137,14 @@ cd nodejs-perf-logger
 npm install request # just a one-off command - don't need to do this every build
 serverless package --package aws-artifacts --postmetricsurl <api url>
 serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile> --postmetricsurl <api url>
-
 ```
 
 ```bash
 # Deploy the cost-metrics calculation function - triggers off inserts into the performance metrics DynamoDB table
 cd lambda-cost-service
-serverless deploy -v --aws-profile serverless --dynamodbstreamarn <ARN of ServerlessFunctionMetrics Stream from earlier create-table step>
+aws dynamodb describe-table --table-name ServerlessFunctionMetrics --profile <aws cli profile>
+# Note - take the "LatestStreamArn" value from the output of above command and use in deploy below
+serverless deploy -v --aws-profile serverless --dynamodbstreamarn <ARN of ServerlessFunctionMetrics Stream>
 ```
 ## Build and Deploy - Azure
 Build and deploy the individual target test functions. These are contained in the folder "/azure-test/".
@@ -192,7 +193,7 @@ Test **metrics** function (note: test example is via API Gateway - not Lambda di
 curl -v -X POST -d@lib/test-metrics-service.json https://ybt41omi9i.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
 ```
 
-### End-to-End Test
+### End-to-End Test - AWS Lambda
 Full end-to-end test measuring sample target function:
 ```bash
 cd /aws-test/aws-service-node610
@@ -204,9 +205,26 @@ serverless invoke -f awsnode610 -l --aws-profile <aws-cli-profile>
 aws dynamodb query --table-name ServerlessFunctionMetrics \
     --key-condition-expression "FunctionName = :v1" \
     --expression-attribute-values file://query-metrics-table-java.json
+
+# Verify results - Costs (edit the json file for the request id you're looking for)
+aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "RequestId = :v1" --expression-attribute-values file://query-costs-table-requestid.json
+```
+### End-to-End Test - Azure Functions
+Full end-to-end test measuring sample target function:
+```bash
+cd /azure-test/azure-service-nodejs
+serverless invoke -f empty -l 
+
+# Verify results - Metrics
+aws dynamodb query --table-name ServerlessFunctionMetrics \
+    --key-condition-expression "FunctionName = :v1" \
+    --expression-attribute-values file://query-metrics-table-azure-node.json
+
+# Verify results - Costs (edit the json file for the request id you're looking for)
+aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "RequestId = :v1" --expression-attribute-values file://query-costs-table-requestid.json
 ```
 
-## Initiate Full Scheduled Test
+## Initiate Full Scheduled Test AWS Lambda
 Start a scheduled test by enabling the appropriate filters on the test target functions you want to measure.
 For example, to start a "cold-start" test on the aws-node610 test function, use the AWS CLI:
 
