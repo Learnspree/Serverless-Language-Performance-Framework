@@ -173,7 +173,7 @@ serverless package
 serverless deploy -v 
 
 # Important - Set AppSettings value on new perf-logger function so that it triggers from the StorageAccount generated for the test-target function (aws-service-nodejs)
-az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='DefaultEndpointsProtocol=https;AccountName=azureperfmetrics;AccountKey=Dqex91kYtCet38RLEW8PJHuySYu19cx8Uty3CkElGcGUzwWcBdW0PX44HrZvZ8uF/PDyH3Own4/+HXCUgVAVzg==;EndpointSuffix=core.windows.net'
+az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='DefaultEndpointsProtocol=https;AccountName=azureperfmetrics;AccountKey=<Account Key>;EndpointSuffix=core.windows.net'
 ```
 
 ## Validation
