@@ -1,0 +1,14 @@
+{
+    "disabled": false,
+    "bindings": [
+        {
+            "type": "blobTrigger",
+            "direction": "in",
+            "name": "metricsBlob",
+            "path": "nodejs-perf-metrics/{name}",
+            "connection": "AzurePerfLoggerStorage"
+        }
+    ],
+    "entryPoint": "logger",
+    "scriptFile": "handler.js"
+}

@@ -1,0 +1,19 @@
+# Empty Azure Function for testing NodeJS
+
+service: azure-service-nodejs
+
+provider:
+  name: azure
+  location: East US
+
+plugins:
+  - serverless-azure-functions
+
+functions:
+  empty:
+    handler: handler.empty
+    events:
+      - timer:
+        x-azure-settings:
+            name: nodeJSEmptyFunctionTimer 
+            schedule: 0 */60 * * * * 

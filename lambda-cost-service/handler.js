@@ -14,14 +14,35 @@ let zeroIfNumericMetricNull = function (numericMetricValue) {
   return (numericMetricValue == null) ? "" : numericMetricValue.N;
 };
 
+let calculateGBSecondCost = function (serverlessFrameworkName) {
+  // default to AWS Lambda values
+  let gbSecondCost = 0;
+  switch(serverlessFrameworkName) {
+    case "Azure Functions":
+        gbSecondCost = parseFloat(process.env.AZURE_FUNCTIONS_GBSECOND_COST);
+        break;
+    default:
+        gbSecondCost = parseFloat(process.env.AWS_LAMBDA_GBSECOND_COST);
+  }
+  return gbSecondCost;
+}
+
+let calculateInvokeCost = function (serverlessFrameworkName) {
+  // default to AWS Lambda values
+  let invokeCost = 0;
+  switch(serverlessFrameworkName) {
+    case "Azure Functions":
+        invokeCost = parseFloat(process.env.AZURE_FUNCTIONS_INVOKE_COST);
+        break;
+    default:
+        invokeCost = parseFloat(process.env.AWS_LAMBDA_INVOKE_COST);
+  }
+  return invokeCost;
+}
+
 module.exports.costmetrics = (event, context, callback) => {
 
-  let gbSecondCost = parseFloat(process.env.AWS_LAMBDA_GBSECOND_COST);
-  let invokeCost = parseFloat(process.env.AWS_LAMBDA_INVOKE_COST);
-
   // calculate and record cost for each updated record
-  // TODO - note all calcs are currently assuming AWS Lambda
-
   console.log('Total Records in Cost Lambda: ' + event.Records.length);
   event.Records.forEach(function(record) {
 
@@ -35,16 +56,30 @@ module.exports.costmetrics = (event, context, callback) => {
       return;
     }
 
+    // get values from Dynamo DB record
     let requestIdValue = emptyIfStringMetricNull(record.dynamodb.NewImage.RequestId);
     let billedDurationValue = zeroIfNumericMetricNull(record.dynamodb.NewImage.BilledDuration);
     let memorySizeValue = zeroIfNumericMetricNull(record.dynamodb.NewImage.MemorySize);
     let languageRuntimeValue = emptyIfStringMetricNull(record.dynamodb.NewImage.LanguageRuntime);
 
+    // get cost base values based on serverless framework in dynamo record
+    let serverlessFrameworkName = emptyIfStringMetricNull(record.dynamodb.NewImage.ServerlessPlatformName);
+    console.log(`Serverless Platform: ${serverlessFrameworkName}`);
+    let gbSecondCost = calculateGBSecondCost(serverlessFrameworkName);
+    let invokeCost = calculateInvokeCost(serverlessFrameworkName);
+
+    // calculate costs
     let billedGigabits = memorySizeValue / 1024;
     let billedSeconds = billedDurationValue / 1000;
     let gigabitSeconds = billedGigabits * billedSeconds;  
     let gigabitSecondsCost = gigabitSeconds * gbSecondCost;
     let functionCostValue = invokeCost + gigabitSecondsCost;
+
+    console.log(`billedGigabits: ${billedGigabits}`);
+    console.log(`billedSeconds: ${billedSeconds}`);
+    console.log(`gigabitSeconds: ${gigabitSeconds}`);
+    console.log(`gigabitSecondsCost: ${gigabitSecondsCost}`);
+    console.log(`functionCostValue: ${functionCostValue}`);
     
     // Create dynamo-db insert params from calculated data above
     const params = {
