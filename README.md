@@ -165,9 +165,9 @@ Note: Current issues with 2.0.1-beta of Core Tools integration with Node v9.5 (u
 * Select "Function Apps"
 * Select existing “azure-service-nodejs” function-app
 * Add new CSharp Timer-based function to this existing function-app
-..* Choose Language - C#
-..* Choose name `empty-csharp`
-..* Choose default timer cron of 1-per-hour `0 */60 * * * *`
+    * Choose Language - C#
+    * Choose name `empty-csharp`
+    * Choose default timer cron of 1-per-hour `0 */60 * * * *`
 
 ### Azure Insights Metrics Export
 Setup "Continuous Export" of the application-insights data for the function-app just deployed.
