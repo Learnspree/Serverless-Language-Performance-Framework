@@ -178,6 +178,9 @@ Note - choose following options when creating the continuous export (if storage 
 * Destination Storage Account Container = "nodejs-perf-metrics"
 * Data Types To Export: Turn ON "Request" data, turn OFF all others.
 
+### Azure Performance Logger Function
+This function is triggered from metrics saved by Azure Insights into Azure Storage. It parses these and delivers to the AWS-hosted API to save the metrics.
+
 ```bash
 # Deploy the Azure Logs Performance Metric Parser Function
 cd azure-common/azure-perf-logger
