@@ -163,7 +163,7 @@ The Azure Functions test code for CSharp Empty Function is located in "/azure-te
 Note: Current issues with 2.0.1-beta of Core Tools integration with Node v9.5 (used for this project) means cannot use Azure Function Core Tools to deploy via CLI currently. Serverless framework 1.26.1 also not currently supporting csharp functions for Azure either. This test function will have to be currently deployed `manually` via Azure Portal within the existing FunctionApp created and configured for Azure NodeJS function above:
 * Login to Azure Portal
 * Select "Function Apps"
-* Select existing “azure-service-nodejs” function-app
+* Select existing “azure-service-test" function-app
 * Add new CSharp Timer-based function to this existing function-app
     * Choose Language - C#
     * Choose name `empty-csharp`
@@ -175,7 +175,7 @@ To do this, follow the steps in this Azure Portal [Guide](https://docs.microsoft
 
 Note - choose following options when creating the continuous export (if storage account/container does not exist, the portal wizard will guide you through the steps to create them):
 * Destination Storage Account Name = "azureperfmetrics"
-* Destination Storage Account Container = "nodejs-perf-metrics"
+* Destination Storage Account Container = "perf-metrics"
 * Data Types To Export: Turn ON "Request" data, turn OFF all others.
 
 ### Azure Performance Logger Function
@@ -190,7 +190,7 @@ serverless package
 # Connection String for azure storage: see access-keys in azure storage account created above>
 serverless deploy -v 
 
-# Important - Set AppSettings value on new perf-logger function so that it triggers from the StorageAccount generated for the test-target function (aws-service-nodejs)
+# Important - Set AppSettings value on new perf-logger function so that it triggers from the StorageAccount generated for the test-target functions (azure-service-nodejs / azure-service-csharp)
 az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='DefaultEndpointsProtocol=https;AccountName=azureperfmetrics;AccountKey=<Account Key>;EndpointSuffix=core.windows.net'
 ```
 
@@ -231,7 +231,7 @@ aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-e
 Full end-to-end test measuring sample target function:
 ```bash
 cd /azure-test/azure-service-nodejs
-serverless invoke -f empty -l 
+serverless invoke -f empty-nodejs -l 
 
 # Verify results - Metrics
 aws dynamodb query --table-name ServerlessFunctionMetrics \

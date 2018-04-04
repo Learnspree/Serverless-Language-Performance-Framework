@@ -1,6 +1,7 @@
-# Empty Azure Function for testing NodeJS
+# Azure Function App - for Empty Azure Function test apps - includes test NodeJS function
+# C# function to be added manually until azure core tools or serverless framework support allows automation - See README
 
-service: azure-service-nodejs
+service: azure-service-test
 
 provider:
   name: azure
@@ -10,7 +11,7 @@ plugins:
   - serverless-azure-functions
 
 functions:
-  empty:
+  empty-nodejs:
     handler: handler.empty
     events:
       - timer:

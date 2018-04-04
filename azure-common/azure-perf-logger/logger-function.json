@@ -5,7 +5,7 @@
             "type": "blobTrigger",
             "direction": "in",
             "name": "metricsBlob",
-            "path": "nodejs-perf-metrics/{name}",
+            "path": "perf-metrics/{name}",
             "connection": "AzurePerfLoggerStorage"
         }
     ],
