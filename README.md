@@ -148,14 +148,29 @@ serverless deploy -v --aws-profile serverless --dynamodbstreamarn <ARN of Server
 ```
 ## Build and Deploy - Azure
 Build and deploy the individual target test functions. These are contained in the folder "/azure-test/".
-For example, the Azure Functions test for nodeJS is located in "/azure-test/azure-service-nodejs":
+
+### Azure NodeJS
+The Azure Functions test for nodeJS is located in "/azure-test/azure-service-nodejs":
 ```bash
 cd /azure-test/aws-service-nodejs
 npm install
 serverless deploy -v 
 ```
 
-Setup "Continuous Export" of the application-insights data for the test function just deployed.
+### Azure CSharp (CSX)
+The Azure Functions test code for CSharp Empty Function is located in "/azure-test/azure-service-csharp":
+
+Note: Current issues with 2.0.1-beta of Core Tools integration with Node v9.5 (used for this project) means cannot use Azure Function Core Tools to deploy via CLI currently. Serverless framework 1.26.1 also not currently supporting csharp functions for Azure either. This test function will have to be currently deployed `manually` via Azure Portal within the existing FunctionApp created and configured for Azure NodeJS function above:
+* Login to Azure Portal
+* Select "Function Apps"
+* Select existing “azure-service-nodejs” function-app
+* Add new CSharp Timer-based function to this existing function-app
+..* Choose Language - C#
+..* Choose name `empty-csharp`
+..* Choose default timer cron of 1-per-hour `0 */60 * * * *`
+
+### Azure Insights Metrics Export
+Setup "Continuous Export" of the application-insights data for the function-app just deployed.
 To do this, follow the steps in this Azure Portal [Guide](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-export-telemetry).
 
 Note - choose following options when creating the continuous export (if storage account/container does not exist, the portal wizard will guide you through the steps to create them):
