@@ -168,13 +168,14 @@ Note: Current issues with 2.0.1-beta of Core Tools integration with Node v9.5 (u
     * Choose Language - C#
     * Choose name `empty-csharp`
     * Choose default timer cron of 1-per-hour `0 */60 * * * *`
+* Copy the contents of `/azure-test/azure-service-csharp/empty-csharp/run.csx` to the generated run.csx file.
 
 ### Azure Insights Metrics Export
 Setup "Continuous Export" of the application-insights data for the function-app just deployed.
 To do this, follow the steps in this Azure Portal [Guide](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-export-telemetry).
 
 Note - choose following options when creating the continuous export (if storage account/container does not exist, the portal wizard will guide you through the steps to create them):
-* Destination Storage Account Name = "azureperfmetrics"
+* Destination Storage Account Name = e.g. "azureperfmetrics" (these names are globally unique so you may need to adjust)
 * Destination Storage Account Container = "perf-metrics"
 * Data Types To Export: Turn ON "Request" data, turn OFF all others.
 
@@ -190,8 +191,9 @@ serverless package
 # Connection String for azure storage: see access-keys in azure storage account created above>
 serverless deploy -v 
 
-# Important - Set AppSettings value on new perf-logger function so that it triggers from the StorageAccount generated for the test-target functions (azure-service-nodejs / azure-service-csharp)
-az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='DefaultEndpointsProtocol=https;AccountName=azureperfmetrics;AccountKey=<Account Key>;EndpointSuffix=core.windows.net'
+# Important - Set AppSettings value on new perf-logger function so that it triggers from the StorageAccount generated for the test-target functions (empty-nodejs / empty-csharp). 
+# See https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account#manage-your-storage-account  for guide on retrieving the storage connection string
+az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='<connection string retrieved from storage settings - see link in comment above'
 ```
 
 ## Validation

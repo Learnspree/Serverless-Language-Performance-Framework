@@ -1,0 +1,13 @@
+{
+    "disabled": false,
+    "bindings": [
+        {
+            "type": "timerTrigger",
+            "direction": "in",
+            "name": "nodeJSEmptyFunctionTimer",
+            "schedule": "0 */60 * * * *"
+        }
+    ],
+    "entryPoint": "empty",
+    "scriptFile": "handler.js"
+}
