@@ -148,20 +148,39 @@ serverless deploy -v --aws-profile serverless --dynamodbstreamarn <ARN of Server
 ```
 ## Build and Deploy - Azure
 Build and deploy the individual target test functions. These are contained in the folder "/azure-test/".
-For example, the Azure Functions test for nodeJS is located in "/azure-test/azure-service-nodejs":
+
+### Azure NodeJS
+The Azure Functions test for nodeJS is located in "/azure-test/azure-service-nodejs":
 ```bash
 cd /azure-test/aws-service-nodejs
 npm install
 serverless deploy -v 
 ```
 
-Setup "Continuous Export" of the application-insights data for the test function just deployed.
+### Azure CSharp (CSX)
+The Azure Functions test code for CSharp Empty Function is located in "/azure-test/azure-service-csharp":
+
+Note: Current issues with 2.0.1-beta of Core Tools integration with Node v9.5 (used for this project) means cannot use Azure Function Core Tools to deploy via CLI currently. Serverless framework 1.26.1 also not currently supporting csharp functions for Azure either. This test function will have to be currently deployed `manually` via Azure Portal within the existing FunctionApp created and configured for Azure NodeJS function above:
+* Login to Azure Portal
+* Select "Function Apps"
+* Select existing “azure-service-test" function-app
+* Add new CSharp Timer-based function to this existing function-app
+    * Choose Language - C#
+    * Choose name `empty-csharp`
+    * Choose default timer cron of 1-per-hour `0 */60 * * * *`
+* Copy the contents of `/azure-test/azure-service-csharp/empty-csharp/run.csx` to the generated run.csx file.
+
+### Azure Insights Metrics Export
+Setup "Continuous Export" of the application-insights data for the function-app just deployed.
 To do this, follow the steps in this Azure Portal [Guide](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-export-telemetry).
 
 Note - choose following options when creating the continuous export (if storage account/container does not exist, the portal wizard will guide you through the steps to create them):
-* Destination Storage Account Name = "azureperfmetrics"
-* Destination Storage Account Container = "nodejs-perf-metrics"
+* Destination Storage Account Name = e.g. "azureperfmetrics" (these names are globally unique so you may need to adjust)
+* Destination Storage Account Container = "perf-metrics"
 * Data Types To Export: Turn ON "Request" data, turn OFF all others.
+
+### Azure Performance Logger Function
+This function is triggered from metrics saved by Azure Insights into Azure Storage. It parses these and delivers to the AWS-hosted API to save the metrics.
 
 ```bash
 # Deploy the Azure Logs Performance Metric Parser Function
@@ -172,8 +191,9 @@ serverless package
 # Connection String for azure storage: see access-keys in azure storage account created above>
 serverless deploy -v 
 
-# Important - Set AppSettings value on new perf-logger function so that it triggers from the StorageAccount generated for the test-target function (aws-service-nodejs)
-az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='DefaultEndpointsProtocol=https;AccountName=azureperfmetrics;AccountKey=<Account Key>;EndpointSuffix=core.windows.net'
+# Important - Set AppSettings value on new perf-logger function so that it triggers from the StorageAccount generated for the test-target functions (empty-nodejs / empty-csharp). 
+# See https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account#manage-your-storage-account  for guide on retrieving the storage connection string
+az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='<connection string retrieved from storage settings - see link in comment above'
 ```
 
 ## Validation
@@ -213,7 +233,7 @@ aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-e
 Full end-to-end test measuring sample target function:
 ```bash
 cd /azure-test/azure-service-nodejs
-serverless invoke -f empty -l 
+serverless invoke -f empty-nodejs -l 
 
 # Verify results - Metrics
 aws dynamodb query --table-name ServerlessFunctionMetrics \
