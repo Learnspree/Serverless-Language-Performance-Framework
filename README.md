@@ -74,6 +74,12 @@ For example, the AWS test for node610 is located in "/aws-test/aws-service-node6
 cd /aws-test/aws-service-node610
 serverless deploy -v --aws-profile <profile>
 ```
+Note that recently AWS added support for node 8.10. Test function below:
+```bash
+cd /aws-test/aws-service-node810
+serverless deploy -v --aws-profile <profile>
+```
+
 For the python test function:
 ```bash
 cd /aws-test/aws-service-python3
@@ -137,6 +143,8 @@ cd nodejs-perf-logger
 npm install request # just a one-off command - don't need to do this every build
 serverless package --package aws-artifacts --postmetricsurl <api url>
 serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile> --postmetricsurl <api url>
+
+# NOTE: Only 5 cloud-watch logs triggers are allowed by AWS at a time. With the addition of nodejs810 test function, this means that nodejs610 trigger is now commented out by default. Adjust the (up to) 5 triggers you want to measure at any one time by editing /nodejs-perf-logger/serverless.yml.
 ```
 
 ```bash

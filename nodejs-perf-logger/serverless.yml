@@ -22,9 +22,12 @@ functions:
   logger:
     handler: handler.logger
     events:
+#      - cloudwatchLog:
+#          logGroup: '/aws/lambda/awsservicenode610-dev-awsnode610'
+#          filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/awsservicenode610-dev-awsnode610'
-          filter: 'REPORT'
+          logGroup: '/aws/lambda/awsservicenode810-dev-awsnode810'
+          filter: 'REPORT'          
       - cloudwatchLog:
           logGroup: '/aws/lambda/awsservicedotnet2-dev-awsdotnet2'
           filter: 'REPORT'
