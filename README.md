@@ -252,7 +252,7 @@ aws dynamodb query --table-name ServerlessFunctionMetrics \
 aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "RequestId = :v1" --expression-attribute-values file://query-costs-table-requestid.json
 ```
 
-## Initiate Full Scheduled Test AWS Lambda
+## Initiate Full Scheduled Test - AWS Lambda
 Start a scheduled test by enabling the appropriate filters on the test target functions you want to measure.
 For example, to start a "cold-start" test on the aws-node610 test function, use the AWS CLI:
 
@@ -266,8 +266,21 @@ cd /bin
 ./enable-all-coldstart-rules.sh
 ```
 
-## Cancel Scheduled Testing
-Don't forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful!
+## Initiate Full Schedule Test - Azure Functions
+See commands below to check status of existing function apps and also start/stop the "azure-service-test" functionapp which will enable and disable the test functions and their associated timers.
+
+```bash
+az functionapp list
+
+# Start Test
+az functionapp start --name azure-service-test --resource-group azure-service-test-rg
+
+# Stop Test
+az functionapp stop --name azure-service-test --resource-group azure-service-test-rg
+```
+
+## Cancel Scheduled Testing - AWS
+Do not forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful!
 
 Individual rules:
 ```bash
