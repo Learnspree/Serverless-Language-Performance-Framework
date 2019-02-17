@@ -107,7 +107,7 @@ Each target function will by default be setup with two cloud-watch-batch based t
           enabled: false
 ```
 
-View "/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 6.10 function:
+View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 6.10 function:
 
 ```bash
     events:
@@ -118,7 +118,7 @@ View "/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch
 
 Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table created earlier)
 ```bash
-cd lambda-metrics-service
+cd /spf-api/lambda-metrics-service
 dotnet add package AWSSDK.DynamoDBv2 --version 3.3.6
 dotnet add package Amazon.Lambda.APIGatewayEvents
 ./build-macos.sh
@@ -128,17 +128,17 @@ serverless deploy -v --aws-profile <aws cli profile>
 
 ```bash
 # Deploy the AWS CloudWatch Logs Lambda Performance Metric Parser Function
-cd nodejs-perf-logger
+cd /aws-common/nodejs-perf-logger
 npm install request # just a one-off command - don't need to do this every build
 serverless package --package aws-artifacts --postmetricsurl <api url>
 serverless deploy --package aws-artifacts/ --aws-profile <aws cli profile> --postmetricsurl <api url>
 
-# NOTE: Only 5 cloud-watch logs triggers are allowed by AWS at a time. With the addition of nodejs810 test function, this means that nodejs610 trigger is now commented out by default. Adjust the (up to) 5 triggers you want to measure at any one time by editing /nodejs-perf-logger/serverless.yml.
+# NOTE: Only 5 cloud-watch logs triggers are allowed by AWS at a time. With the addition of nodejs810 test function, this means that nodejs610 trigger is now commented out by default. Adjust the (up to) 5 triggers you want to measure at any one time by editing /aws-common/nodejs-perf-logger/serverless.yml.
 ```
 
 ```bash
 # Deploy the cost-metrics calculation function - triggers off inserts into the performance metrics DynamoDB table
-cd lambda-cost-service
+cd /spf-api/lambda-cost-service
 aws dynamodb describe-table --table-name ServerlessFunctionMetrics --profile <aws cli profile>
 # Note - take the "LatestStreamArn" value from the output of above command and use in deploy below
 serverless deploy -v --aws-profile serverless --dynamodbstreamarn <ARN of ServerlessFunctionMetrics Stream>
@@ -202,7 +202,7 @@ serverless invoke --function logger -p lib/test-logger-input-raw.json --postmetr
 
 Test **metrics** function (note: test example is via API Gateway - not Lambda directly - using `curl` below): 
 ```shell
-1. cd lambda-metrics-service
+1. cd /spf-api/lambda-metrics-service
 2. aws apigateway get-rest-apis
 3. curl -v -X POST -d@lib/test-metrics-service.json https://<aws-restapi-id>.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
 
@@ -286,13 +286,13 @@ cd /bin
 To remove all cloud-formation stacks created in your AWS account (by the serverless framework) for the performance testing, follow these commands to remove all functions:
 
 ```bash
-cd lambda-cost-service
+cd /spf-api/lambda-cost-service
 serverless remove --aws-profile <aws profile>
 
-cd lambda-metrics-service
+cd /spf-api/lambda-metrics-service
 serverless remove --aws-profile <aws profile>
 
-cd nodejs-perf-logger
+cd /aws-common/nodejs-perf-logger
 serverless remove --aws-profile <aws profile>
 
 # run the following commands for each test-target function you created for testing
