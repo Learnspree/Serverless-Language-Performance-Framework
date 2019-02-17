@@ -84,5 +84,17 @@ functions:
       - schedule: 
           rate: rate(1 minute)
           name: warmstart-node810-minute
-          enabled: false                 
+          enabled: false    
+  awspython3:
+    runtime: python3.6
+    handler: aws-service-python3/handler.awsemptypython3
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-python3-hourly
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: warmstart-python3-minute
+          enabled: false             
 
