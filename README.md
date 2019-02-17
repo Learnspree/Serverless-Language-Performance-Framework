@@ -68,43 +68,32 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 
 
 ## Build & Deploy - AWS
-Build and deploy the individual target test functions. These are contained in the folder "/aws-test/".
-For example, the AWS test for node610 is located in "/aws-test/aws-service-node610":
-```bash
-cd /aws-test/aws-service-node610
-serverless deploy -v --aws-profile <profile>
-```
-Note that recently AWS added support for node 8.10. Test function below:
-```bash
-cd /aws-test/aws-service-node810
-serverless deploy -v --aws-profile <profile>
-```
+Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node610 is located in "/aws-test/aws-service-node610". There is a central serverless yaml that is used to deploy all aws empty test functions.
 
-For the python test function:
-```bash
-cd /aws-test/aws-service-python3
-serverless deploy -v --aws-profile <profile>
-```
+### Build Pre-Compiled Language Functions
 For the java test function, located in "/aws-test/aws-service-java8":
 ```bash
 cd /aws-test/aws-service-java8
 mvn clean install 
-serverless deploy -v --aws-profile <profile>
 ```
 For the .net core 2 test function, located in "/aws-test/aws-service-dotnet2":
 ```bash
 cd /aws-test/aws-service-dotnet2
 ./build-macos.sh  # Different scripts exist for Windows or Linux
-serverless deploy -v --aws-profile <profile>
 ```
 For the golang test function, located in "/aws-test/aws-service-go":
 ```bash
 cd /aws-test/aws-service-go
 make
+```
+
+### Deploy All Functions
+```bash
+cd /aws-test
 serverless deploy -v --aws-profile <profile>
 ```
 
-Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "serverless.yml" file. These batch triggers will be disabled by default. Enable one-at-a-time to ensure accurate cold or warm-start testing. Example below:
+Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Enable one-at-a-time to ensure accurate cold or warm-start testing. Example below:
 
 ```
     events:
