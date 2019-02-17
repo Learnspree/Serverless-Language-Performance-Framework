@@ -8,6 +8,7 @@ provider:
   timeout: 6
   stage: dev
   region: us-east-1
+  versionFunctions: true # Optional function versioning
 
 # package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
 package:
@@ -46,4 +47,18 @@ functions:
           rate: rate(1 minute)
           name: warmstart-golang-minute
           enabled: false
+  aws-empty-java8:
+    runtime: java8
+    handler: com.learnspree.EmptyJava8Handler
+    package:
+      artifact: aws-service-java8/target/awsjava8empty-dev.jar
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-java8-hourly
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: warmstart-java8-minute
+          enabled: false          
 
