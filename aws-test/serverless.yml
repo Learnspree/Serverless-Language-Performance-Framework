@@ -60,5 +60,29 @@ functions:
       - schedule: 
           rate: rate(1 minute)
           name: warmstart-java8-minute
-          enabled: false          
+          enabled: false
+  awsnode610:
+      runtime: nodejs6.10
+      handler: aws-service-node610/handler.emptytestnode610
+      events:
+        - schedule: 
+            rate: rate(1 hour)
+            name: coldstart-node610-hourly
+            enabled: false
+        - schedule: 
+            rate: rate(1 minute)
+            name: warmstart-node610-minute
+            enabled: false 
+  awsnode810:
+    runtime: nodejs8.10
+    handler: aws-service-node810/handler.emptytestnode810
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-node810-hourly
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: warmstart-node810-minute
+          enabled: false                 
 
