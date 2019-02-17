@@ -1,0 +1,49 @@
+# Config file for aws empty-test functions - all runtimes
+#
+service: aws-empty-test-functions
+
+provider:
+  name: aws
+  memorySize: 128
+  timeout: 6
+  stage: dev
+  region: us-east-1
+
+# package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
+package:
+  individually: true 
+
+# individual function definitions
+functions:
+  dotnet2:
+    runtime: dotnetcore2.0
+    handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::EmptyTestDotNetCore2
+    package:
+      artifact: aws-service-dotnetcore2/bin/release/netcoreapp2.0/deploy-package.zip
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-dotnet2-hourly
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: warmstart-dotnet2-minute
+          enabled: false
+  aws-empty-go:
+    runtime: go1.x
+    handler: aws-service-go/bin/go-empty-function
+    package:
+      exclude:
+        - ./aws-service-go/**
+      include:
+        - ./aws-service-go/bin/**
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-golang-hourly
+          enabled: false
+      - schedule: 
+          rate: rate(1 minute)
+          name: warmstart-golang-minute
+          enabled: false
+
