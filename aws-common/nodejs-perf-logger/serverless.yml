@@ -19,27 +19,39 @@ package:
     - node_modules/**
 
 functions:
-  logger:
+  logger-node:
     handler: handler.logger
     events:
-#      - cloudwatchLog:
-#          logGroup: '/aws/lambda/awsservicenode610-dev-awsnode610'
-#          filter: 'REPORT'
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/awsservicenode610-dev-awsnode610'
+          filter: 'REPORT'
       - cloudwatchLog:
           logGroup: '/aws/lambda/awsservicenode810-dev-awsnode810'
           filter: 'REPORT'          
+  logger-dotnet:
+    handler: handler.logger
+    events:
       - cloudwatchLog:
           logGroup: '/aws/lambda/awsservicedotnet2-dev-awsdotnet2'
           filter: 'REPORT'
-      - cloudwatchLog:
-          logGroup: '/aws/lambda/awsservicepython3-dev-awspython3'
-          filter: 'REPORT'
+  logger-java:
+    handler: handler.logger
+    events:
       - cloudwatchLog:
           logGroup: '/aws/lambda/aws-service-java8-dev-aws-empty-java8'
           filter: 'REPORT'
+  logger-python:
+    handler: handler.logger
+    events:
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/awsservicepython3-dev-awspython3'
+          filter: 'REPORT'
+  logger-go:
+    handler: handler.logger
+    events:
       - cloudwatchLog:
           logGroup: '/aws/lambda/aws-service-go-dev-aws-empty-go'
-          filter: 'REPORT'
+          filter: 'REPORT'          
 
 # Define function environment variables here
     environment:
