@@ -69,3 +69,39 @@ functions:
       AZURE_FUNCTIONS_GBSECOND_COST: "0.000016"
       AZURE_FUNCTIONS_INVOKE_COST: "0.0000002"      
 
+resources:
+  Resources:
+    metrics-table:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: "ServerlessFunctionMetrics"
+        AttributeDefinitions:
+          - AttributeName: FunctionName
+            AttributeType: S
+          - AttributeName: RequestId
+            AttributeType: S            
+        KeySchema:
+          - AttributeName: FunctionName
+            KeyType: HASH
+          - AttributeName: RequestId
+            KeyType: RANGE            
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    costs-table:
+        Type: AWS::DynamoDB::Table
+        DeletionPolicy: Retain
+        Properties:
+          TableName: "ServerlessFunctionCostMetrics"
+          AttributeDefinitions:
+            - AttributeName: RequestId
+              AttributeType: S            
+          KeySchema:
+            - AttributeName: RequestId
+              KeyType: RANGE            
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+          
+
