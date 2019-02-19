@@ -36,7 +36,10 @@ provider:
         - "dynamodb:GetRecords"
         - "dynamodb:GetShardIterator"
         - "dynamodb:ListStreams"
-      Resource: "${opt:dynamodbstreamarn}"
+      Resource:
+        Fn::GetAtt:
+          - metrics-table
+          - StreamArn
 
 
 # packaging information here
@@ -61,7 +64,11 @@ functions:
       include:
       - lambda-cost-service/node_modules/**
     events:
-      - stream: ${opt:dynamodbstreamarn}
+      - stream:
+        arn:
+          Fn::GetAtt:
+                - metrics-table
+                - StreamArn
     environment:
       DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics"
       AWS_LAMBDA_GBSECOND_COST: "0.00001667"
