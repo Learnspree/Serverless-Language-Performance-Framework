@@ -252,7 +252,7 @@ aws events enable-rule --name coldstart-node610-hourly --profile <aws profile>
 All cold-start rules (also existing are scripts for all warm start rules):
 ```bash
 cd /bin
-./enable-all-coldstart-rules.sh
+./enable-all-coldstart-rules.sh [aws-profile-name (optional)]
 ```
 
 ## Initiate Full Schedule Test - Azure Functions
@@ -279,7 +279,7 @@ aws events disable-rule --name coldstart-node610-hourly --profile <aws profile>
 All rules (also existing are scripts for all cold or warm start rules):
 ```bash
 cd /bin
-./disable-all-rules.sh
+./disable-all-rules.sh [aws-profile-name (optional)]
 ```
 
 ## Cleanup
