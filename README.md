@@ -70,28 +70,13 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 ## Build & Deploy - AWS
 Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node610 is located in "/aws-test/aws-service-node610". There is a central serverless yaml that is used to deploy all aws empty test functions.
 
-### Build Pre-Compiled Language Functions
-For the java test function, located in "/aws-test/aws-service-java8":
-```bash
-cd /aws-test/aws-service-java8
-mvn clean install 
-```
-For the .net core 2 test function, located in "/aws-test/aws-service-dotnet2":
-```bash
-cd /aws-test/aws-service-dotnet2
-./build-macos.sh  # Different scripts exist for Windows or Linux
-```
-For the golang test function, located in "/aws-test/aws-service-go":
-```bash
-cd /aws-test/aws-service-go
-make
-```
-
-### Deploy All Functions
+### Build and Deploy all AWS Test Functions
 ```bash
 cd /aws-test
 serverless deploy -v --aws-profile <profile>
 ```
+
+### Deploy All Functions
 
 Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Enable one-at-a-time to ensure accurate cold or warm-start testing. Example below:
 
@@ -213,7 +198,7 @@ curl -v -X POST -d@lib/test-metrics-service.json https://ybt41omi9i.execute-api.
 ### End-to-End Test - AWS Lambda
 Full end-to-end test measuring sample target function:
 ```bash
-cd /aws-test/aws-service-node610
+cd /aws-test
 serverless invoke -f awsnode610 -l --aws-profile <aws-cli-profile>
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
