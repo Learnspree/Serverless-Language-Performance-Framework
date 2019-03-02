@@ -38,7 +38,7 @@ provider:
         - "dynamodb:ListStreams"
       Resource:
         Fn::GetAtt:
-          - metrics-table
+          - LambdaMetricsTable
           - StreamArn
 
 
@@ -46,7 +46,7 @@ provider:
 functions:
   lambda-metrics:
     runtime: dotnetcore2.0
-    timeout: 120 
+    timeout: 30 # max for api-backed lambdas 
     handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::LambdaMetrics
     package:
       artifact: lambda-metrics-service/bin/release/netcoreapp2.0/deploy-package.zip
@@ -67,8 +67,8 @@ functions:
       - stream:
         arn:
           Fn::GetAtt:
-                - metrics-table
-                - StreamArn
+            - LambdaMetricsTable
+            - StreamArn
     environment:
       DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics"
       AWS_LAMBDA_GBSECOND_COST: "0.00001667"
@@ -78,7 +78,7 @@ functions:
 
 resources:
   Resources:
-    metrics-table:
+    LambdaMetricsTable:
       Type: AWS::DynamoDB::Table
       DeletionPolicy: Retain
       Properties:
@@ -96,7 +96,9 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    costs-table:
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE          
+    CostMetricsTable:
         Type: AWS::DynamoDB::Table
         DeletionPolicy: Retain
         Properties:
@@ -106,7 +108,7 @@ resources:
               AttributeType: S            
           KeySchema:
             - AttributeName: RequestId
-              KeyType: RANGE            
+              KeyType: HASH            
           ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1
