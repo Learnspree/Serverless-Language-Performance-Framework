@@ -77,6 +77,17 @@ functions:
       AZURE_FUNCTIONS_INVOKE_COST: "0.0000002"      
 
 resources:
+  Outputs:
+    SpfApiUrl:
+      Description: The URL for the published API
+      Value:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: ApiGatewayRestApi
+            - ".execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}"  
+      Export:
+        Name: SpfApiUrl
   Resources:
     LambdaMetricsTable:
       Type: AWS::DynamoDB::Table

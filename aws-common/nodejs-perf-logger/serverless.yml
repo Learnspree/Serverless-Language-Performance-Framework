@@ -23,37 +23,38 @@ functions:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/awsservicenode610-dev-awsnode610'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnode610'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/awsservicenode810-dev-awsnode810'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnode810'
           filter: 'REPORT'          
   logger-dotnet:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/awsservicedotnet2-dev-awsdotnet2'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-dotnet2'
           filter: 'REPORT'
   logger-java:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-service-java8-dev-aws-empty-java8'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-empty-java8'
           filter: 'REPORT'
   logger-python:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/awsservicepython3-dev-awspython3'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awspython3'
           filter: 'REPORT'
   logger-go:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-service-go-dev-aws-empty-go'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-empty-go'
           filter: 'REPORT'          
 
-# Define function environment variables here
+# Import the API Url that was exported from the API serverless module (TODO - add ${self:provider:stage} to the export/import )
     environment:
-      POST_METRICS_URL: ${opt:postmetricsurl}
+      POST_METRICS_URL: 
+        'Fn::ImportValue': 'SpfApiUrl'
 
