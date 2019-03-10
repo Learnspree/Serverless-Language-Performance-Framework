@@ -59,6 +59,8 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
 
 module.exports.logger = (event, context, callback) => {
      
+  console.log(`Environment URL: ${process.env.POST_METRICS_URL + "/metrics"}`);
+  
   const payload = new Buffer(event.awslogs.data, 'base64');
   zlib.gunzip(payload, (err, res) => {
       if (err) {
@@ -73,6 +75,8 @@ module.exports.logger = (event, context, callback) => {
       let successCount = 0;
       let failureCount = 0;
 
+      console.log(`${parsedPayload}`);
+
 
       parsedPayload.logEvents.forEach(function (eventPayload) {
         const metrics = usageMetrics(eventPayload, functionNameValue, functionVersionValue);
@@ -84,6 +88,7 @@ module.exports.logger = (event, context, callback) => {
           process.env.POST_METRICS_URL + "/metrics",
           { json: metrics },
           function (error, response, body) {
+              console.log(`Body: ${body}, Repsonse: ${response}, Error: ${error}`);
               if (!error && response.statusCode == 200) {
                   successCount++;
               }
@@ -94,7 +99,7 @@ module.exports.logger = (event, context, callback) => {
       });
       
       // For Debugging - uncomment:
-      // console.log(`${successCount} logs saved, ${failureCount} logs failed to save. Check logs for any failures.`);
+      console.log(`${successCount} logs saved, ${failureCount} logs failed to save. Check logs for any failures.`);
 
       // return overall response
       const response = {

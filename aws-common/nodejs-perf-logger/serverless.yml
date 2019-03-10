@@ -11,6 +11,10 @@ provider:
   region: us-east-1
   stage: dev
   versionFunctions: true # Optional function versioning
+  # Import the API Url that was exported from the API serverless module (TODO - add ${self:provider:stage} to the export/import )
+  environment:
+    POST_METRICS_URL: 
+      'Fn::ImportValue': 'SpfApiUrl'
 
   
 # packaging information here
@@ -53,8 +57,4 @@ functions:
           logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-empty-go'
           filter: 'REPORT'          
 
-# Import the API Url that was exported from the API serverless module (TODO - add ${self:provider:stage} to the export/import )
-    environment:
-      POST_METRICS_URL: 
-        'Fn::ImportValue': 'SpfApiUrl'
 
