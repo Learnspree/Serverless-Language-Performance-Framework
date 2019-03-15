@@ -249,11 +249,12 @@ cd /bin
 To remove all cloud-formation stacks created in your AWS account (by the serverless framework) for the performance testing, follow these commands to remove all functions:
 
 ```bash
-# Note - removal of the API will not remove the DynamoDB tables (to protect from accidental removal of existing data)
-cd /spf-api
+# Note - ensure that the logger function is removed first, as this has a dependency on the spf-api stack's API reference
+cd /aws-common/nodejs-perf-logger
 serverless remove --aws-profile <aws profile>
 
-cd /aws-common/nodejs-perf-logger
+# Note - removal of the API will remove the DynamoDB tables (change retention option to "Retain" from "Delete" in the serverless.yml to change this before deployment). Removal will fail if you don't remove teh nodejs-perf-logger first.
+cd /spf-api
 serverless remove --aws-profile <aws profile>
 
 cd aws-test

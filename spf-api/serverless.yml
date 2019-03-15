@@ -65,10 +65,11 @@ functions:
       - lambda-cost-service/node_modules/**
     events:
       - stream:
-        arn:
-          Fn::GetAtt:
-            - LambdaMetricsTable
-            - StreamArn
+          type: dynamodb
+          arn:
+            Fn::GetAtt:
+              - LambdaMetricsTable
+              - StreamArn
     environment:
       DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics"
       AWS_LAMBDA_GBSECOND_COST: "0.00001667"
@@ -91,7 +92,7 @@ resources:
   Resources:
     LambdaMetricsTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         TableName: "ServerlessFunctionMetrics"
         AttributeDefinitions:
@@ -111,7 +112,7 @@ resources:
           StreamViewType: NEW_IMAGE          
     CostMetricsTable:
         Type: AWS::DynamoDB::Table
-        DeletionPolicy: Retain
+        DeletionPolicy: Delete
         Properties:
           TableName: "ServerlessFunctionCostMetrics"
           AttributeDefinitions:
