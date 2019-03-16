@@ -1,0 +1,128 @@
+# Serverless Performance Test Framework
+# Config file for Lambda Service to store provided lambda metrics data into Dynamo DB
+
+# Cost calculations service based on provided performance data
+# This function is de-coupled from the lambda-metrics-service so that re-calculation of costs is 
+# possible if pricing models change
+
+service: spf-api
+
+provider:
+  name: aws
+  memorySize: 128
+  timeout: 12
+  stage: dev
+  region: us-east-1
+
+# you can add statements to the Lambda function's IAM Role here
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*"
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:Query"
+        - "dynamodb:Scan"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*/index/*"
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:DescribeStream"
+        - "dynamodb:GetRecords"
+        - "dynamodb:GetShardIterator"
+        - "dynamodb:ListStreams"
+      Resource:
+        Fn::GetAtt:
+          - LambdaMetricsTable
+          - StreamArn
+
+
+# packaging information here
+functions:
+  lambda-metrics:
+    runtime: dotnetcore2.0
+    timeout: 30 # max for api-backed lambdas 
+    handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::LambdaMetrics
+    package:
+      artifact: lambda-metrics-service/bin/release/netcoreapp2.0/deploy-package.zip
+    events:
+      - http:
+          path: metrics
+          method: post
+    environment:
+      ACCEPTED_RUNTIMES: "python3,go,dotnet2,java8,node610,node810"          
+
+  cost-metrics:
+    runtime: nodejs6.10
+    handler: lambda-cost-service/handler.costmetrics
+    package:
+      include:
+      - lambda-cost-service/node_modules/**
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt:
+              - LambdaMetricsTable
+              - StreamArn
+    environment:
+      DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics"
+      AWS_LAMBDA_GBSECOND_COST: "0.00001667"
+      AWS_LAMBDA_INVOKE_COST: "0.0000002"
+      AZURE_FUNCTIONS_GBSECOND_COST: "0.000016"
+      AZURE_FUNCTIONS_INVOKE_COST: "0.0000002"      
+
+resources:
+  Outputs:
+    SpfApiUrl:
+      Description: The URL for the published API
+      Value:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: ApiGatewayRestApi
+            - ".execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}"  
+      Export:
+        Name: SpfApiUrl
+  Resources:
+    LambdaMetricsTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Delete
+      Properties:
+        TableName: "ServerlessFunctionMetrics"
+        AttributeDefinitions:
+          - AttributeName: FunctionName
+            AttributeType: S
+          - AttributeName: RequestId
+            AttributeType: S            
+        KeySchema:
+          - AttributeName: FunctionName
+            KeyType: HASH
+          - AttributeName: RequestId
+            KeyType: RANGE            
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE          
+    CostMetricsTable:
+        Type: AWS::DynamoDB::Table
+        DeletionPolicy: Delete
+        Properties:
+          TableName: "ServerlessFunctionCostMetrics"
+          AttributeDefinitions:
+            - AttributeName: RequestId
+              AttributeType: S            
+          KeySchema:
+            - AttributeName: RequestId
+              KeyType: HASH            
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+          
+
