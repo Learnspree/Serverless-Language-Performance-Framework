@@ -42,7 +42,7 @@ paths:
     get:
       tags:
       - "runtime-data"
-      summary: "Get data about a language runtime's performance"
+      summary: "Get summary data about a language runtime's performance"
       description: ""
       operationId: "runtimeSummary"
       consumes:
@@ -81,6 +81,31 @@ paths:
         description: "Runtime Language Name"
         required: true
         type: "string"
+      - name: "platform"
+        in: "query"
+        description: "Filter: The platform(s) to filter the query by - e.g. aws"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "aws"
+          - "azure"
+        collectionFormat: "multi"        
+      - name: "state"
+        in: "query"
+        description: "Filter: The function state to filter the query by - either warm or cold"
+        required: false
+        type: "string" 
+        enum:
+          - "warm"
+          - "cold"        
+      - name: "memory"
+        in: "query"
+        description: "Filter: The function allocated memory to filter the query by - e.g. 128 (MB)"
+        required: false
+        type: "integer"
+        format: "int32"             
       responses:
         200:
           description: "successful operation"
