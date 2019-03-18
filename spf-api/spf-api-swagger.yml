@@ -92,10 +92,31 @@ definitions:
   Metric:
     type: "object"
     properties:
-      id:
+      functionName:
+        type: "string"
+      functionVersion:
+        type: "string"
+      timestamp:
+        type: "string"
+      duration:
         type: "integer"
-        format: "int64"
-      name:
+        format: "int32"
+        description: "Function execution duration (ms)"          
+      billedDuration:
+        type: "integer"
+        format: "int32"
+        description: "Function execution duration as billed (ms)"          
+      memorySize:
+        type: "integer"
+        format: "int32"
+        description: "Memory that was allcoated to the function (MB)"     
+      memoryUsed:
+          type: "integer"
+          format: "int32"
+          description: "Maximum memory that was used by the function (MB)"                          
+      languageRuntime:
+        type: "string"
+      serverlessPlatformName:
         type: "string"
   MetricsSummary:
     type: "object"
