@@ -55,6 +55,46 @@ paths:
         description: "Runtime Language Name"
         required: true
         type: "string"
+      - name: "platform"
+        in: "query"
+        description: "Filter: The platform(s) to filter the query by - e.g. aws"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "aws"
+          - "azure"
+        collectionFormat: "multi"        
+      - name: "state"
+        in: "query"
+        description: "Filter: The function state to filter the query by - either warm or cold"
+        required: false
+        type: "string" 
+        enum:
+          - "warm"
+          - "cold"        
+      - name: "memory"
+        in: "query"
+        description: "Filter: The function allocated memory to filter the query by - e.g. 128 (MB)"
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "type"
+        in: "query"
+        description: "Filter: The test function type to filter the query by - e.g. empty"
+        required: false
+        type: "string"
+      - name: "startDate"
+        in: "query"
+        description: "Filter: The start date for the period to filter the query by"
+        type: "string"
+        format: "date-time"   
+      - name: "endDate"
+        in: "query"
+        description: "Filter: The end date for the period to filter the query by"
+        type: "string"
+        format: "date-time"                                          
       responses:
         200:
           description: "successful operation"
@@ -105,7 +145,22 @@ paths:
         description: "Filter: The function allocated memory to filter the query by - e.g. 128 (MB)"
         required: false
         type: "integer"
-        format: "int32"             
+        format: "int32"
+      - name: "type"
+        in: "query"
+        description: "Filter: The test function type to filter the query by - e.g. empty"
+        required: false
+        type: "string"
+      - name: "startDate"
+        in: "query"
+        description: "Filter: The start date for the period to filter the query by"
+        type: "string"
+        format: "date-time"   
+      - name: "endDate"
+        in: "query"
+        description: "Filter: The end date for the period to filter the query by"
+        type: "string"
+        format: "date-time"                                  
       responses:
         200:
           description: "successful operation"
@@ -162,4 +217,3 @@ externalDocs:
   # /runtimes/<runtime>/maximum?state=warm
   # /runtimes/<runtime>/minimum?state=warm
   # /runtimes/<runtime>/average?state=warm&start_date=XXX&end_date=YYY&memory=ZZZ&type=empty
-  # /plaforms/<platform>/runtimes/<runtime>.... as above
