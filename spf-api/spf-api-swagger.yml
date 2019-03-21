@@ -85,6 +85,8 @@ paths:
         description: "Filter: The test function type to filter the query by - e.g. empty"
         required: false
         type: "string"
+        enum:
+          - "empty"
       - name: "startDate"
         in: "query"
         description: "Filter: The start date for the period to filter the query by"
@@ -151,6 +153,8 @@ paths:
         description: "Filter: The test function type to filter the query by - e.g. empty"
         required: false
         type: "string"
+        enum:
+          - "empty"        
       - name: "startDate"
         in: "query"
         description: "Filter: The start date for the period to filter the query by"
