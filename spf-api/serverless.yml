@@ -96,12 +96,12 @@ resources:
       Properties:
         TableName: "ServerlessFunctionMetrics"
         AttributeDefinitions:
-          - AttributeName: FunctionName
+          - AttributeName: LanguageRuntime
             AttributeType: S
           - AttributeName: RequestId
             AttributeType: S            
         KeySchema:
-          - AttributeName: FunctionName
+          - AttributeName: LanguageRuntime
             KeyType: HASH
           - AttributeName: RequestId
             KeyType: RANGE            
@@ -116,11 +116,15 @@ resources:
         Properties:
           TableName: "ServerlessFunctionCostMetrics"
           AttributeDefinitions:
+            - AttributeName: LanguageRuntime
+              AttributeType: S
             - AttributeName: RequestId
-              AttributeType: S            
+              AttributeType: S           
           KeySchema:
+            - AttributeName: LanguageRuntime
+              KeyType: HASH
             - AttributeName: RequestId
-              KeyType: HASH            
+              KeyType: RANGE          
           ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1
