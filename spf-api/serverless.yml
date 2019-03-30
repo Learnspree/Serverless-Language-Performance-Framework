@@ -10,6 +10,7 @@ service: spf-api
 provider:
   name: aws
   memorySize: 128
+  #endpointType: PRIVATE
   timeout: 12
   stage: dev
   region: us-east-1
@@ -44,6 +45,35 @@ provider:
 
 # packaging information here
 functions:
+  hello:
+    handler: get-runtime/handler.hello
+    runtime: python3.7
+    events:
+      - http:
+          path:  runtimes/{runtimeId}/maximum
+          method: get
+          request:
+            parameters:
+              querystrings:
+                platform: false
+                state: false
+                memory: false
+                type: false
+                startDate: false
+                endDate: false
+              paths:
+                runtimeId: true
+          cors: true
+            #origins:
+            #  - http://serverlessperformance.net
+            #headers:
+            #  - Content-Type
+            #  - X-Amz-Date
+            #  - Authorization
+            #  - X-Api-Key
+            #  - X-Amz-Security-Token
+            #  - X-Amz-User-Agent
+            #allowCredentials: false
   lambda-metrics:
     runtime: dotnetcore2.0
     timeout: 30 # max for api-backed lambdas 
