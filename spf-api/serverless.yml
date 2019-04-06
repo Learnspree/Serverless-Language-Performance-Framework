@@ -45,9 +45,11 @@ provider:
 
 # packaging information here
 functions:
-  hello:
-    handler: get-runtime/handler.hello
+  get-runtime-max:
+    handler: getruntime/handler.getMaximum
     runtime: python3.7
+    environment:
+      DYNAMODB_TABLE: "ServerlessFunctionMetrics"
     events:
       - http:
           path:  runtimes/{runtimeId}/maximum
