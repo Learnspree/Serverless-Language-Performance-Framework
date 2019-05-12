@@ -11,11 +11,10 @@ dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
 def getMaximum(event, context):
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
-    #table = dynamodb.Table('TestServerless')
 
     # fetch metrics from the database
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
-    print('Language Runtime: ', inputRuntime)
+    print('Language Runtime Input: ', inputRuntime)
     
 
     # TODO - change to a query as get_item requires full key including ID ?
@@ -31,11 +30,12 @@ def getMaximum(event, context):
     # )
     
     try:
-        # result = table.query(
-        #     KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-        #     ProjectionExpression='LanguageRuntime'
-        # )
-        result = table.scan()
+        result = table.query(
+            TableName=os.environ['DYNAMODB_TABLE'],
+            KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
+            ProjectionExpression='LanguageRuntime'
+        )
+        # result = table.scan()
     except ParamValidationError as e:
         print("Parameter validation error: %s" % e)        
     except ClientError as e:
