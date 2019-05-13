@@ -23,7 +23,6 @@ def getMaximum(event, context):
             ProjectionExpression='LanguageRuntime, #duration',
             ExpressionAttributeNames = { "#duration": "Duration" }
         )
-        # result = table.scan()
     except ParamValidationError as e:
         print("Parameter validation error: %s" % e)        
     except ClientError as e:
@@ -31,14 +30,20 @@ def getMaximum(event, context):
     except Exception as e:
         print("Generic error: %s" % e)
         
-    returnValue = ""
+    returnValue = "done"
     maxDuration = -1
     print(result)
     for i in result['Items']:
-        duration = i['Duration']
-        if duration > maxDuration:
-            maxDuration = duration
-            returnValue = json.dumps(i) 
+        try:
+            print(i)
+            jsonString = json.dumps(i, cls=decimalencoder.DecimalEncoder)
+            print(jsonString)
+            #duration = i['Duration']
+            #if duration > maxDuration:
+            #    maxDuration = duration
+            #    returnValue = i
+        except Exception as e:
+            print("Generic error: %s" % e)            
     
     # create a response
     response = {

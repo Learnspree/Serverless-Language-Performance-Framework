@@ -1,7 +1,7 @@
 import decimal
 import json
 
-class decimal_encoder(json.JSONEncoder):
+class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
             return int(obj)
