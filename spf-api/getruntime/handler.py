@@ -20,7 +20,8 @@ def getMaximum(event, context):
         result = table.query(
             TableName=os.environ['DYNAMODB_TABLE'],
             KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-            ProjectionExpression='LanguageRuntime, Duration'
+            ProjectionExpression='LanguageRuntime, #duration',
+            ExpressionAttributeNames = { "#duration": "Duration" }
         )
         # result = table.scan()
     except ParamValidationError as e:
