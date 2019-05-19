@@ -132,7 +132,9 @@ resources:
           - AttributeName: LanguageRuntime
             AttributeType: S
           - AttributeName: RequestId
-            AttributeType: S            
+            AttributeType: S   
+          - AttributeName: Duration
+            AttributeType: S                            
         KeySchema:
           - AttributeName: LanguageRuntime
             KeyType: HASH
