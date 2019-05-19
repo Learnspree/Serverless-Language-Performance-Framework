@@ -137,7 +137,16 @@ resources:
           - AttributeName: LanguageRuntime
             KeyType: HASH
           - AttributeName: RequestId
-            KeyType: RANGE            
+            KeyType: RANGE
+        LocalSecondaryIndexes:
+          - IndexName: duration-index
+            KeySchema:
+              - AttributeName: LanguageRuntime
+                KeyType: HASH
+              - AttributeName: Duration
+                KeyType: RANGE
+            Projection:
+              ProjectionType: KEYS_ONLY
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

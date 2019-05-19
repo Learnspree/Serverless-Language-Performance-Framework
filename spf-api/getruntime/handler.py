@@ -17,11 +17,16 @@ def getMaximum(event, context):
     print('Language Runtime Input: ', inputRuntime)
     
     try:
+        # todo - use a local secondary index to enable query sort by duration. see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LSI.html#LSI.Using
         result = table.query(
             TableName=os.environ['DYNAMODB_TABLE'],
+            #IndexName='duration-index',
+            # todo - add sorting by sort key of index (also need to actually create the index)
             KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
             ProjectionExpression='LanguageRuntime, #duration',
-            ExpressionAttributeNames = { "#duration": "Duration" }
+            ExpressionAttributeNames = { "#duration": "Duration" },
+            #ScanIndexForward=False # sort descending
+            ##FilterExpression=Attr('Platform').begins_with("AWS") - note FilterExpression good for future querying for certain CSPs etc.
         )
     except ParamValidationError as e:
         print("Parameter validation error: %s" % e)        
@@ -30,20 +35,19 @@ def getMaximum(event, context):
     except Exception as e:
         print("Generic error: %s" % e)
         
-    returnValue = "done"
+    returnValue = ""
     maxDuration = -1
-    print(result)
-    for i in result['Items']:
-        try:
-            print(i)
-            jsonString = json.dumps(i, cls=decimalencoder.DecimalEncoder)
+
+    try:
+        if not result['Items']:
+            print ("no records available for %s" % inputRuntime)
+        else:
+            maxItem = result['Items'][0]
+            print(maxItem)
+            jsonString = json.dumps(maxItem, cls=decimalencoder.DecimalEncoder)
             print(jsonString)
-            #duration = i['Duration']
-            #if duration > maxDuration:
-            #    maxDuration = duration
-            #    returnValue = i
-        except Exception as e:
-            print("Generic error: %s" % e)            
+    except Exception as e:
+        print("Generic error: %s" % e)  
     
     # create a response
     response = {
