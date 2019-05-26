@@ -91,7 +91,7 @@ functions:
       ACCEPTED_RUNTIMES: "python3,go,dotnet2,java8,node610,node810"          
 
   cost-metrics:
-    runtime: nodejs6.10
+    runtime: nodejs8.10
     handler: lambda-cost-service/handler.costmetrics
     package:
       include:
