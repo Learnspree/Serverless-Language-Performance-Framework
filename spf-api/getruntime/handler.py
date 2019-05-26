@@ -20,12 +20,11 @@ def getMaximum(event, context):
         # todo - use a local secondary index to enable query sort by duration. see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LSI.html#LSI.Using
         result = table.query(
             TableName=os.environ['DYNAMODB_TABLE'],
-            #IndexName='duration-index',
-            # todo - add sorting by sort key of index (also need to actually create the index)
+            IndexName='duration-index',
             KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
             ProjectionExpression='LanguageRuntime, #duration',
             ExpressionAttributeNames = { "#duration": "Duration" },
-            #ScanIndexForward=False # sort descending
+            ScanIndexForward=True # sort descending
             ##FilterExpression=Attr('Platform').begins_with("AWS") - note FilterExpression good for future querying for certain CSPs etc.
         )
     except ParamValidationError as e:
@@ -46,6 +45,7 @@ def getMaximum(event, context):
             print(maxItem)
             jsonString = json.dumps(maxItem, cls=decimalencoder.DecimalEncoder)
             print(jsonString)
+            returnValue = jsonString
     except Exception as e:
         print("Generic error: %s" % e)  
     
