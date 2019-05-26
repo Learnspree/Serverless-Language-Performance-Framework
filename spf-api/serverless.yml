@@ -78,11 +78,11 @@ functions:
             #  - X-Amz-User-Agent
             #allowCredentials: false
   lambda-metrics:
-    runtime: dotnetcore2.0
+    runtime: dotnetcore2.1
     timeout: 30 # max for api-backed lambdas 
     handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::LambdaMetrics
     package:
-      artifact: lambda-metrics-service/bin/release/netcoreapp2.0/deploy-package.zip
+      artifact: lambda-metrics-service/bin/release/netcoreapp2.1/deploy-package.zip
     events:
       - http:
           path: metrics

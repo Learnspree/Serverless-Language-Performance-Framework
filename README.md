@@ -22,8 +22,7 @@ Development of this performance testing framework used the following packages an
 | Serverless Framework   | 1.40.0               | https://serverless.com/framework/docs/getting-started/|
 | Node                   | 9.5.0                | https://nodejs.org/en/                     |
 | NPM                    | 5.6.0                | https://www.npmjs.com                      |
-| .NET Core Framework    | 2.0.5                | https://www.microsoft.com/net/learn/get-started/macos|
-| .NET SDK / CLI         | 2.1.4                | https://www.microsoft.com/net/learn/get-started/macos|
+| .NET Core SDK / CLI    | 2.2.107              | https://dotnet.microsoft.com/download |
 | Java                   | Oracle jdk1.8.0_101  | http://www.oracle.com/technetwork/java/javaee/overview/index.html|
 | Apache Maven (for Java)| 3.5.2                | https://maven.apache.org/                  |
 | Golang                 | 1.10                 | https://golang.org/doc/install             |
@@ -42,11 +41,10 @@ See table above for versions and links
 4. Configure AWS Credentials for AWS CLI *(see links above)*
 5. Install Serverless Framework *(via `npm install -g serverless`)*
 6. Configure AWS Credentials for Serverless Framework *(see links above)*
-7. Install .NET Core 2.0.5
-8. Install required nuget packages for .NET Core *(commands in "build" section below for this)*
-9. Install Java JDK 1.8
-10. Install Maven (3.x)
-11. Install Golang (1.x)
+7. Install .NET Core *(see links above)* (Note - for upgrade of existing .NET Core (if necessary) see https://docs.microsoft.com/en-us/dotnet/core/versions/remove-runtime-sdk-versions?tabs=macos)
+8. Install Java JDK 1.8
+9. Install Maven (3.x)
+10. Install Golang (1.x)
 
 ## Setup Azure Function Testing
 If you want to additionally test Azure Functions (in addition to AWS Lambda) then follow these additional steps:
