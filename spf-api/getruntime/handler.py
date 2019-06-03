@@ -22,8 +22,8 @@ def getMaximum(event, context):
             TableName=os.environ['DYNAMODB_TABLE'],
             IndexName='duration-index',
             KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-            ProjectionExpression='LanguageRuntime, #duration',
-            ExpressionAttributeNames = { "#duration": "Duration" },
+            ProjectionExpression='LanguageRuntime, #duration, BilledDuration, FunctionName, FunctionVersion, #timestamp, MemorySize, MemoryUsed, ServerlessPlatformName',
+            ExpressionAttributeNames = { "#duration": "Duration", "#timestamp": "Timestamp" },
             ScanIndexForward=False # sort descending
             ##FilterExpression=Attr('Platform').begins_with("AWS") - note FilterExpression good for future querying for certain CSPs etc.
         )
