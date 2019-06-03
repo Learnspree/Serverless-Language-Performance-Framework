@@ -24,7 +24,7 @@ def getMaximum(event, context):
             KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
             ProjectionExpression='LanguageRuntime, #duration',
             ExpressionAttributeNames = { "#duration": "Duration" },
-            ScanIndexForward=True # sort descending
+            ScanIndexForward=False # sort descending
             ##FilterExpression=Attr('Platform').begins_with("AWS") - note FilterExpression good for future querying for certain CSPs etc.
         )
     except ParamValidationError as e:
