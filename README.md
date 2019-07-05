@@ -16,16 +16,16 @@ Development of this performance testing framework used the following packages an
 
 | Package                | Version              | Link                                       |
 |------------------------|----------------------|--------------------------------------------|
-| MacOS                  | Sierra (10.12.6)     |                                            |
-| Brew (Homebrew)        | 1.5.4                | https://brew.sh                            |
-| AWS CLI                | 1.14.32              | https://aws.amazon.com/cli                 |
-| Serverless Framework   | 1.40.0               | https://serverless.com/framework/docs/getting-started/|
-| Node                   | 9.5.0                | https://nodejs.org/en/                     |
-| NPM                    | 5.6.0                | https://www.npmjs.com                      |
-| .NET Core SDK / CLI    | 2.2.107              | https://dotnet.microsoft.com/download |
-| Java                   | Oracle jdk1.8.0_101  | http://www.oracle.com/technetwork/java/javaee/overview/index.html|
-| Apache Maven (for Java)| 3.5.2                | https://maven.apache.org/                  |
-| Golang                 | 1.10                 | https://golang.org/doc/install             |
+| MacOS                  | Mojave (10.14.4)     |                                            |
+| Brew (Homebrew)        | 2.1.6                | https://brew.sh                            |
+| AWS CLI                | 1.16.190             | https://aws.amazon.com/cli                 |
+| Serverless Framework   | 1.46.1               | https://serverless.com/framework/docs/getting-started/|
+| Node                   | 12.5.0               | https://nodejs.org/en/                     |
+| NPM                    | 6.9.0                | https://www.npmjs.com                      |
+| .NET Core SDK / CLI    | 2.2.300              | https://dotnet.microsoft.com/download |
+| Java (JDK)             | Oracle jdk1.8.0_212  | https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html|
+| Apache Maven (for Java)| 3.6.1                | https://maven.apache.org/                  |
+| Golang                 | 1.12.6               | https://golang.org/doc/install             |
 | Azure CLI              | 2.0.29               | https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest|
 | Azure Functions VSCode | 0.7.0 (Preview)      | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
 | Azure Functions Core Tools | 2.0.1-beta.24    | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
