@@ -58,38 +58,40 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 
 
 ## Build & Deploy - AWS
-Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node610 is located in "/aws-test/aws-service-node610". There is a central serverless yaml that is used to deploy all aws empty test functions.
+Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node610 is located in "/aws-test/aws-service-node810". There is a central serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions.
 
 ### Build and Deploy all AWS Test Functions
 ```bash
 cd /aws-test
-serverless deploy -v --aws-profile <profile>
+./spf-build-aws-test.sh
 ```
 
 ### Deploy All Functions
 
-Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Enable one-at-a-time to ensure accurate cold or warm-start testing. Example below:
+Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Enable warm OR cold to ensure accurate cold or warm-start testing (i.e. so he warm schedule won't interfere with the cold). Example below:
 
 ```
     events:
       - schedule: 
           rate: rate(1 hour)
-          name: coldstart-node610-hourly
+          name: coldstart-node810-hourly
           enabled: false
       - schedule: 
           rate: rate(1 minute)
-          name: warmstart-node610-minute
+          name: warmstart-node810-minute
           enabled: false
 ```
 
-View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 6.10 function:
+View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 8.10 function:
 
 ```bash
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnode610'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnode810'
           filter: 'REPORT'
 ```
+
+### Deploy API For Metrics Storage
 
 Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table) and the Cost Function which is triggered off that table
 ```bash
