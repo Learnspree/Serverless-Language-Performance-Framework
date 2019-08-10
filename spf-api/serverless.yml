@@ -88,7 +88,7 @@ functions:
           path: metrics
           method: post
     environment:
-      ACCEPTED_RUNTIMES: "python3,go,dotnet2,java8,node610,node810"          
+      ACCEPTED_RUNTIMES: "python3,go,dotnet2,java8,node810"          
 
   cost-metrics:
     runtime: nodejs8.10

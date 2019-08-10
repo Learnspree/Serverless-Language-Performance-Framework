@@ -58,7 +58,7 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 
 
 ## Build & Deploy - AWS
-Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node610 is located in "/aws-test/aws-service-node810". There is a central serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions.
+Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node810 is located in "/aws-test/aws-service-node810". There is a central serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions.
 
 ### Build and Deploy all AWS Test Functions
 ```bash
@@ -177,7 +177,7 @@ curl -v -X POST -d@lib/test-metrics-service.json https://ybt41omi9i.execute-api.
 Full end-to-end test measuring sample target function:
 ```bash
 cd /aws-test
-serverless invoke -f awsnode610 -l --aws-profile <aws-cli-profile>
+serverless invoke -f awsnode810 -l --aws-profile <aws-cli-profile>
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
 # Check DynamoDB table "ServerlessFunctionMetrics" to validate.
@@ -206,10 +206,10 @@ aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-e
 
 ## Initiate Full Scheduled Test - AWS Lambda
 Start a scheduled test by enabling the appropriate filters on the test target functions you want to measure.
-For example, to start a "cold-start" test on the aws-node610 test function, use the AWS CLI:
+For example, to start a "cold-start" test on the aws-node810 test function, use the AWS CLI:
 
 ```bash
-aws events enable-rule --name coldstart-node610-hourly --profile <aws profile>
+aws events enable-rule --name coldstart-node810-hourly --profile <aws profile>
 ```
 
 All cold-start rules (also existing are scripts for all warm start rules):
@@ -236,7 +236,7 @@ Do not forget to cancel testing or else they will continue to run indefinitely. 
 
 Individual rules:
 ```bash
-aws events disable-rule --name coldstart-node610-hourly --profile <aws profile>
+aws events disable-rule --name coldstart-node810-hourly --profile <aws profile>
 ```
 
 All rules (also existing are scripts for all cold or warm start rules):

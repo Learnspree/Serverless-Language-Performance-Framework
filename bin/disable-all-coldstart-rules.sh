@@ -1,7 +1,6 @@
 if [ $# -eq 0 ]
   then
     echo "No arguments supplied - using default aws cli profile"
-    aws events disable-rule --name coldstart-node610-hourly 
     aws events disable-rule --name coldstart-node810-hourly
     aws events disable-rule --name coldstart-java8-hourly
     aws events disable-rule --name coldstart-dotnet2-hourly
@@ -9,7 +8,6 @@ if [ $# -eq 0 ]
     aws events disable-rule --name coldstart-golang-hourly
   else
     echo "Using aws cli profile '$1'"
-    aws events disable-rule --name coldstart-node610-hourly --profile $1 &
     aws events disable-rule --name coldstart-node810-hourly --profile $1 &
     aws events disable-rule --name coldstart-java8-hourly --profile $1 &
     aws events disable-rule --name coldstart-dotnet2-hourly --profile $1 &
