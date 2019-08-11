@@ -193,11 +193,12 @@ serverless invoke -f empty-nodejs -l
 
 # Verify results - Metrics
 aws dynamodb query --table-name ServerlessFunctionMetrics \
-    --key-condition-expression "FunctionName = :v1" \
-    --expression-attribute-values file://query-metrics-table-azure-node.json
+    --index-name "duration-index" \
+    --key-condition-expression "LanguageRuntime = :runtime" \
+    --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"
 
 # Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "RequestId = :v1" --expression-attribute-values file://query-costs-table-requestid.json
+aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"empty-nodejs\"}}"
 ```
 
 ## Initiate Full Scheduled Test - AWS Lambda
