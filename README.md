@@ -162,15 +162,28 @@ Full end-to-end test measuring sample target function:
 cd /aws-test
 serverless invoke -f awsnode810 -l [--aws-profile <aws-cli-profile>]
 
+# Verify using get-maximum API endpoint
+curl https://<api-gateway-url>.execute-api.us-east-1.amazonaws.com/dev/runtimes/node810/maximum
+
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
 # Check DynamoDB table "ServerlessFunctionMetrics" to validate.
-# Example below to query for aws-java function but similar JSON files exist for other test functions queries.
+# Example below to query for all "node810" runtime results
 aws dynamodb query --table-name ServerlessFunctionMetrics \
-    --key-condition-expression "FunctionName = :v1" \
-    --expression-attribute-values file://query-metrics-table-java.json
+    --index-name "duration-index" \
+    --key-condition-expression "LanguageRuntime = :runtime" \
+    --expression-attribute-values "{\":runtime\": {\"S\": \"node810\"}}"
+
+Note potential values for runtime:
+* node810
+* java8
+* dotnet2
+* go
+* python3
+* empty-csharp (azure csharp)
+* empty-nodejs (azure nodejs)
 
 # Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "RequestId = :v1" --expression-attribute-values file://query-costs-table-requestid.json
+aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"node810\"}}"
 ```
 ### End-to-End Test - Azure Functions
 Full end-to-end test measuring sample target function:
