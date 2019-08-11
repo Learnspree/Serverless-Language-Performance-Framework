@@ -27,9 +27,6 @@ functions:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnode610'
-          filter: 'REPORT'
-      - cloudwatchLog:
           logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnode810'
           filter: 'REPORT'          
   logger-dotnet:

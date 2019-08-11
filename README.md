@@ -16,16 +16,16 @@ Development of this performance testing framework used the following packages an
 
 | Package                | Version              | Link                                       |
 |------------------------|----------------------|--------------------------------------------|
-| MacOS                  | Sierra (10.12.6)     |                                            |
-| Brew (Homebrew)        | 1.5.4                | https://brew.sh                            |
-| AWS CLI                | 1.14.32              | https://aws.amazon.com/cli                 |
-| Serverless Framework   | 1.40.0               | https://serverless.com/framework/docs/getting-started/|
-| Node                   | 9.5.0                | https://nodejs.org/en/                     |
-| NPM                    | 5.6.0                | https://www.npmjs.com                      |
-| .NET Core SDK / CLI    | 2.2.107              | https://dotnet.microsoft.com/download |
-| Java                   | Oracle jdk1.8.0_101  | http://www.oracle.com/technetwork/java/javaee/overview/index.html|
-| Apache Maven (for Java)| 3.5.2                | https://maven.apache.org/                  |
-| Golang                 | 1.10                 | https://golang.org/doc/install             |
+| MacOS                  | Mojave (10.14.4)     |                                            |
+| Brew (Homebrew)        | 2.1.6                | https://brew.sh                            |
+| AWS CLI                | 1.16.190             | https://aws.amazon.com/cli                 |
+| Serverless Framework   | 1.46.1               | https://serverless.com/framework/docs/getting-started/|
+| Node                   | 12.5.0               | https://nodejs.org/en/                     |
+| NPM                    | 6.9.0                | https://www.npmjs.com                      |
+| .NET Core SDK / CLI    | 2.2.300              | https://dotnet.microsoft.com/download |
+| Java (JDK)             | Oracle jdk1.8.0_212  | https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html|
+| Apache Maven (for Java)| 3.6.1                | https://maven.apache.org/                  |
+| Golang                 | 1.12.6               | https://golang.org/doc/install             |
 | Azure CLI              | 2.0.29               | https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest|
 | Azure Functions VSCode | 0.7.0 (Preview)      | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
 | Azure Functions Core Tools | 2.0.1-beta.24    | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
@@ -58,48 +58,50 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 
 
 ## Build & Deploy - AWS
-Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node610 is located in "/aws-test/aws-service-node610". There is a central serverless yaml that is used to deploy all aws empty test functions.
+Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node810 is located in "/aws-test/aws-service-node810". There is a central serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions.
 
 ### Build and Deploy all AWS Test Functions
 ```bash
 cd /aws-test
-serverless deploy -v --aws-profile <profile>
+./spf-build-aws-test.sh
 ```
 
 ### Deploy All Functions
 
-Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Enable one-at-a-time to ensure accurate cold or warm-start testing. Example below:
+Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Enable warm OR cold to ensure accurate cold or warm-start testing (i.e. so he warm schedule won't interfere with the cold). Example below:
 
 ```
     events:
       - schedule: 
           rate: rate(1 hour)
-          name: coldstart-node610-hourly
+          name: coldstart-node810-hourly
           enabled: false
       - schedule: 
           rate: rate(1 minute)
-          name: warmstart-node610-minute
+          name: warmstart-node810-minute
           enabled: false
 ```
 
-View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 6.10 function:
+View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 8.10 function:
 
 ```bash
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnode610'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnode810'
           filter: 'REPORT'
 ```
+
+### Deploy API For Metrics Storage
 
 Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table) and the Cost Function which is triggered off that table
 ```bash
 cd /spf-api
 ./spf-build-api.sh
-# Note - take a note of the API URL that is output from the deploy command. You'll need it to set up the logger below.
 ```
 
+### Deploy AWS Logger Function 
+
 ```bash
-# Deploy the AWS CloudWatch Logs Lambda Performance Metric Parser Function
 cd /aws-common/nodejs-perf-logger
 ./spf-build-aws-logger.sh
 ```
@@ -154,38 +156,34 @@ serverless deploy -v
 az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='<connection string retrieved from storage settings - see link in comment above'
 ```
 
-## Validation
-Test **logger** function via serverless framework local invoke using:
-```bash
-serverless invoke --function logger -p lib/test-logger-input-raw.json --postmetricsurl <api url>
-# Note - optionally run locally with local option
-```
-
-Test **metrics** function (note: test example is via API Gateway - not Lambda directly - using `curl` below): 
-```shell
-1. cd /spf-api/lambda-metrics-service
-2. aws apigateway get-rest-apis
-3. curl -v -X POST -d@lib/test-metrics-service.json https://<aws-restapi-id>.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
-
-# example:
-curl -v -X POST -d@lib/test-metrics-service.json https://ybt41omi9i.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
-```
-
 ### End-to-End Test - AWS Lambda
 Full end-to-end test measuring sample target function:
 ```bash
 cd /aws-test
-serverless invoke -f awsnode610 -l --aws-profile <aws-cli-profile>
+serverless invoke -f awsnode810 -l [--aws-profile <aws-cli-profile>]
+
+# Verify using get-maximum API endpoint
+curl https://<api-gateway-url>.execute-api.us-east-1.amazonaws.com/dev/runtimes/node810/maximum
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
 # Check DynamoDB table "ServerlessFunctionMetrics" to validate.
-# Example below to query for aws-java function but similar JSON files exist for other test functions queries.
+# Example below to query for all "node810" runtime results
 aws dynamodb query --table-name ServerlessFunctionMetrics \
-    --key-condition-expression "FunctionName = :v1" \
-    --expression-attribute-values file://query-metrics-table-java.json
+    --index-name "duration-index" \
+    --key-condition-expression "LanguageRuntime = :runtime" \
+    --expression-attribute-values "{\":runtime\": {\"S\": \"node810\"}}"
+
+Note potential values for runtime:
+* node810
+* java8
+* dotnet2
+* go
+* python3
+* empty-csharp (azure csharp)
+* empty-nodejs (azure nodejs)
 
 # Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "RequestId = :v1" --expression-attribute-values file://query-costs-table-requestid.json
+aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"node810\"}}"
 ```
 ### End-to-End Test - Azure Functions
 Full end-to-end test measuring sample target function:
@@ -195,25 +193,26 @@ serverless invoke -f empty-nodejs -l
 
 # Verify results - Metrics
 aws dynamodb query --table-name ServerlessFunctionMetrics \
-    --key-condition-expression "FunctionName = :v1" \
-    --expression-attribute-values file://query-metrics-table-azure-node.json
+    --index-name "duration-index" \
+    --key-condition-expression "LanguageRuntime = :runtime" \
+    --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"
 
 # Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "RequestId = :v1" --expression-attribute-values file://query-costs-table-requestid.json
+aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"empty-nodejs\"}}"
 ```
 
 ## Initiate Full Scheduled Test - AWS Lambda
 Start a scheduled test by enabling the appropriate filters on the test target functions you want to measure.
-For example, to start a "cold-start" test on the aws-node610 test function, use the AWS CLI:
+For example, to start a "cold-start" test on the aws-node810 test function, use the AWS CLI:
 
 ```bash
-aws events enable-rule --name coldstart-node610-hourly --profile <aws profile>
+aws events enable-rule --name coldstart-node810-hourly [--profile <aws profile>]
 ```
 
 All cold-start rules (also existing are scripts for all warm start rules):
 ```bash
 cd /bin
-./enable-all-coldstart-rules.sh [aws-profile-name (optional)]
+./enable-all-coldstart-rules.sh [aws-profile-name]
 ```
 
 ## Initiate Full Schedule Test - Azure Functions
@@ -234,13 +233,13 @@ Do not forget to cancel testing or else they will continue to run indefinitely. 
 
 Individual rules:
 ```bash
-aws events disable-rule --name coldstart-node610-hourly --profile <aws profile>
+aws events disable-rule --name coldstart-node810-hourly [--profile <aws profile>]
 ```
 
 All rules (also existing are scripts for all cold or warm start rules):
 ```bash
 cd /bin
-./disable-all-rules.sh [aws-profile-name (optional)]
+./disable-all-rules.sh [aws-profile-name]
 ```
 
 ## Cleanup
@@ -249,20 +248,20 @@ To remove all cloud-formation stacks created in your AWS account (by the serverl
 ```bash
 # Note - ensure that the logger function is removed first, as this has a dependency on the spf-api stack's API reference
 cd /aws-common/nodejs-perf-logger
-serverless remove --aws-profile <aws profile>
+./spf-remove-aws-logger.sh
 
 # Note - removal of the API will remove the DynamoDB tables (change retention option to "Retain" from "Delete" in the serverless.yml to change this before deployment). Removal will fail if you don't remove teh nodejs-perf-logger first.
 cd /spf-api
-serverless remove --aws-profile <aws profile>
+./spf-remove-api.sh
 
 cd aws-test
-serverless remove --aws-profile <aws profile>
+./spf-remove-aws-test.sh
 ```
 ### Dynamo DB Table Removal (Optional)
 Optionally, remove the dynamodb metrics table
 **WARNING!!** This will remove all your test results!
 
 ```bash
-aws dynamodb delete-table --table-name ServerlessFunctionMetrics --profile <aws-profile>
-aws dynamodb delete-table --table-name ServerlessFunctionCostMetrics --profile <aws-profile>
+aws dynamodb delete-table --table-name ServerlessFunctionMetrics [--profile <aws-profile>]
+aws dynamodb delete-table --table-name ServerlessFunctionCostMetrics [--profile <aws-profile>]
 ```
