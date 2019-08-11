@@ -97,11 +97,11 @@ Build & Deploy the API-backed metrics persistance function (saves given metrics 
 ```bash
 cd /spf-api
 ./spf-build-api.sh
-# Note - take a note of the API URL that is output from the deploy command. You'll need it to set up the logger below.
 ```
 
+### Deploy AWS Logger Function 
+
 ```bash
-# Deploy the AWS CloudWatch Logs Lambda Performance Metric Parser Function
 cd /aws-common/nodejs-perf-logger
 ./spf-build-aws-logger.sh
 ```
@@ -156,28 +156,11 @@ serverless deploy -v
 az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='<connection string retrieved from storage settings - see link in comment above'
 ```
 
-## Validation
-Test **logger** function via serverless framework local invoke using:
-```bash
-serverless invoke --function logger -p lib/test-logger-input-raw.json --postmetricsurl <api url>
-# Note - optionally run locally with local option
-```
-
-Test **metrics** function (note: test example is via API Gateway - not Lambda directly - using `curl` below): 
-```shell
-1. cd /spf-api/lambda-metrics-service
-2. aws apigateway get-rest-apis
-3. curl -v -X POST -d@lib/test-metrics-service.json https://<aws-restapi-id>.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
-
-# example:
-curl -v -X POST -d@lib/test-metrics-service.json https://ybt41omi9i.execute-api.us-east-1.amazonaws.com/dev/metrics --header "Content-Type: application/json"
-```
-
 ### End-to-End Test - AWS Lambda
 Full end-to-end test measuring sample target function:
 ```bash
 cd /aws-test
-serverless invoke -f awsnode810 -l --aws-profile <aws-cli-profile>
+serverless invoke -f awsnode810 -l [--aws-profile <aws-cli-profile>]
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
 # Check DynamoDB table "ServerlessFunctionMetrics" to validate.
@@ -209,13 +192,13 @@ Start a scheduled test by enabling the appropriate filters on the test target fu
 For example, to start a "cold-start" test on the aws-node810 test function, use the AWS CLI:
 
 ```bash
-aws events enable-rule --name coldstart-node810-hourly --profile <aws profile>
+aws events enable-rule --name coldstart-node810-hourly [--profile <aws profile>]
 ```
 
 All cold-start rules (also existing are scripts for all warm start rules):
 ```bash
 cd /bin
-./enable-all-coldstart-rules.sh [aws-profile-name (optional)]
+./enable-all-coldstart-rules.sh [aws-profile-name]
 ```
 
 ## Initiate Full Schedule Test - Azure Functions
@@ -236,13 +219,13 @@ Do not forget to cancel testing or else they will continue to run indefinitely. 
 
 Individual rules:
 ```bash
-aws events disable-rule --name coldstart-node810-hourly --profile <aws profile>
+aws events disable-rule --name coldstart-node810-hourly [--profile <aws profile>]
 ```
 
 All rules (also existing are scripts for all cold or warm start rules):
 ```bash
 cd /bin
-./disable-all-rules.sh [aws-profile-name (optional)]
+./disable-all-rules.sh [aws-profile-name]
 ```
 
 ## Cleanup
@@ -251,20 +234,20 @@ To remove all cloud-formation stacks created in your AWS account (by the serverl
 ```bash
 # Note - ensure that the logger function is removed first, as this has a dependency on the spf-api stack's API reference
 cd /aws-common/nodejs-perf-logger
-serverless remove --aws-profile <aws profile>
+./spf-remove-aws-logger.sh
 
 # Note - removal of the API will remove the DynamoDB tables (change retention option to "Retain" from "Delete" in the serverless.yml to change this before deployment). Removal will fail if you don't remove teh nodejs-perf-logger first.
 cd /spf-api
-serverless remove --aws-profile <aws profile>
+./spf-remove-api.sh
 
 cd aws-test
-serverless remove --aws-profile <aws profile>
+./spf-remove-aws-test.sh
 ```
 ### Dynamo DB Table Removal (Optional)
 Optionally, remove the dynamodb metrics table
 **WARNING!!** This will remove all your test results!
 
 ```bash
-aws dynamodb delete-table --table-name ServerlessFunctionMetrics --profile <aws-profile>
-aws dynamodb delete-table --table-name ServerlessFunctionCostMetrics --profile <aws-profile>
+aws dynamodb delete-table --table-name ServerlessFunctionMetrics [--profile <aws-profile>]
+aws dynamodb delete-table --table-name ServerlessFunctionCostMetrics [--profile <aws-profile>]
 ```
