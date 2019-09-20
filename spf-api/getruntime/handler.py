@@ -15,7 +15,7 @@ class QueryType(Enum):
     MIN = 1
     MAX = 2
 
-def getMimimum(event, context):
+def getMinimum(event, context):
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
     return getMinMax(inputRuntime, QueryType.MIN)
 
