@@ -45,6 +45,28 @@ provider:
 
 # packaging information here
 functions:
+  get-runtime-min:
+    handler: getruntime/handler.getMinimum
+    runtime: python3.7
+    timeout: 5
+    environment:
+      DYNAMODB_TABLE: "ServerlessFunctionMetrics"
+    events:
+      - http:
+          path:  runtimes/{runtimeId}/minimum
+          method: get
+          request:
+            parameters:
+              querystrings:
+                platform: false
+                state: false
+                memory: false
+                type: false
+                startDate: false
+                endDate: false
+              paths:
+                runtimeId: true
+          cors: true  
   get-runtime-max:
     handler: getruntime/handler.getMaximum
     runtime: python3.7
