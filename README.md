@@ -27,8 +27,8 @@ Development of this performance testing framework used the following packages an
 | Apache Maven (for Java)| 3.6.1                | https://maven.apache.org/                  |
 | Golang                 | 1.12.6               | https://golang.org/doc/install             |
 | Azure CLI              | 2.0.29               | https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest|
-| Azure Functions VSCode | 0.7.0 (Preview)      | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
-| Azure Functions Core Tools | 2.0.1-beta.24    | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
+| Azure Functions VSCode | 0.18.1 (Preview)     | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
+| Azure Functions Core Tools | 2.7.1585         | https://github.com/Azure/azure-functions-core-tools|
 
 
 ## Setup AWS Lambda Testing
