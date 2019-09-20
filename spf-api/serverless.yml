@@ -46,7 +46,7 @@ provider:
 # packaging information here
 functions:
   get-runtime-min:
-    handler: getruntime/handler.getMinimum
+    handler: getruntime/maxmin.getMinimum
     runtime: python3.7
     timeout: 5
     environment:
@@ -68,7 +68,7 @@ functions:
                 runtimeId: true
           cors: true  
   get-runtime-max:
-    handler: getruntime/handler.getMaximum
+    handler: getruntime/maxmin.getMaximum
     runtime: python3.7
     timeout: 5
     environment:
