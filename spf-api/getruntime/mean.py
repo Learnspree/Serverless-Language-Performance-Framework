@@ -3,6 +3,7 @@ import os
 import json
 import boto3
 
+from decimal import *
 from enum import Enum
 from getruntime import decimalencoder
 
@@ -41,9 +42,12 @@ def getComputedValue(inputRuntime, queryType):
     except Exception as e:
         print("Generic error: %s" % e)
         
-    returnValue = -1.0
-    totalDuration = 0.0
-    totalBilledDuration = 0.0
+    returnValue = { 
+                    "meanDuration" : Decimal('-1.0'),
+                    "meanBilledDuration" : Decimal('-1.0')
+                  } 
+    totalDuration = Decimal('0.0')
+    totalBilledDuration = Decimal('0.0')
 
     try:
         if not allMatchingRows['Items']:
@@ -53,8 +57,8 @@ def getComputedValue(inputRuntime, queryType):
                 totalDuration += row['Duration']
                 totalBilledDuration += row['BilledDuration']
             returnValue = { 
-                            'meanDuration' : totalDuration / allMatchingRows['Count'],
-                            'meanBilledDuration' : totalBilledDuration / allMatchingRows['Count']
+                            "meanDuration" : totalDuration / allMatchingRows['Count'],
+                            "meanBilledDuration" : totalBilledDuration / allMatchingRows['Count']
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  
@@ -62,7 +66,7 @@ def getComputedValue(inputRuntime, queryType):
     # create a response
     response = {
         "statusCode": 200,
-        "body": returnValue
+        "body": json.dumps(returnValue, cls=decimalencoder.DecimalEncoder)
     }
 
     return response

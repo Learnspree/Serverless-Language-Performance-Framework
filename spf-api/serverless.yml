@@ -45,7 +45,7 @@ provider:
 
 # packaging information here
 functions:
-  get-runtime-min:
+  get-mean:
     handler: getruntime/mean.getMeanDuration
     runtime: python3.7
     timeout: 5
