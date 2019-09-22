@@ -3,6 +3,7 @@ import os
 import json
 import boto3
 
+from decimal import *
 from enum import Enum
 from getruntime import decimalencoder
 
@@ -12,18 +13,13 @@ from botocore.exceptions import ClientError, ParamValidationError
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
 class QueryType(Enum):
-    MIN = 1
-    MAX = 2
+    MEAN = 1
 
-def getMinimum(event, context):
+def getMeanDuration(event, context):
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
-    return getMinMax(inputRuntime, QueryType.MIN)
+    return getComputedValue(inputRuntime, QueryType.MEAN)
 
-def getMaximum(event, context):
-    inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
-    return getMinMax(inputRuntime, QueryType.MAX)
-
-def getMinMax(inputRuntime, queryType):
+def getComputedValue(inputRuntime, queryType):
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
     # fetch metrics from the database
@@ -31,14 +27,12 @@ def getMinMax(inputRuntime, queryType):
     print('RequestType: ', queryType)
     
     try:
-        # todo - use a local secondary index to enable query sort by duration. see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LSI.html#LSI.Using
-        result = table.query(
+        allMatchingRows = table.query(
             TableName=os.environ['DYNAMODB_TABLE'],
             IndexName='duration-index',
             KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-            ProjectionExpression='LanguageRuntime, #duration, BilledDuration, FunctionName, FunctionVersion, #timestamp, MemorySize, MemoryUsed, ServerlessPlatformName',
-            ExpressionAttributeNames = { "#duration": "Duration", "#timestamp": "Timestamp" },
-            ScanIndexForward=(queryType == QueryType.MIN) # sort descending ('false' for maximum) or ascending ('true' for minimum)
+            ProjectionExpression='LanguageRuntime, #duration, BilledDuration',
+            ExpressionAttributeNames = { "#duration": "Duration" } #, "#timestamp": "Timestamp" }
             ##FilterExpression=Attr('Platform').begins_with("AWS") - note FilterExpression good for future querying for certain CSPs etc.
         )
     except ParamValidationError as e:
@@ -48,24 +42,31 @@ def getMinMax(inputRuntime, queryType):
     except Exception as e:
         print("Generic error: %s" % e)
         
-    returnValue = ""
+    returnValue = { 
+                    "meanDuration" : Decimal('-1.0'),
+                    "meanBilledDuration" : Decimal('-1.0')
+                  } 
+    totalDuration = Decimal('0.0')
+    totalBilledDuration = Decimal('0.0')
 
     try:
-        if not result['Items']:
+        if not allMatchingRows['Items']:
             print ("no records available for %s" % inputRuntime)
         else:
-            selectedItem = result['Items'][0]
-            print(selectedItem)
-            jsonString = json.dumps(selectedItem, cls=decimalencoder.DecimalEncoder)
-            print(jsonString)
-            returnValue = jsonString
+            for row in allMatchingRows['Items']:
+                totalDuration += row['Duration']
+                totalBilledDuration += row['BilledDuration']
+            returnValue = { 
+                            "meanDuration" : totalDuration / allMatchingRows['Count'],
+                            "meanBilledDuration" : totalBilledDuration / allMatchingRows['Count']
+                          } 
     except Exception as e:
         print("Generic error: %s" % e)  
     
     # create a response
     response = {
         "statusCode": 200,
-        "body": returnValue
+        "body": json.dumps(returnValue, cls=decimalencoder.DecimalEncoder)
     }
 
     return response
