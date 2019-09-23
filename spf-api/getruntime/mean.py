@@ -38,7 +38,6 @@ def getComputedValue(inputRuntime, targetPlatform, queryType):
         if (targetPlatform is None):
             allMatchingRows = table.query(
                 TableName=os.environ['DYNAMODB_TABLE'],
-                IndexName='duration-index',
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
                 ProjectionExpression='LanguageRuntime, #duration, BilledDuration',
                 ExpressionAttributeNames = { "#duration": "Duration" }
@@ -46,7 +45,6 @@ def getComputedValue(inputRuntime, targetPlatform, queryType):
         else:
             allMatchingRows = table.query(
                 TableName=os.environ['DYNAMODB_TABLE'],
-                IndexName='duration-index',
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
                 ProjectionExpression='LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
                 ExpressionAttributeNames = { "#duration": "Duration" },
