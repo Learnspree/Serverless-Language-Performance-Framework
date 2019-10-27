@@ -71,7 +71,6 @@ def getMinMax(event, queryType):
             selectedItem = result['Items'][0]
             print(selectedItem)
             jsonString = json.dumps(selectedItem, cls=decimalencoder.DecimalEncoder)
-            print(jsonString)
             returnValue = jsonString
     except Exception as e:
         print("Generic error: %s" % e)  
