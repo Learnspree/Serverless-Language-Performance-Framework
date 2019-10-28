@@ -23,7 +23,7 @@ def getMeanDuration(event, context):
         targetPlatform = '{}'.format(event['queryStringParameters']['platform'])
     
     queryFilterExpression = getDynamoFilterExpression(event['queryStringParameters'])
-    return getComputedValue(inputRuntime, targetPlatform, QueryType.MEAN)
+    return getComputedValue(inputRuntime, queryFilterExpression, QueryType.MEAN)
 
 def getDynamoFilterExpression(eventQueryParams):
     if eventQueryParams is None:
@@ -46,18 +46,15 @@ def combineFilterExpressionFromQueryString(filterExp, queryParams, queryParamKey
 
     return filterExp
 
-def getComputedValue(inputRuntime, targetPlatform, queryType):
+def getComputedValue(inputRuntime, queryFilterExpression, queryType):
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
     # fetch metrics from the database
     print('Language Runtime Input: ', inputRuntime)
     print('RequestType: ', queryType)
-    print('TargetPlatform: ', targetPlatform)
 
     try:
-        filterExp = '' if (targetPlatform is None) else Key('ServerlessPlatformName').eq(targetPlatform)
-
-        if (targetPlatform is None):
+        if (queryFilterExpression is None):
             allMatchingRows = table.query(
                 TableName=os.environ['DYNAMODB_TABLE'],
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
@@ -70,7 +67,7 @@ def getComputedValue(inputRuntime, targetPlatform, queryType):
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
                 ProjectionExpression='LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
                 ExpressionAttributeNames = { "#duration": "Duration" },
-                FilterExpression=filterExp
+                FilterExpression = queryFilterExpression
             )
     except ParamValidationError as e:
         print("Parameter validation error: %s" % e)        
