@@ -17,10 +17,6 @@ class QueryType(Enum):
 
 def getMeanDuration(event, context):
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
-
-    targetPlatform = None
-    if event['queryStringParameters'] is not None and event['queryStringParameters']['platform'] is not None:
-        targetPlatform = '{}'.format(event['queryStringParameters']['platform'])
     
     queryFilterExpression = getDynamoFilterExpression(event['queryStringParameters'])
     return getComputedValue(inputRuntime, queryFilterExpression, QueryType.MEAN)
@@ -32,7 +28,9 @@ def getDynamoFilterExpression(eventQueryParams):
     filterExp = None
     filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'state', 'State')
     filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'platform', 'ServerlessPlatformName')
-    
+    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'memory', 'MemorySize')
+    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'functionname', 'FunctionName')
+
     return filterExp
 
 def combineFilterExpressionFromQueryString(filterExp, queryParams, queryParamKey, dynamoTableColumnName):
