@@ -30,19 +30,19 @@ def getDynamoFilterExpression(eventQueryParams):
         return None 
     
     filterExp = None
-    filterExp = combineFilterExpression(filterExp, eventQueryParams['state'], 'State')
-    filterExp = combineFilterExpression(filterExp, eventQueryParams['platform'], 'ServerlessPlatformName')
+    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'state', 'State')
+    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'platform', 'ServerlessPlatformName')
     
     return filterExp
 
-def combineFilterExpression(filterExp, queryParamValue, dynamoTableColumnName):
-    if queryParamValue is None:
+def combineFilterExpressionFromQueryString(filterExp, queryParams, queryParamKey, dynamoTableColumnName):
+    if queryParamKey not in queryParams:
         return filterExp
 
     if filterExp is None:
-        filterExp = Key(dynamoTableColumnName).eq(queryParamValue) 
+        filterExp = Key(dynamoTableColumnName).eq(queryParams[queryParamKey]) 
     else:
-        filterExp = filterExp & Key(dynamoTableColumnName).eq(queryParamValue)
+        filterExp = filterExp & Key(dynamoTableColumnName).eq(queryParams[queryParamKey])
 
     return filterExp
 
