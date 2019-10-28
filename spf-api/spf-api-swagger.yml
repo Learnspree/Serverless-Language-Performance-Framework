@@ -63,8 +63,8 @@ paths:
         items:
           type: "string"
           enum:
-          - "aws"
-          - "azure"
+          - "AWS Lambda"
+          - "Azure Functions"
         collectionFormat: "multi"        
       - name: "state"
         in: "query"

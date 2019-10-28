@@ -17,24 +17,39 @@ class QueryType(Enum):
 
 def getMeanDuration(event, context):
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
-    return getComputedValue(inputRuntime, QueryType.MEAN)
 
-def getComputedValue(inputRuntime, queryType):
+    targetPlatform = None
+    if event['queryStringParameters'] is not None and event['queryStringParameters']['platform'] is not None:
+        targetPlatform = '{}'.format(event['queryStringParameters']['platform'])
+
+    return getComputedValue(inputRuntime, targetPlatform, QueryType.MEAN)
+
+def getComputedValue(inputRuntime, targetPlatform, queryType):
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
     # fetch metrics from the database
     print('Language Runtime Input: ', inputRuntime)
     print('RequestType: ', queryType)
-    
+    print('TargetPlatform: ', targetPlatform)
+
     try:
-        allMatchingRows = table.query(
-            TableName=os.environ['DYNAMODB_TABLE'],
-            IndexName='duration-index',
-            KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-            ProjectionExpression='LanguageRuntime, #duration, BilledDuration',
-            ExpressionAttributeNames = { "#duration": "Duration" } #, "#timestamp": "Timestamp" }
-            ##FilterExpression=Attr('Platform').begins_with("AWS") - note FilterExpression good for future querying for certain CSPs etc.
-        )
+        filterExp = '' if (targetPlatform is None) else Key('ServerlessPlatformName').eq(targetPlatform)
+
+        if (targetPlatform is None):
+            allMatchingRows = table.query(
+                TableName=os.environ['DYNAMODB_TABLE'],
+                KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
+                ProjectionExpression='LanguageRuntime, #duration, BilledDuration',
+                ExpressionAttributeNames = { "#duration": "Duration" }
+            )
+        else:
+            allMatchingRows = table.query(
+                TableName=os.environ['DYNAMODB_TABLE'],
+                KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
+                ProjectionExpression='LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
+                ExpressionAttributeNames = { "#duration": "Duration" },
+                FilterExpression=filterExp
+            )
     except ParamValidationError as e:
         print("Parameter validation error: %s" % e)        
     except ClientError as e:
@@ -42,6 +57,7 @@ def getComputedValue(inputRuntime, queryType):
     except Exception as e:
         print("Generic error: %s" % e)
         
+    print(allMatchingRows)
     returnValue = { 
                     "meanDuration" : Decimal('-1.0'),
                     "meanBilledDuration" : Decimal('-1.0')
