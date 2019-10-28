@@ -21,8 +21,30 @@ def getMeanDuration(event, context):
     targetPlatform = None
     if event['queryStringParameters'] is not None and event['queryStringParameters']['platform'] is not None:
         targetPlatform = '{}'.format(event['queryStringParameters']['platform'])
-
+    
+    queryFilterExpression = getDynamoFilterExpression(event['queryStringParameters'])
     return getComputedValue(inputRuntime, targetPlatform, QueryType.MEAN)
+
+def getDynamoFilterExpression(eventQueryParams):
+    if eventQueryParams is None:
+        return None 
+    
+    filterExp = None
+    filterExp = combineFilterExpression(filterExp, eventQueryParams['state'], 'State')
+    filterExp = combineFilterExpression(filterExp, eventQueryParams['platform'], 'ServerlessPlatformName')
+    
+    return filterExp
+
+def combineFilterExpression(filterExp, queryParamValue, dynamoTableColumnName):
+    if queryParamValue is None:
+        return filterExp
+
+    if filterExp is None:
+        filterExp = Key(dynamoTableColumnName).eq(queryParamValue) 
+    else:
+        filterExp = filterExp & Key(dynamoTableColumnName).eq(queryParamValue)
+
+    return filterExp
 
 def getComputedValue(inputRuntime, targetPlatform, queryType):
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
