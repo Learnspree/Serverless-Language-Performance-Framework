@@ -37,10 +37,15 @@ def combineFilterExpressionFromQueryString(filterExp, queryParams, queryParamKey
     if queryParamKey not in queryParams:
         return filterExp
 
+    # convert numeric fields from string to float for dynamodb query on Number (N)
+    queryParamValue = queryParams[queryParamKey]
+    if queryParamValue.isnumeric():
+        queryParamValue = Decimal(queryParamValue)
+
     if filterExp is None:
-        filterExp = Key(dynamoTableColumnName).eq(queryParams[queryParamKey]) 
+        filterExp = Key(dynamoTableColumnName).eq(queryParamValue) 
     else:
-        filterExp = filterExp & Key(dynamoTableColumnName).eq(queryParams[queryParamKey])
+        filterExp = filterExp & Key(dynamoTableColumnName).eq(queryParamValue)
 
     return filterExp
 
