@@ -2,6 +2,7 @@
 import os
 import json
 import boto3
+import datetime
 
 from decimal import *
 from enum import Enum
@@ -30,6 +31,13 @@ def getDynamoFilterExpression(eventQueryParams):
     filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'platform', 'ServerlessPlatformName')
     filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'memory', 'MemorySize')
     filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'functionname', 'FunctionName')
+    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'region', 'Region')
+    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'zone', 'Zone')
+
+    # datetime filters for start/end date are in UNIX epoch timestamp format as in nodejs Date.now() method
+    # e.g. 1518951734319
+    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'startdate', 'Timestamp')
+    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'enddate', 'Timestamp')
 
     return filterExp
 
@@ -42,6 +50,15 @@ def combineFilterExpressionFromQueryString(filterExp, queryParams, queryParamKey
     if queryParamValue.isnumeric():
         queryParamValue = Decimal(queryParamValue)
 
+    # default to "equals" comparison
+    newFilterExp = Key(dynamoTableColumnName).eq(queryParamValue)
+
+    # use <= or >= if looking at date ranges
+    if queryParamKey.find("startdate") > -1:
+        newFilterExp = Key(dynamoTableColumnName).gte(queryParamValue)
+    elif queryParamKey.find("enddate") > -1:
+        newFilterExp = Key(dynamoTableColumnName).lte(queryParamValue)
+            
     if filterExp is None:
         filterExp = Key(dynamoTableColumnName).eq(queryParamValue) 
     else:
