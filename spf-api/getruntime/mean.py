@@ -55,14 +55,14 @@ def combineFilterExpressionFromQueryString(filterExp, queryParams, queryParamKey
 
     # use <= or >= if looking at date ranges
     if queryParamKey.find("startdate") > -1:
-        newFilterExp = Key(dynamoTableColumnName).gte(queryParamValue)
+        newFilterExp = Attr(dynamoTableColumnName).gte(queryParamValue)
     elif queryParamKey.find("enddate") > -1:
-        newFilterExp = Key(dynamoTableColumnName).lte(queryParamValue)
+        newFilterExp = Attr(dynamoTableColumnName).lte(queryParamValue)
             
     if filterExp is None:
-        filterExp = Key(dynamoTableColumnName).eq(queryParamValue) 
+        filterExp = newFilterExp
     else:
-        filterExp = filterExp & Key(dynamoTableColumnName).eq(queryParamValue)
+        filterExp = filterExp & newFilterExp
 
     return filterExp
 
