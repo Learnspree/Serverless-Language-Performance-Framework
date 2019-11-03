@@ -7,6 +7,7 @@ import datetime
 from decimal import *
 from enum import Enum
 from getruntime import decimalencoder
+from getruntime import queryfilter
 
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError, ParamValidationError
@@ -19,52 +20,8 @@ class QueryType(Enum):
 def getMeanDuration(event, context):
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
     
-    queryFilterExpression = getDynamoFilterExpression(event['queryStringParameters'])
+    queryFilterExpression = queryfilter.getDynamoFilterExpression(event['queryStringParameters'])
     return getComputedValue(inputRuntime, queryFilterExpression, QueryType.MEAN)
-
-def getDynamoFilterExpression(eventQueryParams):
-    if eventQueryParams is None:
-        return None 
-    
-    filterExp = None
-    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'state', 'State')
-    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'platform', 'ServerlessPlatformName')
-    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'memory', 'MemorySize')
-    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'functionname', 'FunctionName')
-    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'region', 'Region')
-    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'zone', 'Zone')
-
-    # datetime filters for start/end date are in UNIX epoch timestamp format as in nodejs Date.now() method
-    # e.g. 1518951734319
-    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'startdate', 'Timestamp')
-    filterExp = combineFilterExpressionFromQueryString(filterExp, eventQueryParams, 'enddate', 'Timestamp')
-
-    return filterExp
-
-def combineFilterExpressionFromQueryString(filterExp, queryParams, queryParamKey, dynamoTableColumnName):
-    if queryParamKey not in queryParams:
-        return filterExp
-
-    # convert numeric fields from string to float for dynamodb query on Number (N)
-    queryParamValue = queryParams[queryParamKey]
-    if queryParamValue.isnumeric():
-        queryParamValue = Decimal(queryParamValue)
-
-    # default to "equals" comparison
-    newFilterExp = Key(dynamoTableColumnName).eq(queryParamValue)
-
-    # use <= or >= if looking at date ranges
-    if queryParamKey.find("startdate") > -1:
-        newFilterExp = Attr(dynamoTableColumnName).gte(queryParamValue)
-    elif queryParamKey.find("enddate") > -1:
-        newFilterExp = Attr(dynamoTableColumnName).lte(queryParamValue)
-            
-    if filterExp is None:
-        filterExp = newFilterExp
-    else:
-        filterExp = filterExp & newFilterExp
-
-    return filterExp
 
 def getComputedValue(inputRuntime, queryFilterExpression, queryType):
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
