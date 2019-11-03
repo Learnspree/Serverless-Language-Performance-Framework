@@ -5,6 +5,7 @@ import boto3
 
 from enum import Enum
 from getruntime import decimalencoder
+from getruntime import queryfilter
 
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError, ParamValidationError
@@ -24,19 +25,14 @@ def getMaximum(event, context):
 def getMinMax(event, queryType):
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
-
-    # get query params
-    targetPlatform = None
-    if event['queryStringParameters'] is not None and event['queryStringParameters']['platform'] is not None:
-        targetPlatform = '{}'.format(event['queryStringParameters']['platform'])
+    queryFilterExpression = queryfilter.getDynamoFilterExpression(event['queryStringParameters'])
 
     # fetch metrics from the database
     print('Language Runtime Input: ', inputRuntime)
     print('RequestType: ', queryType)
-    print('Platform: ', targetPlatform)
     
     try:
-        if (targetPlatform is None):
+        if (queryFilterExpression is None):
             result = table.query(
                 TableName=os.environ['DYNAMODB_TABLE'],
                 IndexName='duration-index',
@@ -52,8 +48,8 @@ def getMinMax(event, queryType):
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
                 ProjectionExpression='LanguageRuntime, #duration, BilledDuration, FunctionName, FunctionVersion, #timestamp, MemorySize, MemoryUsed, ServerlessPlatformName',
                 ExpressionAttributeNames = { "#duration": "Duration", "#timestamp": "Timestamp" },
-                ScanIndexForward=(queryType == QueryType.MIN), # sort descending ('false' for maximum) or ascending ('true' for minimum)
-                FilterExpression=Attr('ServerlessPlatformName').begins_with(targetPlatform) 
+                ScanIndexForward=(queryType == QueryType.MIN), 
+                FilterExpression=queryFilterExpression
             )
     except ParamValidationError as e:
         print("Parameter validation error: %s" % e)        
