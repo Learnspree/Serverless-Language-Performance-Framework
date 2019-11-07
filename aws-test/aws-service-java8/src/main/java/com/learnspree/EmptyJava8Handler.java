@@ -10,7 +10,7 @@ public class EmptyJava8Handler implements RequestHandler<Map<String,Object>, Res
 
 	@Override
 	public Response handleRequest(Map<String,Object> input, Context context) {
-		System.out.println("State: " + ((INVOKE_COUNT++ > 0) ? "Warm" : "Cold"));
+		System.out.println(String.format("RequestId: %s State: %s", context.getAwsRequestId(), ((INVOKE_COUNT++ > 0) ? "Warm" : "Cold")));
 		return new Response("Empty Java 8 Test Function Completed.");
 	}
 }
