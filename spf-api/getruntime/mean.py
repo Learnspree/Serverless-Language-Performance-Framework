@@ -2,10 +2,12 @@
 import os
 import json
 import boto3
+import datetime
 
 from decimal import *
 from enum import Enum
 from getruntime import decimalencoder
+from getruntime import queryfilter
 
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError, ParamValidationError
@@ -17,25 +19,19 @@ class QueryType(Enum):
 
 def getMeanDuration(event, context):
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
+    
+    queryFilterExpression = queryfilter.getDynamoFilterExpression(event['queryStringParameters'])
+    return getComputedValue(inputRuntime, queryFilterExpression, QueryType.MEAN)
 
-    targetPlatform = None
-    if event['queryStringParameters'] is not None and event['queryStringParameters']['platform'] is not None:
-        targetPlatform = '{}'.format(event['queryStringParameters']['platform'])
-
-    return getComputedValue(inputRuntime, targetPlatform, QueryType.MEAN)
-
-def getComputedValue(inputRuntime, targetPlatform, queryType):
+def getComputedValue(inputRuntime, queryFilterExpression, queryType):
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
     # fetch metrics from the database
     print('Language Runtime Input: ', inputRuntime)
     print('RequestType: ', queryType)
-    print('TargetPlatform: ', targetPlatform)
 
     try:
-        filterExp = '' if (targetPlatform is None) else Key('ServerlessPlatformName').eq(targetPlatform)
-
-        if (targetPlatform is None):
+        if (queryFilterExpression is None):
             allMatchingRows = table.query(
                 TableName=os.environ['DYNAMODB_TABLE'],
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
@@ -48,7 +44,7 @@ def getComputedValue(inputRuntime, targetPlatform, queryType):
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
                 ProjectionExpression='LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
                 ExpressionAttributeNames = { "#duration": "Duration" },
-                FilterExpression=filterExp
+                FilterExpression = queryFilterExpression
             )
     except ParamValidationError as e:
         print("Parameter validation error: %s" % e)        

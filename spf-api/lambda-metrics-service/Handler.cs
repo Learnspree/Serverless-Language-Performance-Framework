@@ -88,7 +88,7 @@ namespace ServerlessPerformanceFramework
                       S = metrics.FunctionName
                   }},
                 { "Timestamp", new AttributeValue {
-                      S = metrics.Timestamp
+                      N = metrics.Timestamp
                   }},
                 { "FunctionVersion", new AttributeValue {
                       S = metrics.FunctionVersion
