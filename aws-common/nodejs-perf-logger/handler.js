@@ -20,7 +20,10 @@ let functionVersion = function (logStream) {
 
 let parseFloatWith = (regex, input) => {
   let res = regex.exec(input);
-  return parseFloat(res[1]);
+  if (res == null)
+    return NaN
+  else
+    return parseFloat(res[1]);
 };
 
 let parseRegex = (regex, input) => {
@@ -38,7 +41,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
     let billedDurationValue = parseFloatWith(/Billed Duration: (.*) ms/i, messageParts[2]);
     let memorySizeValue     = parseFloatWith(/Memory Size: (.*) MB/i, messageParts[3]);
     let memoryUsedValue     = parseFloatWith(/Max Memory Used: (.*) MB/i, messageParts[4]);
-    let isColdStart         = ((messageParts.length > 5) && (parseFloatWith(/Init Duration: (.*) ms/i, messageParts[5]) > 0));
+    let isWarmStart         = isNaN(parseFloatWith(/Init Duration: (.*) ms/i, messageParts[5])); // Init Duration only in log entry if Cold Start
 
     return {
       timestamp : Date.now(), // TODO - better to get timestamp as input from executing function via custom cloudwatch log entry
@@ -49,7 +52,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
       memoryUsed : memoryUsedValue,
       functionName : functionNameValue,
       functionVersion : functionVersionValue,
-      state: isColdStart ? "cold" : "warm",
+      state: isWarmStart ? "warm" : "cold",
 
       // following values hardcoded for now as we know we're running in AWS Lambda. 
       // TODO - change these to environment variables for more flexibility
