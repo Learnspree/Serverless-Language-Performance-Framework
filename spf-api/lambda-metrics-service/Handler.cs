@@ -18,7 +18,7 @@ namespace ServerlessPerformanceFramework
     {
        public async Task<APIGatewayProxyResponse> LambdaMetrics(APIGatewayProxyRequest request, ILambdaContext context)
        {
-            // Uncomment for debugging: Console.WriteLine(request.Body);
+            Console.WriteLine(request.Body);
             JsonSerializerSettings serSettings = new JsonSerializerSettings();
             serSettings.ContractResolver = new DefaultContractResolver();
             AddMetricsRequest metricsRequest = JsonConvert.DeserializeObject<AddMetricsRequest>(request.Body, serSettings);
@@ -110,6 +110,9 @@ namespace ServerlessPerformanceFramework
                   }},
                 { "ServerlessPlatformName", new AttributeValue {
                       S = metrics.ServerlessPlatformName
+                  }},
+                { "State", new AttributeValue {
+                      S = metrics.State
                   }}
             };
 
@@ -129,6 +132,7 @@ namespace ServerlessPerformanceFramework
       public string MemoryUsed {get; set;}
       public string LanguageRuntime {get; set;}
       public string ServerlessPlatformName {get; set;}
+      public string State {get; set;}
 
       public AddMetricsRequest(
         string requestId,
@@ -140,7 +144,8 @@ namespace ServerlessPerformanceFramework
         string memorySize,
         string memoryUsed,
         string runtime,
-        string platform) {
+        string platform,
+        string state) {
           RequestId = requestId;
           FunctionName = functionName;
           FunctionVersion = functionVersion;
@@ -151,6 +156,7 @@ namespace ServerlessPerformanceFramework
           MemoryUsed = memoryUsed;
           LanguageRuntime = runtime;
           ServerlessPlatformName = platform;
+          State = state;
       }
     }
 }

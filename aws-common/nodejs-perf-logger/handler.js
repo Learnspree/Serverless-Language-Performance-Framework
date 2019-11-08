@@ -29,7 +29,7 @@ let parseRegex = (regex, input) => {
 };
 
 // a typical report message looks like this:
-//    "REPORT RequestId: 3897a7c2-8ac6-11e7-8e57-bb793172ae75\tDuration: 2.89 ms\tBilled Duration: 100 ms \tMemory Size: 1024 MB\tMax Memory Used: 20 MB\t\n"
+//    "REPORT RequestId: 3897a7c2-8ac6-11e7-8e57-bb793172ae75\tDuration: 2.89 ms\tBilled Duration: 100 ms \tMemory Size: 1024 MB\tMax Memory Used: 20 MB\tInit Duration: 234 ms\t\n"
 let usageMetrics = function (eventPayload, functionNameValue, functionVersionValue) {  
     let messageParts = eventPayload.message.split('\t');
 
@@ -38,6 +38,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
     let billedDurationValue = parseFloatWith(/Billed Duration: (.*) ms/i, messageParts[2]);
     let memorySizeValue     = parseFloatWith(/Memory Size: (.*) MB/i, messageParts[3]);
     let memoryUsedValue     = parseFloatWith(/Max Memory Used: (.*) MB/i, messageParts[4]);
+    let isColdStart         = ((messageParts.length > 5) && (parseFloatWith(/Init Duration: (.*) ms/i, messageParts[5]) > 0));
 
     return {
       timestamp : Date.now(), // TODO - better to get timestamp as input from executing function via custom cloudwatch log entry
@@ -48,6 +49,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
       memoryUsed : memoryUsedValue,
       functionName : functionNameValue,
       functionVersion : functionVersionValue,
+      state: isColdStart ? "cold" : "warm",
 
       // following values hardcoded for now as we know we're running in AWS Lambda. 
       // TODO - change these to environment variables for more flexibility
