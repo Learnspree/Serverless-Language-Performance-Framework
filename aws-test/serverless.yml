@@ -84,5 +84,17 @@ functions:
       - schedule: 
           rate: rate(1 minute)
           name: warmstart-python3-minute
-          enabled: false             
+          enabled: false
+  awspython36-coldstart:
+    runtime: python3.7
+    handler: aws-burst-invoker/handler.burst_invoker
+    events:
+      - schedule: 
+          rate: rate(1 hour)
+          name: coldstart-python3-hourly-burst
+          enabled: false
+          input:
+            invokeCount: 2
+            targetFunctionName: aws-empty-test-functions-dev-awspython3
+
 
