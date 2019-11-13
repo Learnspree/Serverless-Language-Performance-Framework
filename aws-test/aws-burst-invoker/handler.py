@@ -15,6 +15,5 @@ def burst_invoker(event, context):
 
     for x in range(event['invokeCount']):
         invoke_response = lambda_client.invoke(FunctionName=event['targetFunctionName'],
-                                            InvocationType='Event',
-                                            Payload=None)
+                                            InvocationType='Event')
         print(invoke_response)

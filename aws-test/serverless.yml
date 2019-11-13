@@ -9,6 +9,11 @@ provider:
   stage: dev
   region: us-east-1
   versionFunctions: true # Optional function versioning
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: "*" 
 
 # package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
 package:
@@ -94,7 +99,7 @@ functions:
           name: coldstart-python3-hourly-burst
           enabled: false
           input:
-            invokeCount: 2
+            invokeCount: 10
             targetFunctionName: aws-empty-test-functions-dev-awspython3
 
 
