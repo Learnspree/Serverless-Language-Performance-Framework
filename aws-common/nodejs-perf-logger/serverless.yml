@@ -45,7 +45,7 @@ functions:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awspython3'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awspython36'
           filter: 'REPORT'
   logger-go:
     handler: handler.logger

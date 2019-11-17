@@ -15,6 +15,11 @@ provider:
         - lambda:InvokeFunction
       Resource: "arn:aws:lambda:${self:provider.region}:*:function:aws-empty-test*" 
 
+custom:
+  coldStartInterval: rate(60 minutes) # minutes => 1 hour 
+  coldStartBatchSize: 6 # => 6 every 60 minutes => 6 per hour
+  warmStartInterval: rate(10 minutes) # minutes => 6 per hour
+
 # package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
 package:
   individually: true 
@@ -78,16 +83,12 @@ functions:
           rate: rate(1 minute)
           name: warmstart-node810-minute
           enabled: false    
-  awspython3:
+  awspython36:
     runtime: python3.6
     handler: aws-service-python3/handler.awsemptypython3
     events:
       - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-python3-hourly
-          enabled: false
-      - schedule: 
-          rate: rate(1 minute)
+          rate: ${self:custom.warmStartInterval}
           name: warmstart-python3-minute
           enabled: false
   awspython36-coldstart:
@@ -96,11 +97,11 @@ functions:
     memorySize: 512
     events:
       - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-python3-hourly-burst
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-python36-hourly-burst
           enabled: false
           input:
-            invokeCount: 3
-            targetFunctionName: aws-empty-test-functions-dev-awspython3
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: aws-empty-test-functions-dev-awspython36
 
 

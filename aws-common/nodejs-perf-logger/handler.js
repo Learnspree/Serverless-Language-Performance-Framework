@@ -44,7 +44,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
     let isWarmStart         = isNaN(parseFloatWith(/Init Duration: (.*) ms/i, messageParts[5])); // Init Duration only in log entry if Cold Start
 
     return {
-      timestamp : Date.now(), // TODO - better to get timestamp as input from executing function via custom cloudwatch log entry
+      timestamp : Date.now(), // TODO - better to get timestamp as input from executing function via  cloudwatch log entry
       requestId : uniqueRequestId,
       duration : actualDurationValue,
       billedDuration : billedDurationValue,
