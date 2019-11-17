@@ -100,7 +100,7 @@ functions:
           name: coldstart-python3-hourly-burst
           enabled: false
           input:
-            invokeCount: 10
+            invokeCount: 3
             targetFunctionName: aws-empty-test-functions-dev-awspython3
 
 
