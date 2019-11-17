@@ -4,6 +4,7 @@ from threading import Thread
 import json
 
 threads = []
+lambda_client = boto3_client('lambda')
 
 class myThread(Thread):
 
@@ -15,7 +16,6 @@ class myThread(Thread):
     
     def run(self):
         print('Invoking ', self.functionName)
-        lambda_client = boto3_client('lambda')
         invoke_response = lambda_client.invoke(FunctionName=self.functionName,
                                                 InvocationType='Event')
         print('Invoke Response: ', invoke_response)        
