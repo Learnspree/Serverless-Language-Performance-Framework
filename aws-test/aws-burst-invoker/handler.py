@@ -30,14 +30,14 @@ def burst_invoker(event, context):
             return
 
         try:
+            local_threads = []
             for x in range(event['invokeCount']):
                 t = myThread(event['targetFunctionName'])
-                print('appending thread')
+                local_threads.append(t)
                 threads.append(t)
 
             # start all threads
-            for thread in threads:
-                print('starting thread')
+            for thread in local_threads:
                 print('starting thread', thread.functionName)
                 thread.start()
 
