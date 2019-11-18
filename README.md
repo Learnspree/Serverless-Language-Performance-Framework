@@ -71,15 +71,27 @@ cd /aws-test
 Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Enable warm OR cold to ensure accurate cold or warm-start testing (i.e. so he warm schedule won't interfere with the cold). Example below:
 
 ```
-    events:
-      - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-node810-hourly
-          enabled: false
-      - schedule: 
-          rate: rate(1 minute)
-          name: warmstart-node810-minute
-          enabled: false
+    awsnode810:
+        runtime: nodejs8.10
+        handler: aws-service-node810/handler.emptytestnode810
+        events:
+        - schedule: 
+            rate: rate(1 minute)
+            name: warmstart-node810-minute
+            enabled: false    
+
+    awsnode810-coldstart:
+        runtime: python3.7
+        handler: aws-burst-invoker/handler.burst_invoker
+        memorySize: ${self:custom.coldStartBatchMemory}
+        events:
+        - schedule: 
+            rate: ${self:custom.coldStartInterval}
+            name: coldstart-node810-hourly-burst
+            enabled: false
+            input:
+                invokeCount: ${self:custom.coldStartBatchSize}
+                targetFunctionName: aws-empty-test-functions-dev-awsnode810                 
 ```
 
 View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 8.10 function:
@@ -203,13 +215,8 @@ aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-e
 
 ## Initiate Full Scheduled Test - AWS Lambda
 Start a scheduled test by enabling the appropriate filters on the test target functions you want to measure.
-For example, to start a "cold-start" test on the aws-node810 test function, use the AWS CLI:
+For example, to start a "cold-start" test, use the AWS CLI via the provided script (also existing are scripts for all warm start rules):
 
-```bash
-aws events enable-rule --name coldstart-node810-hourly [--profile <aws profile>]
-```
-
-All cold-start rules (also existing are scripts for all warm start rules):
 ```bash
 cd /bin
 ./enable-all-coldstart-rules.sh [aws-profile-name]
@@ -229,14 +236,8 @@ az functionapp stop --name azure-service-test --resource-group azure-service-tes
 ```
 
 ## Cancel Scheduled Testing - AWS
-Do not forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful!
+Do not forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful! Note, also existing are scripts for all cold or warm start rules)
 
-Individual rules:
-```bash
-aws events disable-rule --name coldstart-node810-hourly [--profile <aws profile>]
-```
-
-All rules (also existing are scripts for all cold or warm start rules):
 ```bash
 cd /bin
 ./disable-all-rules.sh [aws-profile-name]

@@ -18,6 +18,7 @@ provider:
 custom:
   coldStartInterval: rate(60 minutes) # minutes => 1 hour 
   coldStartBatchSize: 6 # => 6 every 60 minutes => 6 per hour
+  coldStartBatchMemory: 512
   warmStartInterval: rate(10 minutes) # minutes => 6 per hour
 
 # package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
@@ -26,16 +27,13 @@ package:
 
 # individual function definitions
 functions:
+  # begin empty test functions
   dotnet2:
     runtime: dotnetcore2.1
     handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::EmptyTestDotNetCore2
     package:
       artifact: aws-service-dotnetcore2/bin/release/netcoreapp2.1/deploy-package.zip
     events:
-      - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-dotnet2-hourly
-          enabled: false
       - schedule: 
           rate: rate(1 minute)
           name: warmstart-dotnet2-minute
@@ -50,10 +48,6 @@ functions:
         - ./aws-service-go/bin/**
     events:
       - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-golang-hourly
-          enabled: false
-      - schedule: 
           rate: rate(1 minute)
           name: warmstart-golang-minute
           enabled: false
@@ -64,10 +58,6 @@ functions:
       artifact: aws-service-java8/target/awsjava8empty-dev.jar
     events:
       - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-java8-hourly
-          enabled: false
-      - schedule: 
           rate: rate(1 minute)
           name: warmstart-java8-minute
           enabled: false
@@ -75,10 +65,6 @@ functions:
     runtime: nodejs8.10
     handler: aws-service-node810/handler.emptytestnode810
     events:
-      - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-node810-hourly
-          enabled: false
       - schedule: 
           rate: rate(1 minute)
           name: warmstart-node810-minute
@@ -91,10 +77,11 @@ functions:
           rate: ${self:custom.warmStartInterval}
           name: warmstart-python3-minute
           enabled: false
+  # begin cold-start-scheduler functions
   awspython36-coldstart:
     runtime: python3.7
     handler: aws-burst-invoker/handler.burst_invoker
-    memorySize: 512
+    memorySize: ${self:custom.coldStartBatchMemory}
     events:
       - schedule: 
           rate: ${self:custom.coldStartInterval}
@@ -103,5 +90,53 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: aws-empty-test-functions-dev-awspython36
+  awsnode810-coldstart:
+    runtime: python3.7
+    handler: aws-burst-invoker/handler.burst_invoker
+    memorySize: ${self:custom.coldStartBatchMemory}
+    events:
+      - schedule: 
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-node810-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: aws-empty-test-functions-dev-awsnode810       
+  awsjava8-coldstart:
+    runtime: python3.7
+    handler: aws-burst-invoker/handler.burst_invoker
+    memorySize: ${self:custom.coldStartBatchMemory}
+    events:
+      - schedule: 
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-java8-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: aws-empty-test-functions-dev-aws-empty-java8
+  awsgo-coldstart:
+      runtime: python3.7
+      handler: aws-burst-invoker/handler.burst_invoker
+      memorySize: ${self:custom.coldStartBatchMemory}
+      events:
+        - schedule: 
+            rate: ${self:custom.coldStartInterval}
+            name: coldstart-go-hourly-burst
+            enabled: false
+            input:
+              invokeCount: ${self:custom.coldStartBatchSize}
+              targetFunctionName: aws-empty-test-functions-dev-aws-empty-go         
+  awsdotnet2-coldstart:
+        runtime: python3.7
+        handler: aws-burst-invoker/handler.burst_invoker
+        memorySize: ${self:custom.coldStartBatchMemory}
+        events:
+          - schedule: 
+              rate: ${self:custom.coldStartInterval}
+              name: coldstart-dotnet2-hourly-burst
+              enabled: false
+              input:
+                invokeCount: ${self:custom.coldStartBatchSize}
+                targetFunctionName: aws-empty-test-functions-dev-dotnet2
 
 
