@@ -23,35 +23,51 @@ package:
     - node_modules/**
 
 functions:
+  # logger per runtime to get around limitations on number of event triggers per function
   logger-node:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnode810'
-          filter: 'REPORT'          
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-warm-empty-node810'
+          filter: 'REPORT'   
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-cold-empty-node810'
+          filter: 'REPORT'                  
   logger-dotnet:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-dotnet2'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-warm-empty-dotnet21'
           filter: 'REPORT'
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-cold-empty-dotnet21'
+          filter: 'REPORT'          
   logger-java:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-empty-java8'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-warm-empty-java8'
           filter: 'REPORT'
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-cold-empty-java8'
+          filter: 'REPORT'          
   logger-python:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awspython36'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-warm-empty-python36'
           filter: 'REPORT'
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-cold-empty-python36'
+          filter: 'REPORT'          
   logger-go:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-empty-go'
-          filter: 'REPORT'          
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-warm-empty-go'
+          filter: 'REPORT'     
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-cold-empty-go'
+          filter: 'REPORT'                  
 
 
