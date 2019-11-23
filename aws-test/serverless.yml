@@ -6,8 +6,8 @@ provider:
   name: aws
   memorySize: 128
   timeout: 6
-  stage: dev
-  region: us-east-1
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region,'us-east-1'}
   versionFunctions: true # Optional function versioning
   iamRoleStatements:
     - Effect: Allow
@@ -55,7 +55,7 @@ functions:
     runtime: java8
     handler: com.learnspree.EmptyJava8Handler
     package:
-      artifact: aws-service-java8/target/awsjava8empty-dev.jar
+      artifact: aws-service-java8/target/awsjava8empty-${self:provider.stage}.jar
     events:
       - schedule: 
           rate: rate(1 minute)
@@ -95,7 +95,7 @@ functions:
     runtime: java8
     handler: com.learnspree.EmptyJava8Handler
     package:
-      artifact: aws-service-java8/target/awsjava8empty-dev.jar
+      artifact: aws-service-java8/target/awsjava8empty-${self:provider.stage}.jar
   aws-cold-empty-node810:
     runtime: nodejs8.10
     handler: aws-service-node810/handler.emptytestnode810
@@ -114,7 +114,7 @@ functions:
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: aws-empty-test-functions-dev-aws-cold-empty-python36
+            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-python36
   awsnode810-coldstart:
     runtime: python3.7
     handler: aws-burst-invoker/handler.burst_invoker
@@ -126,7 +126,7 @@ functions:
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: aws-empty-test-functions-dev-aws-cold-empty-node810
+            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-node810
   awsjava8-coldstart:
     runtime: python3.7
     handler: aws-burst-invoker/handler.burst_invoker
@@ -138,7 +138,7 @@ functions:
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: aws-empty-test-functions-dev-aws-cold-empty-java8
+            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-java8
   awsgo-coldstart:
       runtime: python3.7
       handler: aws-burst-invoker/handler.burst_invoker
@@ -150,7 +150,7 @@ functions:
             enabled: false
             input:
               invokeCount: ${self:custom.coldStartBatchSize}
-              targetFunctionName: aws-empty-test-functions-dev-aws-cold-empty-go
+              targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-go
   awsdotnet2-coldstart:
         runtime: python3.7
         handler: aws-burst-invoker/handler.burst_invoker
@@ -162,6 +162,6 @@ functions:
               enabled: false
               input:
                 invokeCount: ${self:custom.coldStartBatchSize}
-                targetFunctionName: aws-empty-test-functions-dev-aws-cold-empty-dotnet21
+                targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21
 
 

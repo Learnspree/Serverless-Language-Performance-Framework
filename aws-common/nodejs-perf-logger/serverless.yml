@@ -8,8 +8,8 @@ provider:
   runtime: nodejs8.10
   memorySize: 128
   timeout: 20
-  region: us-east-1
-  stage: dev
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region,'us-east-1'}
   versionFunctions: true # Optional function versioning
   # Import the API Url that was exported from the API serverless module (TODO - add ${self:provider:stage} to the export/import )
   environment:
@@ -28,46 +28,46 @@ functions:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-warm-empty-node810'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-node810'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-cold-empty-node810'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-node810'
           filter: 'REPORT'                  
   logger-dotnet:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-warm-empty-dotnet21'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-dotnet21'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-cold-empty-dotnet21'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21'
           filter: 'REPORT'          
   logger-java:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-warm-empty-java8'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-java8'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-cold-empty-java8'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-java8'
           filter: 'REPORT'          
   logger-python:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-warm-empty-python36'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-python36'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-cold-empty-python36'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-python36'
           filter: 'REPORT'          
   logger-go:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-warm-empty-go'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-go'
           filter: 'REPORT'     
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-aws-cold-empty-go'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-go'
           filter: 'REPORT'                  
 
 
