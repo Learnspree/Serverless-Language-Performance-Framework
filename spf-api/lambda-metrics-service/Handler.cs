@@ -42,7 +42,9 @@ namespace ServerlessPerformanceFramework
             {
                 var putItemData = CreatePutItemData(metrics);
                 AmazonDynamoDBClient client = new AmazonDynamoDBClient();
-                Task<PutItemResponse> putTask = client.PutItemAsync("ServerlessFunctionMetrics", putItemData);
+                var tableName = Environment.GetEnvironmentVariable("DYNAMODB_METRICS_TABLE");
+                Console.WriteLine(tableName);
+                Task<PutItemResponse> putTask = client.PutItemAsync(tableName, putItemData);
                 var response = await putTask;
 
                 // return 0 for success, otherwise failure of -1
