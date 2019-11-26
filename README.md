@@ -61,6 +61,8 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node810 is located in "/aws-test/aws-service-node810". There is a central serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions.
 
 ### Build and Deploy all AWS Test Functions
+Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
+
 ```bash
 cd /aws-test
 ./spf-build-aws-test.sh
@@ -105,13 +107,14 @@ View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source 
 
 ### Deploy API For Metrics Storage
 
-Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table) and the Cost Function which is triggered off that table
+Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table) and the Cost Function which is triggered off that table. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 ```bash
 cd /spf-api
 ./spf-build-api.sh
 ```
 
 ### Deploy AWS Logger Function 
+Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 
 ```bash
 cd /aws-common/nodejs-perf-logger
@@ -172,15 +175,15 @@ az functionapp config appsettings set --name azure-perf-logger --resource-group 
 Full end-to-end test measuring sample target function:
 ```bash
 cd /aws-test
-serverless invoke -f awsnode810 -l [--aws-profile <aws-cli-profile>]
+serverless invoke -f aws-warm-empty-node810 -l [--aws-profile <aws-cli-profile>]
 
 # Verify using get-maximum API endpoint
 curl https://<api-gateway-url>.execute-api.us-east-1.amazonaws.com/dev/runtimes/node810/maximum
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
-# Check DynamoDB table "ServerlessFunctionMetrics" to validate.
+# Check DynamoDB table "ServerlessFunctionMetrics-<env>" to validate.
 # Example below to query for all "node810" runtime results
-aws dynamodb query --table-name ServerlessFunctionMetrics \
+aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --index-name "duration-index" \
     --key-condition-expression "LanguageRuntime = :runtime" \
     --expression-attribute-values "{\":runtime\": {\"S\": \"node810\"}}"
@@ -188,14 +191,14 @@ aws dynamodb query --table-name ServerlessFunctionMetrics \
 Note potential values for runtime:
 * node810
 * java8
-* dotnet2
+* dotnet21
 * go
-* python3
+* python36
 * empty-csharp (azure csharp)
 * empty-nodejs (azure nodejs)
 
 # Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"node810\"}}"
+aws dynamodb query --table-name ServerlessFunctionCostMetrics-dev  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"node810\"}}"
 ```
 ### End-to-End Test - Azure Functions
 Full end-to-end test measuring sample target function:
@@ -204,13 +207,13 @@ cd /azure-test/azure-service-nodejs
 serverless invoke -f empty-nodejs -l 
 
 # Verify results - Metrics
-aws dynamodb query --table-name ServerlessFunctionMetrics \
+aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --index-name "duration-index" \
     --key-condition-expression "LanguageRuntime = :runtime" \
     --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"
 
 # Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"empty-nodejs\"}}"
+aws dynamodb query --table-name ServerlessFunctionCostMetrics-dev  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"empty-nodejs\"}}"
 ```
 
 ## Initiate Full Scheduled Test - AWS Lambda
@@ -263,6 +266,6 @@ Optionally, remove the dynamodb metrics table
 **WARNING!!** This will remove all your test results!
 
 ```bash
-aws dynamodb delete-table --table-name ServerlessFunctionMetrics [--profile <aws-profile>]
-aws dynamodb delete-table --table-name ServerlessFunctionCostMetrics [--profile <aws-profile>]
+aws dynamodb delete-table --table-name ServerlessFunctionMetrics-dev [--profile <aws-profile>]
+aws dynamodb delete-table --table-name ServerlessFunctionCostMetrics-dev [--profile <aws-profile>]
 ```
