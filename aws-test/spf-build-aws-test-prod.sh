@@ -5,7 +5,7 @@ echo "***** SPF: running in $DIR *****"
 
 # build java8 test function
 cd $DIR/aws-service-java8
-mvn clean install 
+mvn clean install -Dstage=prod
 
 # Build the .net core 2 test function
 cd $DIR/aws-service-dotnetcore2

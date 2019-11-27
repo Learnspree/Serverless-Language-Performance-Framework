@@ -11,10 +11,10 @@ provider:
   stage: ${opt:stage,'dev'}
   region: ${opt:region,'us-east-1'}
   versionFunctions: true # Optional function versioning
-  # Import the API Url that was exported from the API serverless module (TODO - add ${self:provider:stage} to the export/import )
+  # Import the API Url that was exported from the API serverless module
   environment:
     POST_METRICS_URL: 
-      'Fn::ImportValue': 'SpfApiUrl'
+      'Fn::ImportValue': "SpfApiUrl-${self:provider.stage}"
 
   
 # packaging information here

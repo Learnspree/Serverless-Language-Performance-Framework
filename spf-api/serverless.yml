@@ -170,7 +170,8 @@ resources:
             - Ref: ApiGatewayRestApi
             - ".execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}"  
       Export:
-        Name: SpfApiUrl
+        Name: "SpfApiUrl-${self:provider.stage}"
+
   Resources:
     LambdaMetricsTable:
       Type: AWS::DynamoDB::Table
