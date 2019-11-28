@@ -225,6 +225,13 @@ cd /bin
 ./enable-all-coldstart-rules.sh [aws-profile-name]
 ```
 
+To start a full test of warm and cold start:
+
+```bash
+cd /bin
+./enable-all-rules.sh [aws-profile-name]
+```
+
 ## Initiate Full Schedule Test - Azure Functions
 See commands below to check status of existing function apps and also start/stop the "azure-service-test" functionapp which will enable and disable the test functions and their associated timers.
 
