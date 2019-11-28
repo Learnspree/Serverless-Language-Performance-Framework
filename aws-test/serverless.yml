@@ -36,7 +36,7 @@ functions:
     events:
       - schedule: 
           rate: rate(1 minute)
-          name: warmstart-dotnet2-minute
+          name: warmstart-dotnet21-${self:provider.stage}-minute
           enabled: false
   aws-warm-empty-go:
     runtime: go1.x
@@ -49,7 +49,7 @@ functions:
     events:
       - schedule: 
           rate: rate(1 minute)
-          name: warmstart-golang-minute
+          name: warmstart-golang-${self:provider.stage}-minute
           enabled: false
   aws-warm-empty-java8:
     runtime: java8
@@ -59,7 +59,7 @@ functions:
     events:
       - schedule: 
           rate: rate(1 minute)
-          name: warmstart-java8-minute
+          name: warmstart-java8-${self:provider.stage}-minute
           enabled: false
   aws-warm-empty-node810:
     runtime: nodejs8.10
@@ -67,7 +67,7 @@ functions:
     events:
       - schedule: 
           rate: rate(1 minute)
-          name: warmstart-node810-minute
+          name: warmstart-node810-${self:provider.stage}-minute
           enabled: false    
   aws-warm-empty-python36:
     runtime: python3.6
@@ -75,7 +75,7 @@ functions:
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
-          name: warmstart-python3-minute
+          name: warmstart-python3-${self:provider.stage}-minute
           enabled: false
   # begin cold-start test functions. No events - they're triggered by the batch cold start schedulers below.      
   aws-cold-empty-dotnet21:
@@ -110,7 +110,7 @@ functions:
     events:
       - schedule: 
           rate: ${self:custom.coldStartInterval}
-          name: coldstart-python36-hourly-burst
+          name: coldstart-python36-${self:provider.stage}-hourly-burst
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
@@ -122,7 +122,7 @@ functions:
     events:
       - schedule: 
           rate: ${self:custom.coldStartInterval}
-          name: coldstart-node810-hourly-burst
+          name: coldstart-node810-${self:provider.stage}-hourly-burst
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
@@ -134,7 +134,7 @@ functions:
     events:
       - schedule: 
           rate: ${self:custom.coldStartInterval}
-          name: coldstart-java8-hourly-burst
+          name: coldstart-java8-hourly-${self:provider.stage}-burst
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
@@ -146,7 +146,7 @@ functions:
       events:
         - schedule: 
             rate: ${self:custom.coldStartInterval}
-            name: coldstart-go-hourly-burst
+            name: coldstart-go-${self:provider.stage}-hourly-burst
             enabled: false
             input:
               invokeCount: ${self:custom.coldStartBatchSize}
@@ -158,7 +158,7 @@ functions:
         events:
           - schedule: 
               rate: ${self:custom.coldStartInterval}
-              name: coldstart-dotnet2-hourly-burst
+              name: coldstart-dotnet21-${self:provider.stage}-hourly-burst
               enabled: false
               input:
                 invokeCount: ${self:custom.coldStartBatchSize}
