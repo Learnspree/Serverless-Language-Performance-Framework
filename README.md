@@ -58,9 +58,19 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 
 
 ## Build & Deploy - AWS
-Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node810 is located in "/aws-test/aws-service-node810". There is a central serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions.
+The easiest way to deploy the common SPF API and all the AWS test function components is to run the single aggregator script (which has dev and prod versions). For example:
+
+
+```bash
+cd /bin
+./spf-build-aws.sh
+```
+
+Alternatively, you can build/deploy invidual framework components as described below.
 
 ### Build and Deploy all AWS Test Functions
+Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node810 is located in "/aws-test/aws-service-node810". There is a single serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions in the "aws-test" directory. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
+
 ```bash
 cd /aws-test
 ./spf-build-aws-test.sh
@@ -71,15 +81,27 @@ cd /aws-test
 Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Enable warm OR cold to ensure accurate cold or warm-start testing (i.e. so he warm schedule won't interfere with the cold). Example below:
 
 ```
-    events:
-      - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-node810-hourly
-          enabled: false
-      - schedule: 
-          rate: rate(1 minute)
-          name: warmstart-node810-minute
-          enabled: false
+    awsnode810:
+        runtime: nodejs8.10
+        handler: aws-service-node810/handler.emptytestnode810
+        events:
+        - schedule: 
+            rate: rate(1 minute)
+            name: warmstart-node810-minute
+            enabled: false    
+
+    awsnode810-coldstart:
+        runtime: python3.7
+        handler: aws-burst-invoker/handler.burst_invoker
+        memorySize: ${self:custom.coldStartBatchMemory}
+        events:
+        - schedule: 
+            rate: ${self:custom.coldStartInterval}
+            name: coldstart-node810-hourly-burst
+            enabled: false
+            input:
+                invokeCount: ${self:custom.coldStartBatchSize}
+                targetFunctionName: aws-empty-test-functions-dev-awsnode810                 
 ```
 
 View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 8.10 function:
@@ -93,13 +115,14 @@ View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source 
 
 ### Deploy API For Metrics Storage
 
-Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table) and the Cost Function which is triggered off that table
+Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table) and the Cost Function which is triggered off that table. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 ```bash
 cd /spf-api
 ./spf-build-api.sh
 ```
 
 ### Deploy AWS Logger Function 
+Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 
 ```bash
 cd /aws-common/nodejs-perf-logger
@@ -107,10 +130,12 @@ cd /aws-common/nodejs-perf-logger
 ```
 
 ## Build and Deploy - Azure
-Build and deploy the individual target test functions. These are contained in the folder "/azure-test/".
+**NOTE:** Currently the Azure test components may need some re-work to adapt to changes in the main SPF API hosted in AWS (see above section). Any issues will be resolved soon in future updates.
 
 ### Azure NodeJS
+Build and deploy the individual target test functions. These are contained in the folder "/azure-test/".
 The Azure Functions test for nodeJS is located in "/azure-test/azure-service-nodejs":
+
 ```bash
 cd /azure-test/aws-service-nodejs
 npm install
@@ -160,15 +185,15 @@ az functionapp config appsettings set --name azure-perf-logger --resource-group 
 Full end-to-end test measuring sample target function:
 ```bash
 cd /aws-test
-serverless invoke -f awsnode810 -l [--aws-profile <aws-cli-profile>]
+serverless invoke -f aws-warm-empty-node810 -l [--aws-profile <aws-cli-profile>]
 
 # Verify using get-maximum API endpoint
 curl https://<api-gateway-url>.execute-api.us-east-1.amazonaws.com/dev/runtimes/node810/maximum
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
-# Check DynamoDB table "ServerlessFunctionMetrics" to validate.
+# Check DynamoDB table "ServerlessFunctionMetrics-<env>" to validate.
 # Example below to query for all "node810" runtime results
-aws dynamodb query --table-name ServerlessFunctionMetrics \
+aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --index-name "duration-index" \
     --key-condition-expression "LanguageRuntime = :runtime" \
     --expression-attribute-values "{\":runtime\": {\"S\": \"node810\"}}"
@@ -176,14 +201,14 @@ aws dynamodb query --table-name ServerlessFunctionMetrics \
 Note potential values for runtime:
 * node810
 * java8
-* dotnet2
+* dotnet21
 * go
-* python3
+* python36
 * empty-csharp (azure csharp)
 * empty-nodejs (azure nodejs)
 
 # Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"node810\"}}"
+aws dynamodb query --table-name ServerlessFunctionCostMetrics-dev  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"node810\"}}"
 ```
 ### End-to-End Test - Azure Functions
 Full end-to-end test measuring sample target function:
@@ -192,27 +217,29 @@ cd /azure-test/azure-service-nodejs
 serverless invoke -f empty-nodejs -l 
 
 # Verify results - Metrics
-aws dynamodb query --table-name ServerlessFunctionMetrics \
+aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --index-name "duration-index" \
     --key-condition-expression "LanguageRuntime = :runtime" \
     --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"
 
 # Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"empty-nodejs\"}}"
+aws dynamodb query --table-name ServerlessFunctionCostMetrics-dev  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"empty-nodejs\"}}"
 ```
 
 ## Initiate Full Scheduled Test - AWS Lambda
 Start a scheduled test by enabling the appropriate filters on the test target functions you want to measure.
-For example, to start a "cold-start" test on the aws-node810 test function, use the AWS CLI:
+For example, to start a "cold-start" test, use the AWS CLI via the provided script (also existing are scripts for all warm start rules):
 
-```bash
-aws events enable-rule --name coldstart-node810-hourly [--profile <aws profile>]
-```
-
-All cold-start rules (also existing are scripts for all warm start rules):
 ```bash
 cd /bin
 ./enable-all-coldstart-rules.sh [aws-profile-name]
+```
+
+To start a full test of warm and cold start:
+
+```bash
+cd /bin
+./enable-all-rules.sh [aws-profile-name]
 ```
 
 ## Initiate Full Schedule Test - Azure Functions
@@ -229,14 +256,8 @@ az functionapp stop --name azure-service-test --resource-group azure-service-tes
 ```
 
 ## Cancel Scheduled Testing - AWS
-Do not forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful!
+Do not forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful! Note, also existing are scripts for all cold or warm start rules)
 
-Individual rules:
-```bash
-aws events disable-rule --name coldstart-node810-hourly [--profile <aws profile>]
-```
-
-All rules (also existing are scripts for all cold or warm start rules):
 ```bash
 cd /bin
 ./disable-all-rules.sh [aws-profile-name]
@@ -262,6 +283,6 @@ Optionally, remove the dynamodb metrics table
 **WARNING!!** This will remove all your test results!
 
 ```bash
-aws dynamodb delete-table --table-name ServerlessFunctionMetrics [--profile <aws-profile>]
-aws dynamodb delete-table --table-name ServerlessFunctionCostMetrics [--profile <aws-profile>]
+aws dynamodb delete-table --table-name ServerlessFunctionMetrics-dev [--profile <aws-profile>]
+aws dynamodb delete-table --table-name ServerlessFunctionCostMetrics-dev [--profile <aws-profile>]
 ```

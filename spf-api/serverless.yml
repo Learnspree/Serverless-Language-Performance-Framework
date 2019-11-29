@@ -7,13 +7,18 @@
 
 service: spf-api
 
+custom:
+  dynamoDeletionPolicy:
+    dev: Delete
+    prod: Retain
+
 provider:
   name: aws
   memorySize: 128
   #endpointType: PRIVATE
   timeout: 12
-  stage: dev
-  region: us-east-1
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region,'us-east-1'}
 
 # you can add statements to the Lambda function's IAM Role here
   iamRoleStatements:
@@ -50,7 +55,7 @@ functions:
     runtime: python3.7
     timeout: 5
     environment:
-      DYNAMODB_TABLE: "ServerlessFunctionMetrics"
+      DYNAMODB_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"
     events:
       - http:
           path:  runtimes/{runtimeId}/mean
@@ -72,7 +77,7 @@ functions:
     runtime: python3.7
     timeout: 5
     environment:
-      DYNAMODB_TABLE: "ServerlessFunctionMetrics"
+      DYNAMODB_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"
     events:
       - http:
           path:  runtimes/{runtimeId}/minimum
@@ -94,7 +99,7 @@ functions:
     runtime: python3.7
     timeout: 5
     environment:
-      DYNAMODB_TABLE: "ServerlessFunctionMetrics"
+      DYNAMODB_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"
     events:
       - http:
           path:  runtimes/{runtimeId}/maximum
@@ -132,7 +137,7 @@ functions:
           path: metrics
           method: post
     environment:
-      ACCEPTED_RUNTIMES: "python3,go,dotnet2,java8,node810"          
+      DYNAMODB_METRICS_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"
 
   cost-metrics:
     runtime: nodejs8.10
@@ -148,7 +153,7 @@ functions:
               - LambdaMetricsTable
               - StreamArn
     environment:
-      DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics"
+      DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics-${self:provider.stage}"
       AWS_LAMBDA_GBSECOND_COST: "0.00001667"
       AWS_LAMBDA_INVOKE_COST: "0.0000002"
       AZURE_FUNCTIONS_GBSECOND_COST: "0.000016"
@@ -165,13 +170,14 @@ resources:
             - Ref: ApiGatewayRestApi
             - ".execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}"  
       Export:
-        Name: SpfApiUrl
+        Name: "SpfApiUrl-${self:provider.stage}"
+
   Resources:
     LambdaMetricsTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: Delete
+      DeletionPolicy: ${self:custom.dynamoDeletionPolicy.${self:provider.stage}}
       Properties:
-        TableName: "ServerlessFunctionMetrics"
+        TableName: "ServerlessFunctionMetrics-${self:provider.stage}"
         AttributeDefinitions:
           - AttributeName: LanguageRuntime
             AttributeType: S
@@ -200,9 +206,9 @@ resources:
           StreamViewType: NEW_IMAGE          
     CostMetricsTable:
         Type: AWS::DynamoDB::Table
-        DeletionPolicy: Delete
+        DeletionPolicy: ${self:custom.dynamoDeletionPolicy.${self:provider.stage}}
         Properties:
-          TableName: "ServerlessFunctionCostMetrics"
+          TableName: "ServerlessFunctionCostMetrics-${self:provider.stage}"
           AttributeDefinitions:
             - AttributeName: LanguageRuntime
               AttributeType: S

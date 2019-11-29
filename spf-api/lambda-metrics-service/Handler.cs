@@ -22,7 +22,6 @@ namespace ServerlessPerformanceFramework
             JsonSerializerSettings serSettings = new JsonSerializerSettings();
             serSettings.ContractResolver = new DefaultContractResolver();
             AddMetricsRequest metricsRequest = JsonConvert.DeserializeObject<AddMetricsRequest>(request.Body, serSettings);
-            SetLanguageRuntime(metricsRequest);
 
             Task<int> createItemTask = CreateItem(metricsRequest);
             int result = await createItemTask;
@@ -37,34 +36,15 @@ namespace ServerlessPerformanceFramework
             return response;
        }
 
-       private void SetLanguageRuntime(AddMetricsRequest metrics)
-       {
-            // Detect language runtime from naming convention (ending in "<languageruntimename>") if missing
-            if (metrics.LanguageRuntime == null)
-            {
-                metrics.LanguageRuntime = "unknown";
-                // verify the languageruntime name was actually provided and is in the accepted list
-                // otherwise default to "unknown"
-                var runtimesDelimited = System.Environment.GetEnvironmentVariable("ACCEPTED_RUNTIMES");
-                var acceptedRuntimes = new List<string>(runtimesDelimited.Split(',')); 
-                foreach (String runtime in acceptedRuntimes)
-                {
-                    if (metrics.FunctionName.EndsWith(runtime))
-                    {
-                        metrics.LanguageRuntime = runtime;
-                        break;
-                    }
-                }
-            }
-       }
-
        private async Task<int> CreateItem(AddMetricsRequest metrics)
        {
             try 
             {
                 var putItemData = CreatePutItemData(metrics);
                 AmazonDynamoDBClient client = new AmazonDynamoDBClient();
-                Task<PutItemResponse> putTask = client.PutItemAsync("ServerlessFunctionMetrics", putItemData);
+                var tableName = Environment.GetEnvironmentVariable("DYNAMODB_METRICS_TABLE");
+                Console.WriteLine(tableName);
+                Task<PutItemResponse> putTask = client.PutItemAsync(tableName, putItemData);
                 var response = await putTask;
 
                 // return 0 for success, otherwise failure of -1

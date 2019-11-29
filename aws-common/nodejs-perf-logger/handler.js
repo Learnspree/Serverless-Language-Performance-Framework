@@ -10,6 +10,12 @@ let functionName = function (logGroup) {
   return logGroup.split('/').reverse()[0];
 };
 
+// function name like this:
+//    aws-empty-go
+let languageRuntimeFromFunctionName = function (functionName) {
+  return functionName.split('-').reverse()[0];
+}
+
 // logStream looks like this:
 //    "logStream": "2016/08/17/[76]afe5c000d5344c33b5d88be7a4c55816"
 let functionVersion = function (logStream) {
@@ -44,7 +50,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
     let isWarmStart         = isNaN(parseFloatWith(/Init Duration: (.*) ms/i, messageParts[5])); // Init Duration only in log entry if Cold Start
 
     return {
-      timestamp : Date.now(), // TODO - better to get timestamp as input from executing function via custom cloudwatch log entry
+      timestamp : Date.now(), // TODO - better to get timestamp as input from executing function via  cloudwatch log entry
       requestId : uniqueRequestId,
       duration : actualDurationValue,
       billedDuration : billedDurationValue,
@@ -52,6 +58,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
       memoryUsed : memoryUsedValue,
       functionName : functionNameValue,
       functionVersion : functionVersionValue,
+      languageRuntime : languageRuntimeFromFunctionName(functionNameValue),
       state: isWarmStart ? "warm" : "cold",
 
       // following values hardcoded for now as we know we're running in AWS Lambda. 

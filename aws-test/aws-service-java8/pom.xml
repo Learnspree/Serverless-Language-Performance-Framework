@@ -4,7 +4,7 @@
   <groupId>com.learnspree</groupId>
   <artifactId>awsjava8empty</artifactId>
   <packaging>jar</packaging>
-  <version>dev</version>
+  <version>${stage}</version>
   <name>awsjava8empty</name>
   
   <properties>

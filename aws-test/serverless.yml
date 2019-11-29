@@ -6,9 +6,20 @@ provider:
   name: aws
   memorySize: 128
   timeout: 6
-  stage: dev
-  region: us-east-1
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region,'us-east-1'}
   versionFunctions: true # Optional function versioning
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: "arn:aws:lambda:${self:provider.region}:*:function:aws-empty-test*" 
+
+custom:
+  coldStartInterval: rate(60 minutes) # minutes => 1 hour 
+  coldStartBatchSize: 6 # => 6 every 60 minutes => 6 per hour
+  coldStartBatchMemory: 512
+  warmStartInterval: rate(10 minutes) # minutes => 6 per hour
 
 # package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
 package:
@@ -16,21 +27,18 @@ package:
 
 # individual function definitions
 functions:
-  dotnet2:
+  # begin warm-start test functions
+  aws-warm-empty-dotnet21:
     runtime: dotnetcore2.1
     handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::EmptyTestDotNetCore2
     package:
       artifact: aws-service-dotnetcore2/bin/release/netcoreapp2.1/deploy-package.zip
     events:
       - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-dotnet2-hourly
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-dotnet21-${self:provider.stage}-minute
           enabled: false
-      - schedule: 
-          rate: rate(1 minute)
-          name: warmstart-dotnet2-minute
-          enabled: false
-  aws-empty-go:
+  aws-warm-empty-go:
     runtime: go1.x
     handler: aws-service-go/bin/go-empty-function
     package:
@@ -40,49 +48,120 @@ functions:
         - ./aws-service-go/bin/**
     events:
       - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-golang-hourly
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-golang-${self:provider.stage}-minute
           enabled: false
-      - schedule: 
-          rate: rate(1 minute)
-          name: warmstart-golang-minute
-          enabled: false
-  aws-empty-java8:
+  aws-warm-empty-java8:
     runtime: java8
     handler: com.learnspree.EmptyJava8Handler
     package:
-      artifact: aws-service-java8/target/awsjava8empty-dev.jar
+      artifact: aws-service-java8/target/awsjava8empty-${self:provider.stage}.jar
     events:
       - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-java8-hourly
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-java8-${self:provider.stage}-minute
           enabled: false
-      - schedule: 
-          rate: rate(1 minute)
-          name: warmstart-java8-minute
-          enabled: false
-  awsnode810:
+  aws-warm-empty-node810:
     runtime: nodejs8.10
     handler: aws-service-node810/handler.emptytestnode810
     events:
       - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-node810-hourly
-          enabled: false
-      - schedule: 
-          rate: rate(1 minute)
-          name: warmstart-node810-minute
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-node810-${self:provider.stage}-minute
           enabled: false    
-  awspython3:
+  aws-warm-empty-python36:
     runtime: python3.6
     handler: aws-service-python3/handler.awsemptypython3
     events:
       - schedule: 
-          rate: rate(1 hour)
-          name: coldstart-python3-hourly
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-python3-${self:provider.stage}-minute
           enabled: false
+  # begin cold-start test functions. No events - they're triggered by the batch cold start schedulers below.      
+  aws-cold-empty-dotnet21:
+    runtime: dotnetcore2.1
+    handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::EmptyTestDotNetCore2
+    package:
+      artifact: aws-service-dotnetcore2/bin/release/netcoreapp2.1/deploy-package.zip
+  aws-cold-empty-go:
+    runtime: go1.x
+    handler: aws-service-go/bin/go-empty-function
+    package:
+      exclude:
+        - ./aws-service-go/**
+      include:
+        - ./aws-service-go/bin/**
+  aws-cold-empty-java8:
+    runtime: java8
+    handler: com.learnspree.EmptyJava8Handler
+    package:
+      artifact: aws-service-java8/target/awsjava8empty-${self:provider.stage}.jar
+  aws-cold-empty-node810:
+    runtime: nodejs8.10
+    handler: aws-service-node810/handler.emptytestnode810
+  aws-cold-empty-python36:
+    runtime: python3.6
+    handler: aws-service-python3/handler.awsemptypython3
+  # begin cold-start-scheduler functions
+  awspython36-coldstart:
+    runtime: python3.7
+    handler: aws-burst-invoker/handler.burst_invoker
+    memorySize: ${self:custom.coldStartBatchMemory}
+    events:
       - schedule: 
-          rate: rate(1 minute)
-          name: warmstart-python3-minute
-          enabled: false             
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-python36-${self:provider.stage}-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-python36
+  awsnode810-coldstart:
+    runtime: python3.7
+    handler: aws-burst-invoker/handler.burst_invoker
+    memorySize: ${self:custom.coldStartBatchMemory}
+    events:
+      - schedule: 
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-node810-${self:provider.stage}-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-node810
+  awsjava8-coldstart:
+    runtime: python3.7
+    handler: aws-burst-invoker/handler.burst_invoker
+    memorySize: ${self:custom.coldStartBatchMemory}
+    events:
+      - schedule: 
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-java8-${self:provider.stage}-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-java8
+  awsgo-coldstart:
+      runtime: python3.7
+      handler: aws-burst-invoker/handler.burst_invoker
+      memorySize: ${self:custom.coldStartBatchMemory}
+      events:
+        - schedule: 
+            rate: ${self:custom.coldStartInterval}
+            name: coldstart-go-${self:provider.stage}-hourly-burst
+            enabled: false
+            input:
+              invokeCount: ${self:custom.coldStartBatchSize}
+              targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-go
+  awsdotnet2-coldstart:
+        runtime: python3.7
+        handler: aws-burst-invoker/handler.burst_invoker
+        memorySize: ${self:custom.coldStartBatchMemory}
+        events:
+          - schedule: 
+              rate: ${self:custom.coldStartInterval}
+              name: coldstart-dotnet21-${self:provider.stage}-hourly-burst
+              enabled: false
+              input:
+                invokeCount: ${self:custom.coldStartBatchSize}
+                targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21
+
 
