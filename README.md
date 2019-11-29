@@ -58,10 +58,18 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 
 
 ## Build & Deploy - AWS
-Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node810 is located in "/aws-test/aws-service-node810". There is a central serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions.
+The easiest way to deploy the common SPF API and all the AWS test function components is to run the single aggregator script (which has dev and prod versions). For example:
+
+
+```bash
+cd /bin
+./spf-build-aws.sh
+```
+
+Alternatively, you can build/deploy invidual framework components as described below.
 
 ### Build and Deploy all AWS Test Functions
-Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
+Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node810 is located in "/aws-test/aws-service-node810". There is a single serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions in the "aws-test" directory. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 
 ```bash
 cd /aws-test
@@ -122,10 +130,12 @@ cd /aws-common/nodejs-perf-logger
 ```
 
 ## Build and Deploy - Azure
-Build and deploy the individual target test functions. These are contained in the folder "/azure-test/".
+**NOTE:** Currently the Azure test components may need some re-work to adapt to changes in the main SPF API hosted in AWS (see above section). Any issues will be resolved soon in future updates.
 
 ### Azure NodeJS
+Build and deploy the individual target test functions. These are contained in the folder "/azure-test/".
 The Azure Functions test for nodeJS is located in "/azure-test/azure-service-nodejs":
+
 ```bash
 cd /azure-test/aws-service-nodejs
 npm install
