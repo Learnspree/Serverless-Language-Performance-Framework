@@ -35,7 +35,7 @@ functions:
       artifact: aws-service-dotnetcore2/bin/release/netcoreapp2.1/deploy-package.zip
     events:
       - schedule: 
-          rate: rate(1 minute)
+          rate: ${self:custom.warmStartInterval}
           name: warmstart-dotnet21-${self:provider.stage}-minute
           enabled: false
   aws-warm-empty-go:
@@ -48,7 +48,7 @@ functions:
         - ./aws-service-go/bin/**
     events:
       - schedule: 
-          rate: rate(1 minute)
+          rate: ${self:custom.warmStartInterval}
           name: warmstart-golang-${self:provider.stage}-minute
           enabled: false
   aws-warm-empty-java8:
@@ -58,7 +58,7 @@ functions:
       artifact: aws-service-java8/target/awsjava8empty-${self:provider.stage}.jar
     events:
       - schedule: 
-          rate: rate(1 minute)
+          rate: ${self:custom.warmStartInterval}
           name: warmstart-java8-${self:provider.stage}-minute
           enabled: false
   aws-warm-empty-node810:
@@ -66,7 +66,7 @@ functions:
     handler: aws-service-node810/handler.emptytestnode810
     events:
       - schedule: 
-          rate: rate(1 minute)
+          rate: ${self:custom.warmStartInterval}
           name: warmstart-node810-${self:provider.stage}-minute
           enabled: false    
   aws-warm-empty-python36:
