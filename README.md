@@ -78,7 +78,7 @@ cd /aws-test
 
 ### Deploy All Functions
 
-Each target function will by default be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Enable warm OR cold to ensure accurate cold or warm-start testing (i.e. so he warm schedule won't interfere with the cold). Example below:
+Each target function will essentially be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Example below:
 
 ```
     awsnode810:
@@ -227,19 +227,11 @@ aws dynamodb query --table-name ServerlessFunctionCostMetrics-dev  --key-conditi
 ```
 
 ## Initiate Full Scheduled Test - AWS Lambda
-Start a scheduled test by enabling the appropriate filters on the test target functions you want to measure.
-For example, to start a "cold-start" test, use the AWS CLI via the provided script (also existing are scripts for all warm start rules):
+Start a scheduled test by enabling the appropriate cloudwatch events on the test target functions you want to measure. For convenience, to start a full test of warm and cold start:
 
 ```bash
 cd /bin
-./enable-all-coldstart-rules.sh [aws-profile-name]
-```
-
-To start a full test of warm and cold start:
-
-```bash
-cd /bin
-./enable-all-rules.sh [aws-profile-name]
+./enable-all-rules.sh 
 ```
 
 ## Initiate Full Schedule Test - Azure Functions
@@ -256,11 +248,11 @@ az functionapp stop --name azure-service-test --resource-group azure-service-tes
 ```
 
 ## Cancel Scheduled Testing - AWS
-Do not forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful! Note, also existing are scripts for all cold or warm start rules)
+Do not forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful! 
 
 ```bash
 cd /bin
-./disable-all-rules.sh [aws-profile-name]
+./disable-all-rules.sh
 ```
 
 ## Cleanup

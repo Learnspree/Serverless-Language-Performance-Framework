@@ -49,7 +49,7 @@ functions:
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
-          name: warmstart-golang-${self:provider.stage}-minute
+          name: warmstart-go-${self:provider.stage}-minute
           enabled: false
   aws-warm-empty-java8:
     runtime: java8
@@ -71,11 +71,11 @@ functions:
           enabled: false    
   aws-warm-empty-python36:
     runtime: python3.6
-    handler: aws-service-python3/handler.awsemptypython3
+    handler: aws-service-6/handler.awsemptypython3
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
-          name: warmstart-python3-${self:provider.stage}-minute
+          name: warmstart-python36-${self:provider.stage}-minute
           enabled: false
   # begin cold-start test functions. No events - they're triggered by the batch cold start schedulers below.      
   aws-cold-empty-dotnet21:
@@ -101,7 +101,7 @@ functions:
     handler: aws-service-node810/handler.emptytestnode810
   aws-cold-empty-python36:
     runtime: python3.6
-    handler: aws-service-python3/handler.awsemptypython3
+    handler: aws-service-python36/handler.awsemptypython36
   # begin cold-start-scheduler functions
   awspython36-coldstart:
     runtime: python3.7
