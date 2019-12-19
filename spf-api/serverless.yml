@@ -15,10 +15,16 @@ custom:
 provider:
   name: aws
   memorySize: 128
-  #endpointType: PRIVATE
   timeout: 12
   stage: ${opt:stage,'dev'}
   region: ${opt:region,'us-east-1'}
+  usagePlan:
+    quota:
+      limit: 10 # for test - change to 100000 later
+      period: MONTH
+    throttle:
+      burstLimit: 200
+      rateLimit: 100
 
 # you can add statements to the Lambda function's IAM Role here
   iamRoleStatements:
@@ -28,8 +34,6 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*"
     - Effect: "Allow"
       Action:
@@ -71,7 +75,6 @@ functions:
                 endDate: false
               paths:
                 runtimeId: true
-          cors: true    
   get-runtime-min:
     handler: getruntime/maxmin.getMinimum
     runtime: python3.7
@@ -93,7 +96,6 @@ functions:
                 endDate: false
               paths:
                 runtimeId: true
-          cors: true  
   get-runtime-max:
     handler: getruntime/maxmin.getMaximum
     runtime: python3.7
@@ -115,17 +117,6 @@ functions:
                 endDate: false
               paths:
                 runtimeId: true
-          cors: true
-            #origins:
-            #  - http://serverlessperformance.net
-            #headers:
-            #  - Content-Type
-            #  - X-Amz-Date
-            #  - Authorization
-            #  - X-Api-Key
-            #  - X-Amz-Security-Token
-            #  - X-Amz-User-Agent
-            #allowCredentials: false
   lambda-metrics:
     runtime: dotnetcore2.1
     timeout: 30 # max for api-backed lambdas 
