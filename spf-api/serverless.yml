@@ -18,13 +18,6 @@ provider:
   timeout: 12
   stage: ${opt:stage,'dev'}
   region: ${opt:region,'us-east-1'}
-  usagePlan:
-    quota:
-      limit: 10 # for test - change to 100000 later
-      period: MONTH
-    throttle:
-      burstLimit: 200
-      rateLimit: 100
 
 # you can add statements to the Lambda function's IAM Role here
   iamRoleStatements:
