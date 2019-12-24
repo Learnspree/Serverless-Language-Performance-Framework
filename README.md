@@ -40,6 +40,7 @@ See table above for versions and links
 3. Install AWS CLI 
 4. Configure AWS Credentials for AWS CLI *(see links above)*
 5. Install Serverless Framework *(via `npm install -g serverless`)*
+6. Install Serverless Domain Manager plugin *(via `npm install serverless-domain-manager --save-dev`)*
 6. Configure AWS Credentials for Serverless Framework *(see links above)*
 7. Install .NET Core *(see links above)* (Note - for upgrade of existing .NET Core (if necessary) see https://docs.microsoft.com/en-us/dotnet/core/versions/remove-runtime-sdk-versions?tabs=macos)
 8. Install Java JDK 1.8
@@ -66,17 +67,34 @@ cd /bin
 ./spf-build-aws.sh
 ```
 
-Alternatively, you can build/deploy invidual framework components as described below.
+Alternatively, you can build/deploy invidual framework components as described in the sections that follow below.
+
+**Route53 / DNS** (Optional)
+
+Pre-requisites: *(there are many guides from AWS to show how to do this)*:
+* Use AWS Route53 to register your new domain using AWS.
+* Create SSL certificate using ACM to match your domain. Use DNS verification.
+
+See https://serverless.com/blog/serverless-api-gateway-domain/ and https://seed.run/blog/how-to-set-up-a-custom-domain-name-for-api-gateway-in-your-serverless-app.html for instructions on using domain setup plugin for serverless. Steps:
+* cd `<spf-api directory>`
+* npm install serverless-domain-manager --save-dev
+* serverless create_domain --stage dev
+  * Now should see new custom domain added to "Custom Domains" list in API Gateway. However there are as yet no base path mappings.
+* serverless deploy --stage dev
+  * Now you see a /dev base path mapping on the new custom domain above.
+  * You also see new Route53 recordsets added to your existing PHZ (Private Hosted Zone) to map to the custom domain's cloudfront distribution.
+
+Test new domain link to API Gateway:
+
+`curl https://api.<domain>/dev/runtimes/java8/mean`
 
 ### Build and Deploy all AWS Test Functions
-Build and deploy the individual target test functions. These are contained in the folder "/aws-test/". For example, the AWS test for node810 is located in "/aws-test/aws-service-node810". There is a single serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions in the "aws-test" directory. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
+This section describes how to re-build and re-deploy the individual target test functions only. These are contained in the folder "/aws-test/". For example, the AWS test for node810 is located in "/aws-test/aws-service-node810". There is a single serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions in the "aws-test" directory. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 
 ```bash
 cd /aws-test
 ./spf-build-aws-test.sh
 ```
-
-### Deploy All Functions
 
 Each target function will essentially be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Example below:
 
@@ -129,7 +147,7 @@ cd /aws-common/nodejs-perf-logger
 ./spf-build-aws-logger.sh
 ```
 
-## Build and Deploy - Azure
+## Build and Deploy - Azure (*Rework Needed*)
 **NOTE:** Currently the Azure test components may need some re-work to adapt to changes in the main SPF API hosted in AWS (see above section). Any issues will be resolved soon in future updates.
 
 ### Azure NodeJS
