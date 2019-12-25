@@ -63,6 +63,16 @@ functions:
       - http:
           path:  runtimes/{runtimeId}/mean
           method: get
+          cors:
+            origin: ${opt:corsorigin,'*'}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
           request:
             parameters:
               querystrings:
@@ -84,6 +94,16 @@ functions:
       - http:
           path:  runtimes/{runtimeId}/minimum
           method: get
+          cors:
+            origin: ${opt:corsorigin,'*'}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
           request:
             parameters:
               querystrings:
@@ -105,6 +125,16 @@ functions:
       - http:
           path:  runtimes/{runtimeId}/maximum
           method: get
+          cors:
+            origin: ${opt:corsorigin,'*'}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false          
           request:
             parameters:
               querystrings:

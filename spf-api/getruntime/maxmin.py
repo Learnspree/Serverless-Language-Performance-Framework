@@ -74,6 +74,10 @@ def getMinMax(event, queryType):
     # create a response
     response = {
         "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Origin": "*", # Required for CORS support to work
+            "Access-Control-Allow-Credentials": "false", # Required for cookies, authorization headers with HTTPS
+        },
         "body": returnValue
     }
 
