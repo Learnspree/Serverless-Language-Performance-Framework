@@ -7,10 +7,16 @@
 
 service: spf-api
 
+plugins:
+  - serverless-domain-manager
+
 custom:
   dynamoDeletionPolicy:
     dev: Delete
     prod: Retain
+  customDomain:
+    domainName: ${opt:domain,'api.serverlessperformance.net'}
+    basePath: ${opt:stage,'dev'}
 
 provider:
   name: aws
@@ -57,6 +63,16 @@ functions:
       - http:
           path:  runtimes/{runtimeId}/mean
           method: get
+          cors:
+            origin: ${opt:corsorigin,'*'}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
           request:
             parameters:
               querystrings:
@@ -78,6 +94,16 @@ functions:
       - http:
           path:  runtimes/{runtimeId}/minimum
           method: get
+          cors:
+            origin: ${opt:corsorigin,'*'}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
           request:
             parameters:
               querystrings:
@@ -99,6 +125,16 @@ functions:
       - http:
           path:  runtimes/{runtimeId}/maximum
           method: get
+          cors:
+            origin: ${opt:corsorigin,'*'}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false          
           request:
             parameters:
               querystrings:
