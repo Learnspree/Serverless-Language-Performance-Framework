@@ -1,5 +1,5 @@
 # Serverless-Language-Performance-Framework
-This project originated from a paper on Serverless Performance as part of MSc Applied IT Architecture @ [Technological University of Dublin (IT Tallaght)](https://www.it-tallaght.ie)
+This project originated from a [paper](https://ieeexplore.ieee.org/abstract/document/8605773) on Serverless Performance as part of MSc Software Architecture @ [Technological University of Dublin (IT Tallaght)](https://www.it-tallaght.ie)
 
 This project uses the [serverless framework](http://www.serverless.com) to test the relative performance and cost of different language implementations in AWS Lambda and other serverless platforms.
 

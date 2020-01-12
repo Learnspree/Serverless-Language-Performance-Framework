@@ -53,7 +53,6 @@ def getComputedValue(inputRuntime, queryFilterExpression, queryType):
     except Exception as e:
         print("Generic error: %s" % e)
         
-    print(allMatchingRows)
     returnValue = { 
                     "meanDuration" : Decimal('-1.0'),
                     "meanBilledDuration" : Decimal('-1.0')

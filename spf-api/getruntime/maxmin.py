@@ -65,7 +65,6 @@ def getMinMax(event, queryType):
             print ("no records available for %s" % inputRuntime)
         else:
             selectedItem = result['Items'][0]
-            print(selectedItem)
             jsonString = json.dumps(selectedItem, cls=decimalencoder.DecimalEncoder)
             returnValue = jsonString
     except Exception as e:
