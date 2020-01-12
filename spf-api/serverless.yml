@@ -8,12 +8,19 @@
 service: spf-api
 
 plugins:
+  # serverless-domain-manager plugin used to hook API up to the Route53 DNS domain
   - serverless-domain-manager
 
 custom:
-  dynamoDeletionPolicy:
-    dev: Delete
-    prod: Retain
+  environmentConfiguration:
+    dev:
+      dynamoDeletionPolicy: Delete
+      dynamoReadCapacityUnits: 2
+      dynamoWriteCapacityUnits: 2
+    prod:
+      dynamoDeletionPolicy: Retain
+      dynamoReadCapacityUnits: 8
+      dynamoWriteCapacityUnits: 8
   customDomain:
     domainName: ${opt:domain,'api.serverlessperformance.net'}
     basePath: ${opt:stage,'dev'}
@@ -165,7 +172,7 @@ resources:
   Resources:
     LambdaMetricsTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: ${self:custom.dynamoDeletionPolicy.${self:provider.stage}}
+      DeletionPolicy: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoDeletionPolicy}
       Properties:
         TableName: "ServerlessFunctionMetrics-${self:provider.stage}"
         AttributeDefinitions:
@@ -190,7 +197,7 @@ resources:
             Projection:
               ProjectionType: ALL
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoReadCapacityUnits}
+          WriteCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoWriteCapacityUnits}
           
 
