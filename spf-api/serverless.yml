@@ -50,6 +50,38 @@ provider:
 
 # packaging information here
 functions:
+  get-summary-stats:
+      handler: getruntime/summarystats.getSummaryStats
+      runtime: python3.8
+      timeout: 5
+      environment:
+        DYNAMODB_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"
+      events:
+        - http:
+            path:  runtimes/{runtimeId}/summary
+            method: get
+            cors:
+              origin: ${opt:corsorigin,'*'}
+              headers:
+                - Content-Type
+                - X-Amz-Date
+                - Authorization
+                - X-Api-Key
+                - X-Amz-Security-Token
+                - X-Amz-User-Agent
+              allowCredentials: false
+            request:
+              parameters:
+                querystrings:
+                  platform: false
+                  state: false
+                  memory: false
+                  type: false
+                  startDate: false
+                  endDate: false
+                  region: false
+                paths:
+                  runtimeId: true  
   get-mean:
     handler: getruntime/mean.getMeanDuration
     runtime: python3.7
