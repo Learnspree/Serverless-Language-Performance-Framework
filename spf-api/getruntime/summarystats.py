@@ -3,6 +3,7 @@ import os
 import json
 import boto3
 import datetime
+import math
 
 from decimal import *
 from enum import Enum
@@ -80,7 +81,7 @@ def getComputedValues(inputRuntime, queryFilterExpression):
 
             returnValue = { 
                             "meanDuration" : totalDuration / allMatchingRows['Count'],
-                            "meanBilledDuration" : totalBilledDuration / allMatchingRows['Count'],
+                            "meanBilledDuration" : int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100,
                             "maxExecution" : json.dumps(maxExecutionRow, cls=decimalencoder.DecimalEncoder),
                             "minExecution" : json.dumps(minExecutionRow, cls=decimalencoder.DecimalEncoder)
                           } 

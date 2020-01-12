@@ -3,6 +3,7 @@ import os
 import json
 import boto3
 import datetime
+import math
 
 from decimal import *
 from enum import Enum
@@ -69,7 +70,7 @@ def getComputedValue(inputRuntime, queryFilterExpression, queryType):
                 totalBilledDuration += row['BilledDuration']
             returnValue = { 
                             "meanDuration" : totalDuration / allMatchingRows['Count'],
-                            "meanBilledDuration" : totalBilledDuration / allMatchingRows['Count']
+                            "meanBilledDuration" : int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  
