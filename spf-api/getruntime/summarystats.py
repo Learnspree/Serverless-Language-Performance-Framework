@@ -53,8 +53,8 @@ def getComputedValues(inputRuntime, queryFilterExpression):
     returnValue = { 
                     "meanDuration" : Decimal('-1.0'),
                     "meanBilledDuration" : Decimal('-1.0'),
-                    "maxExecution" : "",
-                    "minExecution" : ""
+                    "maxExecution" : None,
+                    "minExecution" : None
                   } 
 
     try:
@@ -82,8 +82,8 @@ def getComputedValues(inputRuntime, queryFilterExpression):
             returnValue = { 
                             "meanDuration" : totalDuration / allMatchingRows['Count'],
                             "meanBilledDuration" : int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100,
-                            "maxExecution" : json.dumps(maxExecutionRow, cls=decimalencoder.DecimalEncoder),
-                            "minExecution" : json.dumps(minExecutionRow, cls=decimalencoder.DecimalEncoder)
+                            "maxExecution" : maxExecutionRow,
+                            "minExecution" : minExecutionRow
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  
