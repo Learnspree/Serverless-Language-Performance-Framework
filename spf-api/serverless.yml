@@ -39,16 +39,6 @@ provider:
         - "dynamodb:Query"
         - "dynamodb:Scan"
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*/index/*"
-    - Effect: "Allow"
-      Action:
-        - "dynamodb:DescribeStream"
-        - "dynamodb:GetRecords"
-        - "dynamodb:GetShardIterator"
-        - "dynamodb:ListStreams"
-      Resource:
-        Fn::GetAtt:
-          - LambdaMetricsTable
-          - StreamArn
 
 
 # packaging information here
@@ -157,27 +147,7 @@ functions:
           path: metrics
           method: post
     environment:
-      DYNAMODB_METRICS_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"
-
-  cost-metrics:
-    runtime: nodejs8.10
-    handler: lambda-cost-service/handler.costmetrics
-    package:
-      include:
-      - lambda-cost-service/node_modules/**
-    events:
-      - stream:
-          type: dynamodb
-          arn:
-            Fn::GetAtt:
-              - LambdaMetricsTable
-              - StreamArn
-    environment:
-      DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics-${self:provider.stage}"
-      AWS_LAMBDA_GBSECOND_COST: "0.00001667"
-      AWS_LAMBDA_INVOKE_COST: "0.0000002"
-      AZURE_FUNCTIONS_GBSECOND_COST: "0.000016"
-      AZURE_FUNCTIONS_INVOKE_COST: "0.0000002"      
+      DYNAMODB_METRICS_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"     
 
 resources:
   Outputs:
@@ -222,25 +192,5 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        StreamSpecification:
-          StreamViewType: NEW_IMAGE          
-    CostMetricsTable:
-        Type: AWS::DynamoDB::Table
-        DeletionPolicy: ${self:custom.dynamoDeletionPolicy.${self:provider.stage}}
-        Properties:
-          TableName: "ServerlessFunctionCostMetrics-${self:provider.stage}"
-          AttributeDefinitions:
-            - AttributeName: LanguageRuntime
-              AttributeType: S
-            - AttributeName: RequestId
-              AttributeType: S           
-          KeySchema:
-            - AttributeName: LanguageRuntime
-              KeyType: HASH
-            - AttributeName: RequestId
-              KeyType: RANGE          
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
           
 

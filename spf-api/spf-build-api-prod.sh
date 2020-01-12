@@ -4,7 +4,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 echo "***** SPF: PRODUCTION running in $DIR *****"
 
 # Build the .net core 2 metrics function
-# NOTE - the nodejs cost service (lambda-cost-service) does not require any pre-compilation/build
 cd $DIR/lambda-metrics-service
 dotnet add package AWSSDK.DynamoDBv2 --version 3.3.6
 dotnet add package Amazon.Lambda.APIGatewayEvents
