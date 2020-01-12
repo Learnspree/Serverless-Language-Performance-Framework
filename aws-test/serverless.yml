@@ -16,10 +16,11 @@ provider:
       Resource: "arn:aws:lambda:${self:provider.region}:*:function:aws-empty-test*" 
 
 custom:
+  # you can use rate() or cron() syntax
   coldStartInterval: rate(60 minutes) # minutes => 1 hour 
-  coldStartBatchSize: 6 # => 6 every 60 minutes => 6 per hour
+  coldStartBatchSize: 3 # e.g. => 6 every 60 minutes => 6 per hour
   coldStartBatchMemory: 512
-  warmStartInterval: rate(10 minutes) # minutes => 6 per hour
+  warmStartInterval: cron(56/1 * * * ? *) # every 1 minute starting at 56 past the hour => 4 per hour (but 1st will likely be cold)
 
 # package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
 package:
