@@ -15,21 +15,17 @@ from botocore.exceptions import ClientError, ParamValidationError
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
-class QueryType(Enum):
-    MEAN = 1
-
-def getMeanDuration(event, context):
+def getSummaryStats(event, context):
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
     
     queryFilterExpression = queryfilter.getDynamoFilterExpression(event['queryStringParameters'])
-    return getComputedValue(inputRuntime, queryFilterExpression, QueryType.MEAN)
+    return getComputedValues(inputRuntime, queryFilterExpression)
 
-def getComputedValue(inputRuntime, queryFilterExpression, queryType):
+def getComputedValues(inputRuntime, queryFilterExpression):
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
     # fetch metrics from the database
     print('Language Runtime Input: ', inputRuntime)
-    print('RequestType: ', queryType)
 
     try:
         if (queryFilterExpression is None):
@@ -56,21 +52,38 @@ def getComputedValue(inputRuntime, queryFilterExpression, queryType):
         
     returnValue = { 
                     "meanDuration" : Decimal('-1.0'),
-                    "meanBilledDuration" : Decimal('-1.0')
+                    "meanBilledDuration" : Decimal('-1.0'),
+                    "maxExecution" : None,
+                    "minExecution" : None
                   } 
-    totalDuration = Decimal('0.0')
-    totalBilledDuration = Decimal('0.0')
 
     try:
         if not allMatchingRows['Items']:
             print ("no records available for %s" % inputRuntime)
         else:
+            totalDuration = Decimal('0.0')
+            totalBilledDuration = Decimal('0.0')
+            currentMaxDuration = Decimal('0.0')
+            currentMinDuration = Decimal('1000000.0')
+            maxExecutionRow = allMatchingRows['Items'][0]
+            minExecutionRow = allMatchingRows['Items'][0]
+
             for row in allMatchingRows['Items']:
-                totalDuration += row['Duration']
+                rowDuration = row['Duration']
+                totalDuration += rowDuration
                 totalBilledDuration += row['BilledDuration']
+                if rowDuration > currentMaxDuration:
+                    currentMaxDuration = rowDuration
+                    maxExecutionRow = row
+                if rowDuration < currentMinDuration:
+                    currentMinDuration = rowDuration
+                    minExecutionRow = row
+
             returnValue = { 
                             "meanDuration" : totalDuration / allMatchingRows['Count'],
-                            "meanBilledDuration" : int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100
+                            "meanBilledDuration" : int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100,
+                            "maxExecution" : maxExecutionRow,
+                            "minExecution" : minExecutionRow
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  

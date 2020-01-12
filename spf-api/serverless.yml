@@ -8,12 +8,19 @@
 service: spf-api
 
 plugins:
+  # serverless-domain-manager plugin used to hook API up to the Route53 DNS domain
   - serverless-domain-manager
 
 custom:
-  dynamoDeletionPolicy:
-    dev: Delete
-    prod: Retain
+  environmentConfiguration:
+    dev:
+      dynamoDeletionPolicy: Delete
+      dynamoReadCapacityUnits: 2
+      dynamoWriteCapacityUnits: 2
+    prod:
+      dynamoDeletionPolicy: Retain
+      dynamoReadCapacityUnits: 8
+      dynamoWriteCapacityUnits: 8
   customDomain:
     domainName: ${opt:domain,'api.serverlessperformance.net'}
     basePath: ${opt:stage,'dev'}
@@ -39,20 +46,42 @@ provider:
         - "dynamodb:Query"
         - "dynamodb:Scan"
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*/index/*"
-    - Effect: "Allow"
-      Action:
-        - "dynamodb:DescribeStream"
-        - "dynamodb:GetRecords"
-        - "dynamodb:GetShardIterator"
-        - "dynamodb:ListStreams"
-      Resource:
-        Fn::GetAtt:
-          - LambdaMetricsTable
-          - StreamArn
 
 
 # packaging information here
 functions:
+  get-summary-stats:
+      handler: getruntime/summarystats.getSummaryStats
+      runtime: python3.8
+      timeout: 5
+      environment:
+        DYNAMODB_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"
+      events:
+        - http:
+            path:  runtimes/{runtimeId}/summary
+            method: get
+            cors:
+              origin: ${opt:corsorigin,'*'}
+              headers:
+                - Content-Type
+                - X-Amz-Date
+                - Authorization
+                - X-Api-Key
+                - X-Amz-Security-Token
+                - X-Amz-User-Agent
+              allowCredentials: false
+            request:
+              parameters:
+                querystrings:
+                  platform: false
+                  state: false
+                  memory: false
+                  type: false
+                  startDate: false
+                  endDate: false
+                  region: false
+                paths:
+                  runtimeId: true  
   get-mean:
     handler: getruntime/mean.getMeanDuration
     runtime: python3.7
@@ -82,6 +111,7 @@ functions:
                 type: false
                 startDate: false
                 endDate: false
+                region: false
               paths:
                 runtimeId: true
   get-runtime-min:
@@ -113,6 +143,7 @@ functions:
                 type: false
                 startDate: false
                 endDate: false
+                region: false
               paths:
                 runtimeId: true
   get-runtime-max:
@@ -144,6 +175,7 @@ functions:
                 type: false
                 startDate: false
                 endDate: false
+                region: false
               paths:
                 runtimeId: true
   lambda-metrics:
@@ -157,27 +189,7 @@ functions:
           path: metrics
           method: post
     environment:
-      DYNAMODB_METRICS_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"
-
-  cost-metrics:
-    runtime: nodejs8.10
-    handler: lambda-cost-service/handler.costmetrics
-    package:
-      include:
-      - lambda-cost-service/node_modules/**
-    events:
-      - stream:
-          type: dynamodb
-          arn:
-            Fn::GetAtt:
-              - LambdaMetricsTable
-              - StreamArn
-    environment:
-      DYNAMODB_COSTMETRICS_TABLE: "ServerlessFunctionCostMetrics-${self:provider.stage}"
-      AWS_LAMBDA_GBSECOND_COST: "0.00001667"
-      AWS_LAMBDA_INVOKE_COST: "0.0000002"
-      AZURE_FUNCTIONS_GBSECOND_COST: "0.000016"
-      AZURE_FUNCTIONS_INVOKE_COST: "0.0000002"      
+      DYNAMODB_METRICS_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"     
 
 resources:
   Outputs:
@@ -195,7 +207,7 @@ resources:
   Resources:
     LambdaMetricsTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: ${self:custom.dynamoDeletionPolicy.${self:provider.stage}}
+      DeletionPolicy: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoDeletionPolicy}
       Properties:
         TableName: "ServerlessFunctionMetrics-${self:provider.stage}"
         AttributeDefinitions:
@@ -220,27 +232,7 @@ resources:
             Projection:
               ProjectionType: ALL
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        StreamSpecification:
-          StreamViewType: NEW_IMAGE          
-    CostMetricsTable:
-        Type: AWS::DynamoDB::Table
-        DeletionPolicy: ${self:custom.dynamoDeletionPolicy.${self:provider.stage}}
-        Properties:
-          TableName: "ServerlessFunctionCostMetrics-${self:provider.stage}"
-          AttributeDefinitions:
-            - AttributeName: LanguageRuntime
-              AttributeType: S
-            - AttributeName: RequestId
-              AttributeType: S           
-          KeySchema:
-            - AttributeName: LanguageRuntime
-              KeyType: HASH
-            - AttributeName: RequestId
-              KeyType: RANGE          
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+          ReadCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoReadCapacityUnits}
+          WriteCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoWriteCapacityUnits}
           
 
