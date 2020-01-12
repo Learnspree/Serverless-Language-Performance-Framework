@@ -111,6 +111,7 @@ functions:
                 type: false
                 startDate: false
                 endDate: false
+                region: false
               paths:
                 runtimeId: true
   get-runtime-min:
@@ -142,6 +143,7 @@ functions:
                 type: false
                 startDate: false
                 endDate: false
+                region: false
               paths:
                 runtimeId: true
   get-runtime-max:
@@ -173,6 +175,7 @@ functions:
                 type: false
                 startDate: false
                 endDate: false
+                region: false
               paths:
                 runtimeId: true
   lambda-metrics:
