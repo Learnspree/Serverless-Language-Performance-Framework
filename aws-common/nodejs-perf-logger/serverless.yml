@@ -5,7 +5,7 @@ service: nodejs-perf-logger
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
   memorySize: 128
   timeout: 20
   stage: ${opt:stage,'dev'}
@@ -28,10 +28,10 @@ functions:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-node810'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-nodejs12x'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-node810'
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-nodejs12x'
           filter: 'REPORT'                  
   logger-dotnet:
     handler: handler.logger

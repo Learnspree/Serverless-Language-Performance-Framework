@@ -62,13 +62,13 @@ functions:
           rate: ${self:custom.warmStartInterval}
           name: warmstart-java8-${self:provider.stage}-minute
           enabled: false
-  aws-warm-empty-node810:
-    runtime: nodejs8.10
-    handler: aws-service-node810/handler.emptytestnode810
+  aws-warm-empty-nodejs12x:
+    runtime: nodejs12.x
+    handler: aws-service-nodejs12x/handler.emptytestnodejs12x
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
-          name: warmstart-node810-${self:provider.stage}-minute
+          name: warmstart-nodejs12x-${self:provider.stage}-minute
           enabled: false    
   aws-warm-empty-python36:
     runtime: python3.6
@@ -97,9 +97,9 @@ functions:
     handler: com.learnspree.EmptyJava8Handler
     package:
       artifact: aws-service-java8/target/awsjava8empty-${self:provider.stage}.jar
-  aws-cold-empty-node810:
-    runtime: nodejs8.10
-    handler: aws-service-node810/handler.emptytestnode810
+  aws-cold-empty-nodejs12x:
+    runtime: nodejs12.x
+    handler: aws-service-nodejs12x/handler.emptytestnodejs12x
   aws-cold-empty-python36:
     runtime: python3.6
     handler: aws-service-python36/handler.awsemptypython36
@@ -116,18 +116,18 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-python36
-  awsnode810-coldstart:
+  awsnodejs12x-coldstart:
     runtime: python3.7
     handler: aws-burst-invoker/handler.burst_invoker
     memorySize: ${self:custom.coldStartBatchMemory}
     events:
       - schedule: 
           rate: ${self:custom.coldStartInterval}
-          name: coldstart-node810-${self:provider.stage}-hourly-burst
+          name: coldstart-nodejs12x-${self:provider.stage}-hourly-burst
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-node810
+            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-nodejs12x
   awsjava8-coldstart:
     runtime: python3.7
     handler: aws-burst-invoker/handler.burst_invoker

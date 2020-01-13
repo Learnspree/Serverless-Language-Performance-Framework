@@ -28,13 +28,13 @@ if [[ $environment != "dev" ]] && [[ $environment != "prod" ]]; then
     helpFunction
 fi
 
-aws events disable-rule --name warmstart-node810-$environment-minute 
+aws events disable-rule --name warmstart-nodejs12x-$environment-minute 
 aws events disable-rule --name warmstart-java8-$environment-minute 
 aws events disable-rule --name warmstart-dotnet21-$environment-minute 
 aws events disable-rule --name warmstart-python36-$environment-minute 
 aws events disable-rule --name warmstart-go-$environment-minute 
 aws events disable-rule --name coldstart-python36-$environment-hourly-burst 
-aws events disable-rule --name coldstart-node810-$environment-hourly-burst 
+aws events disable-rule --name coldstart-nodejs12x-$environment-hourly-burst 
 aws events disable-rule --name coldstart-java8-$environment-hourly-burst 
 aws events disable-rule --name coldstart-go-$environment-hourly-burst 
 aws events disable-rule --name coldstart-dotnet21-$environment-hourly-burst 

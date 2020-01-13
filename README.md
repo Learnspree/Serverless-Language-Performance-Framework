@@ -16,12 +16,12 @@ Development of this performance testing framework used the following packages an
 
 | Package                | Version              | Link                                       |
 |------------------------|----------------------|--------------------------------------------|
-| MacOS                  | Mojave (10.14.4)     |                                            |
+| MacOS                  | Mojave (10.14.6)     |                                            |
 | Brew (Homebrew)        | 2.1.6                | https://brew.sh                            |
 | AWS CLI                | 1.16.190             | https://aws.amazon.com/cli                 |
-| Serverless Framework   | 1.46.1               | https://serverless.com/framework/docs/getting-started/|
+| Serverless Framework   | 1.60.5               | https://serverless.com/framework/docs/getting-started/|
 | Node                   | 12.5.0               | https://nodejs.org/en/                     |
-| NPM                    | 6.9.0                | https://www.npmjs.com                      |
+| NPM                    | 6.13.6               | https://www.npmjs.com                      |
 | .NET Core SDK / CLI    | 2.2.300              | https://dotnet.microsoft.com/download |
 | Java (JDK)             | Oracle jdk1.8.0_212  | https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html|
 | Apache Maven (for Java)| 3.6.1                | https://maven.apache.org/                  |
@@ -89,7 +89,7 @@ Test new domain link to API Gateway:
 `curl https://api.<domain>/dev/runtimes/java8/mean`
 
 ### Build and Deploy all AWS Test Functions
-This section describes how to re-build and re-deploy the individual target test functions only. These are contained in the folder "/aws-test/". For example, the AWS test for node810 is located in "/aws-test/aws-service-node810". There is a single serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions in the "aws-test" directory. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
+This section describes how to re-build and re-deploy the individual target test functions only. These are contained in the folder "/aws-test/". For example, the AWS test for nodejs12x is located in "/aws-test/aws-service-nodejs12x". There is a single serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions in the "aws-test" directory. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 
 ```bash
 cd /aws-test
@@ -99,27 +99,27 @@ cd /aws-test
 Each target function will essentially be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Example below:
 
 ```
-    awsnode810:
-        runtime: nodejs8.10
-        handler: aws-service-node810/handler.emptytestnode810
+    awsnodejs12x:
+        runtime: nodejs12.x
+        handler: aws-service-nodejs12x/handler.emptytestnodejs12x
         events:
         - schedule: 
             rate: rate(1 minute)
-            name: warmstart-node810-minute
+            name: warmstart-nodejs12x-minute
             enabled: false    
 
-    awsnode810-coldstart:
+    awsnodejs12x-coldstart:
         runtime: python3.7
         handler: aws-burst-invoker/handler.burst_invoker
         memorySize: ${self:custom.coldStartBatchMemory}
         events:
         - schedule: 
             rate: ${self:custom.coldStartInterval}
-            name: coldstart-node810-hourly-burst
+            name: coldstart-nodejs12x-hourly-burst
             enabled: false
             input:
                 invokeCount: ${self:custom.coldStartBatchSize}
-                targetFunctionName: aws-empty-test-functions-dev-awsnode810                 
+                targetFunctionName: aws-empty-test-functions-dev-awsnodejs12x                 
 ```
 
 View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 8.10 function:
@@ -127,7 +127,7 @@ View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source 
 ```bash
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnode810'
+          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnodejs12x'
           filter: 'REPORT'
 ```
 
@@ -203,21 +203,21 @@ az functionapp config appsettings set --name azure-perf-logger --resource-group 
 Full end-to-end test measuring sample target function:
 ```bash
 cd /aws-test
-serverless invoke -f aws-warm-empty-node810 -l [--aws-profile <aws-cli-profile>]
+serverless invoke -f aws-warm-empty-nodejs12x -l [--aws-profile <aws-cli-profile>]
 
 # Verify using get-maximum API endpoint
-curl https://<api-gateway-url>.execute-api.us-east-1.amazonaws.com/dev/runtimes/node810/maximum
+curl https://<api-gateway-url>.execute-api.us-east-1.amazonaws.com/dev/runtimes/nodejs12x/maximum
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
 # Check DynamoDB table "ServerlessFunctionMetrics-<env>" to validate.
-# Example below to query for all "node810" runtime results
+# Example below to query for all "nodejs12x" runtime results
 aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --index-name "duration-index" \
     --key-condition-expression "LanguageRuntime = :runtime" \
-    --expression-attribute-values "{\":runtime\": {\"S\": \"node810\"}}"
+    --expression-attribute-values "{\":runtime\": {\"S\": \"nodejs12x\"}}"
 
 Note potential values for runtime:
-* node810
+* nodejs12x
 * java8
 * dotnet21
 * go
@@ -226,7 +226,7 @@ Note potential values for runtime:
 * empty-nodejs (azure nodejs)
 
 # Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics-dev  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"node810\"}}"
+aws dynamodb query --table-name ServerlessFunctionCostMetrics-dev  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"nodejs12x\"}}"
 ```
 ### End-to-End Test - Azure Functions
 Full end-to-end test measuring sample target function:
