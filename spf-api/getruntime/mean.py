@@ -70,7 +70,8 @@ def getComputedValue(inputRuntime, queryFilterExpression, queryType):
                 totalBilledDuration += row['BilledDuration']
             returnValue = { 
                             "meanDuration" : totalDuration / allMatchingRows['Count'],
-                            "meanBilledDuration" : int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100
+                            "meanBilledDuration" : int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100,
+                            "count" : allMatchingRows['Count']
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  
