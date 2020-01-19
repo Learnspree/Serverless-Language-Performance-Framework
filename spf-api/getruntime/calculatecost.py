@@ -1,6 +1,7 @@
 import decimal
 import json
 from decimal import *
+import os
 
 def getCostForFunctionDuration(serverlessPlatform, billedDuration, memorySize):
     try:
@@ -35,7 +36,7 @@ def getCostPerMillionForBilledDuration(serverlessPlatform, billedDuration, memor
 def calculateGBSecondCost(serverlessPlatform):
     try:
         gbSecondCost = 0.0
-        if (serverlessPlatform == "Azure Functions")
+        if serverlessPlatform == 'Azure Functions':
             gbSecondCost = os.environ['AZURE_FUNCTIONS_GBSECOND_COST']
         else:
             gbSecondCost = os.environ['AWS_LAMBDA_GBSECOND_COST']
@@ -48,7 +49,7 @@ def calculateGBSecondCost(serverlessPlatform):
 def calculateInvokeCost(serverlessPlatform):
     try:
         invokeCost = 0.0
-        if (serverlessPlatform == "Azure Functions")
+        if serverlessPlatform == 'Azure Functions':
             invokeCost = os.environ['AZURE_FUNCTIONS_INVOKE_COST']
         else:
             invokeCost = os.environ['AWS_LAMBDA_INVOKE_COST']
