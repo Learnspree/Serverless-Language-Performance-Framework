@@ -9,6 +9,7 @@ from decimal import *
 from enum import Enum
 from getruntime import decimalencoder
 from getruntime import queryfilter
+from getruntime import calculatecost
 
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError, ParamValidationError
@@ -68,10 +69,13 @@ def getComputedValue(inputRuntime, queryFilterExpression, queryType):
             for row in allMatchingRows['Items']:
                 totalDuration += row['Duration']
                 totalBilledDuration += row['BilledDuration']
+            
+            meanBilledDuration = int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100
             returnValue = { 
                             "meanDuration" : totalDuration / allMatchingRows['Count'],
-                            "meanBilledDuration" : int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100,
-                            "count" : allMatchingRows['Count']
+                            "meanBilledDuration" : meanBilledDuration,
+                            "count" : allMatchingRows['Count'],
+                            "cost" : calculatecost.getCostPerMillionForBilledDuration("AWS Lambda", meanBilledDuration, 128)
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  
