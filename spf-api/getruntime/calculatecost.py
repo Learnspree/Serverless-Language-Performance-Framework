@@ -1,5 +1,3 @@
-import decimal
-import json
 from decimal import *
 import os
 
@@ -35,11 +33,10 @@ def getCostPerMillionForBilledDuration(serverlessPlatform, billedDuration, memor
 
 def calculateGBSecondCost(serverlessPlatform):
     try:
-        gbSecondCost = 0.0
         if serverlessPlatform == 'Azure Functions':
-            gbSecondCost = os.environ['AZURE_FUNCTIONS_GBSECOND_COST']
+            gbSecondCost = Decimal(os.environ['AZURE_FUNCTIONS_GBSECOND_COST'])
         else:
-            gbSecondCost = os.environ['AWS_LAMBDA_GBSECOND_COST']
+            gbSecondCost = Decimal(os.environ['AWS_LAMBDA_GBSECOND_COST'])
     except Exception as e:
         print("Generic error: %s" % e) 
         raise           
@@ -48,11 +45,10 @@ def calculateGBSecondCost(serverlessPlatform):
 
 def calculateInvokeCost(serverlessPlatform):
     try:
-        invokeCost = 0.0
         if serverlessPlatform == 'Azure Functions':
-            invokeCost = os.environ['AZURE_FUNCTIONS_INVOKE_COST']
+            invokeCost = Decimal(os.environ['AZURE_FUNCTIONS_INVOKE_COST'])
         else:
-            invokeCost = os.environ['AWS_LAMBDA_INVOKE_COST']
+            invokeCost = Decimal(os.environ['AWS_LAMBDA_INVOKE_COST'])
     except Exception as e:
         print("Generic error: %s" % e) 
         raise           
