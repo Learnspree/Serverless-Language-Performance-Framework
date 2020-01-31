@@ -78,7 +78,8 @@ def getComputedValue(inputRuntime, queryFilterExpression, queryType):
                             # TODO - set input memory into cost call to be the query filter memorySize or default to 128 if not there
                             # Note the SPF website always sends a memory size. Other clients can display a caveat on costs that it was defaulted to 
                             # 128 because multiple memory sizes were involved. In future, could calculate average memory and round up to next memory level.
-                            "cost" : calculatecost.getCostPerMillionForBilledDuration("AWS Lambda", Decimal(meanBilledDuration), Decimal('128'))
+                            "cost" : calculatecost.getCostForFunctionDuration("AWS Lambda", Decimal(meanBilledDuration), Decimal('128')),
+                            "costPerMillion" : calculatecost.getCostPerMillionForBilledDuration("AWS Lambda", Decimal(meanBilledDuration), Decimal('128'))
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  
