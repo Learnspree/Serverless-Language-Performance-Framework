@@ -9,6 +9,7 @@ from decimal import *
 from enum import Enum
 from getruntime import decimalencoder
 from getruntime import queryfilter
+from getruntime import calculatecost
 
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError, ParamValidationError
@@ -55,7 +56,9 @@ def getComputedValues(inputRuntime, queryFilterExpression):
                     "meanBilledDuration" : Decimal('-1.0'),
                     "maxExecution" : None,
                     "minExecution" : None,
-                    "count" : 0
+                    "count" : 0,
+                    "cost" : 0,
+                    "costPerMillion" : 0
                   } 
 
     try:
@@ -80,12 +83,18 @@ def getComputedValues(inputRuntime, queryFilterExpression):
                     currentMinDuration = rowDuration
                     minExecutionRow = row
 
+            meanBilledDuration = int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100
             returnValue = { 
                             "meanDuration" : totalDuration / allMatchingRows['Count'],
-                            "meanBilledDuration" : int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100,
+                            "meanBilledDuration" : meanBilledDuration,
                             "maxExecution" : maxExecutionRow,
                             "minExecution" : minExecutionRow,
-                            "count" : allMatchingRows['Count']
+                            "count" : allMatchingRows['Count'],
+                            # TODO - set input memory into cost call to be the query filter memorySize or default to 128 if not there
+                            # Note the SPF website always sends a memory size. Other clients can display a caveat on costs that it was defaulted to 
+                            # 128 because multiple memory sizes were involved. In future, could calculate average memory and round up to next memory level.
+                            "cost" : calculatecost.getCostForFunctionDuration("AWS Lambda", Decimal(meanBilledDuration), Decimal('128')),
+                            "costPerMillion" : calculatecost.getCostPerMillionForBilledDuration("AWS Lambda", Decimal(meanBilledDuration), Decimal('128'))
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  

@@ -11,6 +11,14 @@ dotnet add package Amazon.Lambda.APIGatewayEvents
 
 echo "***** SPF: finished build stage *****"
 
+echo "***** SPF: start test stage *****"
+
+cd $DIR
+python -m unittest discover -v 
+
+echo "***** SPF: finished test stage *****"
+
+
 echo "***** SPF: running sls deploy stage *****"
 
 cd $DIR

@@ -31,6 +31,11 @@ provider:
   timeout: 12
   stage: ${opt:stage,'dev'}
   region: ${opt:region,'us-east-1'}
+  environment:
+    AWS_LAMBDA_GBSECOND_COST: "0.00001667"
+    AWS_LAMBDA_INVOKE_COST: "0.0000002"
+    AZURE_FUNCTIONS_GBSECOND_COST: "0.000016"
+    AZURE_FUNCTIONS_INVOKE_COST: "0.0000002"
 
 # you can add statements to the Lambda function's IAM Role here
   iamRoleStatements:

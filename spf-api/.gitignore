@@ -1,6 +1,10 @@
 # package directories
 node_modules
+**/package-lock.json
 jspm_packages
 
 # Serverless directories
 .serverless
+
+**/__pycache__/**
+**/*.pyc
