@@ -3,6 +3,20 @@ import json
 from decimal import *
 from boto3.dynamodb.conditions import Key, Attr
 
+def getMemoryFromQueryString(eventQueryParams):
+    try:
+        if eventQueryParams is None:
+            # default to 128
+            return Decimal(128) 
+        
+        return Decimal(eventQueryParams['memory'])
+    except KeyError as keyError:
+        # if memory missing, default to 128
+        return Decimal(128)         
+    except Exception as e:
+        print("Error getting memory from query string: %s" % e) 
+        raise           
+
 def getDynamoFilterExpression(eventQueryParams):
     try:
         if eventQueryParams is None:

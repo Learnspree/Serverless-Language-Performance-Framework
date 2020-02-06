@@ -46,6 +46,8 @@ See table above for versions and links
 8. Install Java JDK 1.8
 9. Install Maven (3.x)
 10. Install Golang (1.x)
+11. Install pip for python2.7 (`sudo easy_install pip`)
+12. Install boto3 to support python unit tests (`python -m pip install --user boto3`)
 
 ## Setup Azure Function Testing
 If you want to additionally test Azure Functions (in addition to AWS Lambda) then follow these additional steps:
