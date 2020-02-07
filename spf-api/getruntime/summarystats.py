@@ -17,12 +17,9 @@ from botocore.exceptions import ClientError, ParamValidationError
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
 def getSummaryStats(event, context):
-    inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
-    
-    queryFilterExpression = queryfilter.getDynamoFilterExpression(event['queryStringParameters'])
-    return getComputedValues(inputRuntime, queryFilterExpression)
 
-def getComputedValues(inputRuntime, queryFilterExpression):
+    inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
+    queryFilterExpression = queryfilter.getDynamoFilterExpression(event['queryStringParameters'])
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
     # fetch metrics from the database
@@ -84,17 +81,16 @@ def getComputedValues(inputRuntime, queryFilterExpression):
                     minExecutionRow = row
 
             meanBilledDuration = int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100
+            memoryAllocationForCostCalc = queryfilter.getMemoryFromQueryString(event['queryStringParameters'])
+
             returnValue = { 
                             "meanDuration" : totalDuration / allMatchingRows['Count'],
                             "meanBilledDuration" : meanBilledDuration,
                             "maxExecution" : maxExecutionRow,
                             "minExecution" : minExecutionRow,
                             "count" : allMatchingRows['Count'],
-                            # TODO - set input memory into cost call to be the query filter memorySize or default to 128 if not there
-                            # Note the SPF website always sends a memory size. Other clients can display a caveat on costs that it was defaulted to 
-                            # 128 because multiple memory sizes were involved. In future, could calculate average memory and round up to next memory level.
-                            "cost" : calculatecost.getCostForFunctionDuration("AWS Lambda", Decimal(meanBilledDuration), Decimal('128')),
-                            "costPerMillion" : calculatecost.getCostPerMillionForBilledDuration("AWS Lambda", Decimal(meanBilledDuration), Decimal('128'))
+                            "cost" : calculatecost.getCostForFunctionDuration("AWS Lambda", Decimal(meanBilledDuration), memoryAllocationForCostCalc),
+                            "costPerMillion" : calculatecost.getCostPerMillionForBilledDuration("AWS Lambda", Decimal(meanBilledDuration), memoryAllocationForCostCalc)
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  
