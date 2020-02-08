@@ -48,6 +48,11 @@ go1x-param-reuse: &go1x-param
     include:
       - ./aws-service-go/bin/**
 
+coldstart-param-reuse: &coldstart-param
+  runtime: python3.7
+  handler: aws-burst-invoker/handler.burst_invoker
+  memorySize: ${self:custom.coldStartBatchMemory}
+
 # individual function definitions
 functions:
   # begin warm-start test functions
@@ -142,34 +147,25 @@ functions:
 
   # begin cold-start test functions. No events - they're triggered by the batch cold start schedulers below.      
   aws-cold-empty-dotnet21:
-    runtime: dotnetcore2.1
-    handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::EmptyTestDotNetCore2
-    package:
-      artifact: aws-service-dotnetcore2/bin/release/netcoreapp2.1/deploy-package.zip
+    <<: *dotnet21-param
+
   aws-cold-empty-go:
-    runtime: go1.x
-    handler: aws-service-go/bin/go-empty-function
-    package:
-      exclude:
-        - ./aws-service-go/**
-      include:
-        - ./aws-service-go/bin/**
+    <<: *go1x-param
+
   aws-cold-empty-java8:
-    runtime: java8
-    handler: com.learnspree.EmptyJava8Handler
-    package:
-      artifact: aws-service-java8/target/awsjava8empty-${self:provider.stage}.jar
+    <<: *java8-param
+
   aws-cold-empty-nodejs12x:
     runtime: nodejs12.x
     handler: aws-service-nodejs12x/handler.emptytestnodejs12x
+
   aws-cold-empty-python36:
     runtime: python3.6
     handler: aws-service-python36/handler.awsemptypython36
+
   # begin cold-start-scheduler functions
   awspython36-coldstart:
-    runtime: python3.7
-    handler: aws-burst-invoker/handler.burst_invoker
-    memorySize: ${self:custom.coldStartBatchMemory}
+    <<: *coldstart-param
     events:
       - schedule: 
           rate: ${self:custom.coldStartInterval}
@@ -178,10 +174,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-python36
+
   awsnodejs12x-coldstart:
-    runtime: python3.7
-    handler: aws-burst-invoker/handler.burst_invoker
-    memorySize: ${self:custom.coldStartBatchMemory}
+    <<: *coldstart-param
     events:
       - schedule: 
           rate: ${self:custom.coldStartInterval}
@@ -190,10 +185,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-nodejs12x
+
   awsjava8-coldstart:
-    runtime: python3.7
-    handler: aws-burst-invoker/handler.burst_invoker
-    memorySize: ${self:custom.coldStartBatchMemory}
+    <<: *coldstart-param
     events:
       - schedule: 
           rate: ${self:custom.coldStartInterval}
@@ -202,29 +196,27 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-java8
+
   awsgo-coldstart:
-      runtime: python3.7
-      handler: aws-burst-invoker/handler.burst_invoker
-      memorySize: ${self:custom.coldStartBatchMemory}
-      events:
-        - schedule: 
-            rate: ${self:custom.coldStartInterval}
-            name: coldstart-go-${self:provider.stage}-hourly-burst
-            enabled: false
-            input:
-              invokeCount: ${self:custom.coldStartBatchSize}
-              targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-go
+    <<: *coldstart-param
+    events:
+      - schedule: 
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-go-${self:provider.stage}-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-go
+
   awsdotnet2-coldstart:
-        runtime: python3.7
-        handler: aws-burst-invoker/handler.burst_invoker
-        memorySize: ${self:custom.coldStartBatchMemory}
-        events:
-          - schedule: 
-              rate: ${self:custom.coldStartInterval}
-              name: coldstart-dotnet21-${self:provider.stage}-hourly-burst
-              enabled: false
-              input:
-                invokeCount: ${self:custom.coldStartBatchSize}
-                targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21
+    <<: *coldstart-param
+    events:
+      - schedule: 
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-dotnet21-${self:provider.stage}-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21
 
 
