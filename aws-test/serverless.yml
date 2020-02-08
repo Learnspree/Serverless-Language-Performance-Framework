@@ -26,42 +26,82 @@ custom:
 package:
   individually: true 
 
+# function parameters declared for re-use
+dotnet21-param-reuse: &dotnet21-param
+  runtime: dotnetcore2.1
+  handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::EmptyTestDotNetCore2
+  package:
+    artifact: aws-service-dotnetcore2/bin/release/netcoreapp2.1/deploy-package.zip
+
+java8-param-reuse: &java8-param
+  runtime: java8
+  handler: com.learnspree.EmptyJava8Handler
+  package:
+    artifact: aws-service-java8/target/awsjava8empty-${self:provider.stage}.jar
+
+go1x-param-reuse: &go1x-param
+  runtime: go1.x
+  handler: aws-service-go/bin/go-empty-function
+  package:
+    exclude:
+      - ./aws-service-go/**
+    include:
+      - ./aws-service-go/bin/**
+
 # individual function definitions
 functions:
   # begin warm-start test functions
   aws-warm-empty-dotnet21:
-    runtime: dotnetcore2.1
-    handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::EmptyTestDotNetCore2
-    package:
-      artifact: aws-service-dotnetcore2/bin/release/netcoreapp2.1/deploy-package.zip
+    <<: *dotnet21-param
     events:
-      - schedule: 
-          rate: ${self:custom.warmStartInterval}
-          name: warmstart-dotnet21-${self:provider.stage}-minute
-          enabled: false
+    - schedule: 
+        rate: ${self:custom.warmStartInterval}
+        name: warmstart-dotnet21-${self:provider.stage}-minute
+        enabled: false
+      
+  aws-warm-256-empty-dotnet21:
+    <<: *dotnet21-param
+    memorySize: 256
+    events:
+    - schedule: 
+        rate: ${self:custom.warmStartInterval}
+        name: warmstart-256-dotnet21-${self:provider.stage}-minute
+        enabled: false
+
   aws-warm-empty-go:
-    runtime: go1.x
-    handler: aws-service-go/bin/go-empty-function
-    package:
-      exclude:
-        - ./aws-service-go/**
-      include:
-        - ./aws-service-go/bin/**
+    <<: *go1x-param
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
           name: warmstart-go-${self:provider.stage}-minute
           enabled: false
+
+  aws-warm-256-empty-go:
+    <<: *go1x-param
+    memorySize: 256
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-256-go-${self:provider.stage}-minute
+          enabled: false          
+
   aws-warm-empty-java8:
-    runtime: java8
-    handler: com.learnspree.EmptyJava8Handler
-    package:
-      artifact: aws-service-java8/target/awsjava8empty-${self:provider.stage}.jar
+    <<: *java8-param
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
           name: warmstart-java8-${self:provider.stage}-minute
           enabled: false
+
+  aws-warm-256-empty-java8:
+    <<: *java8-param
+    memorySize: 256
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-256-java8-${self:provider.stage}-minute
+          enabled: false          
+
   aws-warm-empty-nodejs12x:
     runtime: nodejs12.x
     handler: aws-service-nodejs12x/handler.emptytestnodejs12x
@@ -69,7 +109,18 @@ functions:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
           name: warmstart-nodejs12x-${self:provider.stage}-minute
-          enabled: false    
+          enabled: false   
+
+  aws-warm-256-empty-nodejs12x:
+    runtime: nodejs12.x
+    handler: aws-service-nodejs12x/handler.emptytestnodejs12x
+    memorySize: 256
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-256-nodejs12x-${self:provider.stage}-minute
+          enabled: false            
+
   aws-warm-empty-python36:
     runtime: python3.6
     handler: aws-service-6/handler.awsemptypython3
@@ -78,6 +129,17 @@ functions:
           rate: ${self:custom.warmStartInterval}
           name: warmstart-python36-${self:provider.stage}-minute
           enabled: false
+
+  aws-warm-256-empty-python36:
+    runtime: python3.6
+    handler: aws-service-6/handler.awsemptypython3
+    memorySize: 256
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-256-python36-${self:provider.stage}-minute
+          enabled: false          
+
   # begin cold-start test functions. No events - they're triggered by the batch cold start schedulers below.      
   aws-cold-empty-dotnet21:
     runtime: dotnetcore2.1
