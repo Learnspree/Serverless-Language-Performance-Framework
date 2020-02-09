@@ -152,6 +152,10 @@ functions:
   aws-cold-empty-go:
     <<: *go1x-param
 
+  aws-cold-256-empty-go:
+    <<: *go1x-param
+    memorySize: 256
+
   aws-cold-empty-java8:
     <<: *java8-param
 
@@ -206,7 +210,9 @@ functions:
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-go
+            targetFunctionName: 
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-go
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-go
 
   awsdotnet2-coldstart:
     <<: *coldstart-param

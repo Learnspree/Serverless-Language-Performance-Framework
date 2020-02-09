@@ -19,7 +19,8 @@ class myThread(Thread):
 def burst_invoker(event, context):
     try:
         print('Event Count: ', event['invokeCount'])
-        print('Event Target: ', event['targetFunctionName'])
+        for y in event['targetFunctionName']:
+            print(f"Event Target: {y}")
 
         # putting in a hardcoded limit for safety to ensure we don't go wild calling lambdas
         if event['invokeCount'] > 10:
@@ -28,9 +29,11 @@ def burst_invoker(event, context):
         try:
             local_threads = []
             for x in range(event['invokeCount']):
-                t = myThread(event['targetFunctionName'])
-                local_threads.append(t)
-                threads.append(t)
+                for y in event['targetFunctionName']:
+                    print('Target Function: ', y)
+                # t = myThread(event['targetFunctionName'])
+                # local_threads.append(t)
+                # threads.append(t)
 
             # start all threads
             for thread in local_threads:
@@ -40,7 +43,7 @@ def burst_invoker(event, context):
             for thread in threads:
                 thread.join()
         except Exception as e:
-            print("Generic error: %s" % e)  
+            print("Threading error: %s" % e)  
 
         print('done')        
     except Exception as e:
