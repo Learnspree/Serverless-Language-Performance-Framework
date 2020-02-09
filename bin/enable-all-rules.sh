@@ -28,17 +28,20 @@ if [[ $environment != "dev" ]] && [[ $environment != "prod" ]]; then
     helpFunction
 fi
 
+# Cold Start - covers all memory allocations
+aws events enable-rule --name coldstart-python36-$environment-hourly-burst 
+aws events enable-rule --name coldstart-nodejs12x-$environment-hourly-burst 
+aws events enable-rule --name coldstart-java8-$environment-hourly-burst 
+aws events enable-rule --name coldstart-go-$environment-hourly-burst 
+aws events enable-rule --name coldstart-dotnet21-$environment-hourly-burst 
+
+# Warm Start
 # 128 MB 
 aws events enable-rule --name warmstart-nodejs12x-$environment-minute 
 aws events enable-rule --name warmstart-java8-$environment-minute 
 aws events enable-rule --name warmstart-dotnet21-$environment-minute 
 aws events enable-rule --name warmstart-python36-$environment-minute 
 aws events enable-rule --name warmstart-go-$environment-minute 
-aws events enable-rule --name coldstart-python36-$environment-hourly-burst 
-aws events enable-rule --name coldstart-nodejs12x-$environment-hourly-burst 
-aws events enable-rule --name coldstart-java8-$environment-hourly-burst 
-aws events enable-rule --name coldstart-go-$environment-hourly-burst 
-aws events enable-rule --name coldstart-dotnet21-$environment-hourly-burst 
 
 # 256 MB 
 aws events enable-rule --name warmstart-256-nodejs12x-$environment-minute 

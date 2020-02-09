@@ -87,11 +87,12 @@ module.exports.logger = (event, context, callback) => {
       let successCount = 0;
       let failureCount = 0;
 
-      console.log(`${parsedPayload}`);
+      console.log(`Logger detected invoke of ${functionNameValue}`);
 
 
       parsedPayload.logEvents.forEach(function (eventPayload) {
         const metrics = usageMetrics(eventPayload, functionNameValue, functionVersionValue);
+        console.log(`metrics received for ${functionNameValue}`);
 
         // call the API to store data 
         // TODO - make this asynchronous call as we don't really care about the response too much.
@@ -100,7 +101,7 @@ module.exports.logger = (event, context, callback) => {
           process.env.POST_METRICS_URL + "/metrics",
           { json: metrics },
           function (error, response, body) {
-              console.log(`Body: ${body}, Repsonse: ${response}, Error: ${error}`);
+              console.log(`Body: ${body}, Response: ${response}, Error: ${error}`);
               if (!error && response.statusCode == 200) {
                   successCount++;
               }

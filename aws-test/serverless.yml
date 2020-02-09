@@ -18,9 +18,9 @@ provider:
 custom:
   # you can use rate() or cron() syntax
   coldStartInterval: rate(60 minutes) # minutes => 1 hour 
-  coldStartBatchSize: 3 # e.g. => 6 every 60 minutes => 6 per hour
+  coldStartBatchSize: 3 # e.g. if 3 every 60 minutes => 3 per hour
   coldStartBatchMemory: 512
-  warmStartInterval: cron(56/1 * * * ? *) # every 1 minute starting at 56 past the hour => 4 per hour (but 1st will likely be cold)
+  warmStartInterval: rate(2 minutes) # cron(56/1 * * * ? *) # every 1 minute starting at 56 past the hour => 4 per hour (but 1st will likely be cold)
 
 # package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
 package:
@@ -148,24 +148,37 @@ functions:
   # begin cold-start test functions. No events - they're triggered by the batch cold start schedulers below.      
   aws-cold-empty-dotnet21:
     <<: *dotnet21-param
+  aws-cold-256-empty-dotnet21:
+    <<: *dotnet21-param
+    memorySize: 256
 
   aws-cold-empty-go:
     <<: *go1x-param
-
   aws-cold-256-empty-go:
     <<: *go1x-param
     memorySize: 256
 
   aws-cold-empty-java8:
     <<: *java8-param
+  aws-cold-256-empty-java8:
+    <<: *java8-param
+    memorySize: 256
 
   aws-cold-empty-nodejs12x:
     runtime: nodejs12.x
     handler: aws-service-nodejs12x/handler.emptytestnodejs12x
+  aws-cold-256-empty-nodejs12x:
+    runtime: nodejs12.x
+    handler: aws-service-nodejs12x/handler.emptytestnodejs12x
+    memorySize: 256
 
   aws-cold-empty-python36:
     runtime: python3.6
     handler: aws-service-python36/handler.awsemptypython36
+  aws-cold-256-empty-python36:
+    runtime: python3.6
+    handler: aws-service-python36/handler.awsemptypython36
+    memorySize: 256
 
   # begin cold-start-scheduler functions
   awspython36-coldstart:
@@ -177,7 +190,9 @@ functions:
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-python36
+            targetFunctionName: 
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-python36
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-python36
 
   awsnodejs12x-coldstart:
     <<: *coldstart-param
@@ -188,7 +203,9 @@ functions:
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-nodejs12x
+            targetFunctionName: 
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-nodejs12x
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-nodejs12x
 
   awsjava8-coldstart:
     <<: *coldstart-param
@@ -199,7 +216,9 @@ functions:
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-java8
+            targetFunctionName: 
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-java8
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-java8
 
   awsgo-coldstart:
     <<: *coldstart-param
@@ -223,6 +242,8 @@ functions:
           enabled: false
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21
+            targetFunctionName: 
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-dotnet21
 
 
