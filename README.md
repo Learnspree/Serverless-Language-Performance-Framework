@@ -6,10 +6,11 @@ This project uses the [serverless framework](http://www.serverless.com) to test 
 ## Framework Overview
 This framework uses a modular approach to allow plugging in different Serverless Platforms into an AWS-Lambda based processing engine that stores and analyzes the provided performance data. This is best illustrated in the diagram below:
 
-<img alt="Serverless Language Performance Framework Diagram" src="https://github.com/Learnspree/Serverless-Language-Performance-Framework/blob/develop/Framework%20Overview.png" width="583" height="360">
+<img alt="Serverless Language Performance Framework Diagram" src="./Framework%20Overview.png" width="360" height="400">
 
 ## Pre-Requisites
 Use of this framework requires a valid AWS (Amazon Web Services) account. 
+For Azure Functions testing, a valid Azure account is also required.
 
 ## Requirements
 Development of this performance testing framework used the following packages and versions:
@@ -50,6 +51,8 @@ See table above for versions and links
 12. Install boto3 to support python unit tests (`python -m pip install --user boto3`)
 
 ## Setup Azure Function Testing
+**NOTE:** Currently the Azure test components may need some re-work to adapt to changes in the main SPF API hosted in AWS (see above section). Any issues will be resolved soon in future updates.
+
 If you want to additionally test Azure Functions (in addition to AWS Lambda) then follow these additional steps:
 1. Setup Microsoft Azure Account
 2. Install Azure CLI *(See link above or for macOS just use `brew update && brew install azure-cli`)*
@@ -135,7 +138,7 @@ View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source 
 
 ### Deploy API For Metrics Storage
 
-Build & Deploy the API-backed metrics persistance function (saves given metrics in DynamoDB table) and the Cost Function which is triggered off that table. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
+Build & Deploy the metrics persistance function (saves given metrics in DynamoDB table) which is exposed via API Gateway as a RESTful endpoing. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 ```bash
 cd /spf-api
 ./spf-build-api.sh
@@ -218,7 +221,8 @@ aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --key-condition-expression "LanguageRuntime = :runtime" \
     --expression-attribute-values "{\":runtime\": {\"S\": \"nodejs12x\"}}"
 
-Note potential values for runtime:
+```
+Note potential values for runtime above:
 * nodejs12x
 * java8
 * dotnet21
@@ -227,23 +231,18 @@ Note potential values for runtime:
 * empty-csharp (azure csharp)
 * empty-nodejs (azure nodejs)
 
-# Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics-dev  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"nodejs12x\"}}"
-```
 ### End-to-End Test - Azure Functions
 Full end-to-end test measuring sample target function:
 ```bash
 cd /azure-test/azure-service-nodejs
 serverless invoke -f empty-nodejs -l 
 
-# Verify results - Metrics
+# Verify results 
 aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --index-name "duration-index" \
     --key-condition-expression "LanguageRuntime = :runtime" \
     --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"
 
-# Verify results - Costs (edit the json file for the request id you're looking for)
-aws dynamodb query --table-name ServerlessFunctionCostMetrics-dev  --key-condition-expression "LanguageRuntime = :v1" --expression-attribute-values "{\":v1\": {\"S\": \"empty-nodejs\"}}"
 ```
 
 ## Initiate Full Scheduled Test - AWS Lambda
@@ -251,7 +250,7 @@ Start a scheduled test by enabling the appropriate cloudwatch events on the test
 
 ```bash
 cd /bin
-./enable-all-rules.sh 
+./enable-all-rules.sh -e dev
 ```
 
 ## Initiate Full Schedule Test - Azure Functions
@@ -272,29 +271,23 @@ Do not forget to cancel testing or else they will continue to run indefinitely. 
 
 ```bash
 cd /bin
-./disable-all-rules.sh
+./disable-all-rules.sh -e dev
 ```
 
 ## Cleanup
 To remove all cloud-formation stacks created in your AWS account (by the serverless framework) for the performance testing, follow these commands to remove all functions:
 
 ```bash
-# Note - ensure that the logger function is removed first, as this has a dependency on the spf-api stack's API reference
-cd /aws-common/nodejs-perf-logger
-./spf-remove-aws-logger.sh
-
-# Note - removal of the API will remove the DynamoDB tables (change retention option to "Retain" from "Delete" in the serverless.yml to change this before deployment). Removal will fail if you don't remove teh nodejs-perf-logger first.
-cd /spf-api
-./spf-remove-api.sh
-
-cd aws-test
-./spf-remove-aws-test.sh
+# removes default "dev" environment
+# (a prod version of the script is also in /bin)
+cd /bin
+./spf-remove-aws.sh 
 ```
 ### Dynamo DB Table Removal (Optional)
-Optionally, remove the dynamodb metrics table
+Optionally, you can manually remove the dynamodb metrics table. Note: this will happen automatically when you run the "/bin/spf-remove-aws.sh" script which removes the "dev" environment (but not when running the production version of the script - the table is protected there).
+
 **WARNING!!** This will remove all your test results!
 
 ```bash
 aws dynamodb delete-table --table-name ServerlessFunctionMetrics-dev [--profile <aws-profile>]
-aws dynamodb delete-table --table-name ServerlessFunctionCostMetrics-dev [--profile <aws-profile>]
 ```
