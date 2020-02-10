@@ -26,6 +26,14 @@ cd $DIR/aws-service-go
 make
 
 echo "***** SPF: finished build stage *****"
+
+echo "***** SPF: running sls deploy stage *****"
+
+cd $DIR
+serverless deploy -v
+
+echo "***** SPF: finished sls deploy stage *****"
+
 if [ -z $testing ]
 then
     echo "***** SPF: skipping testing stage *****"
@@ -57,10 +65,3 @@ else
 
     echo "***** SPF: finished testing stage *****"
 fi
-
-echo "***** SPF: running sls deploy stage *****"
-
-cd $DIR
-serverless deploy -v
-
-echo "***** SPF: finished sls deploy stage *****"
