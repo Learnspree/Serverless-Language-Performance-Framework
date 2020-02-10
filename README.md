@@ -6,7 +6,7 @@ This project uses the [serverless framework](http://www.serverless.com) to test 
 ## Framework Overview
 This framework uses a modular approach to allow plugging in different Serverless Platforms into an AWS-Lambda based processing engine that stores and analyzes the provided performance data. This is best illustrated in the diagram below:
 
-<img alt="Serverless Language Performance Framework Diagram" src="https://github.com/Learnspree/Serverless-Language-Performance-Framework/blob/develop/Framework%20Overview.png" width="583" height="360">
+<img alt="Serverless Language Performance Framework Diagram" src="./Framework%20Overview.png" width="360" height="400">
 
 ## Pre-Requisites
 Use of this framework requires a valid AWS (Amazon Web Services) account. 
