@@ -98,7 +98,7 @@ This section describes how to re-build and re-deploy the individual target test 
 
 ```bash
 cd /aws-test
-./spf-build-aws-test.sh
+./spf-build-aws-test.sh -e dev [-t]
 ```
 
 Each target function will essentially be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Example below:

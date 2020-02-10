@@ -109,7 +109,7 @@ functions:
 
   aws-warm-empty-nodejs12x:
     runtime: nodejs12.x
-    handler: aws-service-nodejs12x/handler.emptytestnodejs12x
+    handler: aws-service-nodejs/handler.emptytestnodejs
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
@@ -118,7 +118,7 @@ functions:
 
   aws-warm-256-empty-nodejs12x:
     runtime: nodejs12.x
-    handler: aws-service-nodejs12x/handler.emptytestnodejs12x
+    handler: aws-service-nodejs/handler.emptytestnodejs
     memorySize: 256
     events:
       - schedule: 
@@ -128,7 +128,7 @@ functions:
 
   aws-warm-empty-python36:
     runtime: python3.6
-    handler: aws-service-6/handler.awsemptypython3
+    handler: aws-service-python/handler.awsemptypython
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
@@ -137,7 +137,7 @@ functions:
 
   aws-warm-256-empty-python36:
     runtime: python3.6
-    handler: aws-service-6/handler.awsemptypython3
+    handler: aws-service-python/handler.awsemptypython
     memorySize: 256
     events:
       - schedule: 
@@ -166,18 +166,18 @@ functions:
 
   aws-cold-empty-nodejs12x:
     runtime: nodejs12.x
-    handler: aws-service-nodejs12x/handler.emptytestnodejs12x
+    handler: aws-service-nodejs/handler.emptytestnodejs
   aws-cold-256-empty-nodejs12x:
     runtime: nodejs12.x
-    handler: aws-service-nodejs12x/handler.emptytestnodejs12x
+    handler: aws-service-nodejs/handler.emptytestnodejs
     memorySize: 256
 
   aws-cold-empty-python36:
     runtime: python3.6
-    handler: aws-service-python36/handler.awsemptypython36
+    handler: aws-service-python/handler.awsemptypython
   aws-cold-256-empty-python36:
     runtime: python3.6
-    handler: aws-service-python36/handler.awsemptypython36
+    handler: aws-service-python/handler.awsemptypython
     memorySize: 256
 
   # begin cold-start-scheduler functions
