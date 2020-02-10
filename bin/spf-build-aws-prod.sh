@@ -11,7 +11,7 @@ cd $DIR/../spf-api
 # Build the test functions next (logger depends on this stack's log groups)
 echo "***** SPF: Build Test Functions *****"
 cd $DIR/../aws-test
-./spf-build-aws-test-prod.sh
+./spf-build-aws-test.sh -e prod -t
 
 # Finally build the logger which takes test function log entries and delivers to the spf-api
 echo "***** SPF: Build Logger Handlers *****"
