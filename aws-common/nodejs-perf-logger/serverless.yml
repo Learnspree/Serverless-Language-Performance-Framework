@@ -31,8 +31,15 @@ functions:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-nodejs12x'
           filter: 'REPORT'   
       - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-256-empty-nodejs12x'
+          filter: 'REPORT'   
+      - cloudwatchLog:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-nodejs12x'
           filter: 'REPORT'                  
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-nodejs12x'
+          filter: 'REPORT'                  
+
   logger-dotnet:
     handler: handler.logger
     events:
@@ -40,8 +47,15 @@ functions:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-dotnet21'
           filter: 'REPORT'
       - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-256-empty-dotnet21'
+          filter: 'REPORT'
+      - cloudwatchLog:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21'
           filter: 'REPORT'          
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-dotnet21'
+          filter: 'REPORT'          
+
   logger-java:
     handler: handler.logger
     events:
@@ -49,8 +63,15 @@ functions:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-java8'
           filter: 'REPORT'
       - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-256-empty-java8'
+          filter: 'REPORT'
+      - cloudwatchLog:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-java8'
           filter: 'REPORT'          
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-java8'
+          filter: 'REPORT'          
+
   logger-python:
     handler: handler.logger
     events:
@@ -58,8 +79,15 @@ functions:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-python36'
           filter: 'REPORT'
       - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-256-empty-python36'
+          filter: 'REPORT'
+      - cloudwatchLog:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-python36'
-          filter: 'REPORT'          
+          filter: 'REPORT' 
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-python36'
+          filter: 'REPORT' 
+
   logger-go:
     handler: handler.logger
     events:
@@ -67,7 +95,13 @@ functions:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-go'
           filter: 'REPORT'     
       - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-256-empty-go'
+          filter: 'REPORT'     
+      - cloudwatchLog:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-go'
+          filter: 'REPORT'                  
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-go'
           filter: 'REPORT'                  
 
 
