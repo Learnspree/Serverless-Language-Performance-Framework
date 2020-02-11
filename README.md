@@ -243,6 +243,11 @@ aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --key-condition-expression "LanguageRuntime = :runtime" \
     --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"
 
+aws dynamodb scan --table-name ServerlessFunctionMetrics-prod --select "COUNT" \
+    --filter-expression 'LanguageRuntime = :runtime AND #S = :state AND #T > :timestampvalue AND MemorySize = :memory' \
+    --expression-attribute-names '{"#S":"State", "#T":"Timestamp"}' \
+    --expression-attribute-values '{":runtime":{"S":"java8"}, ":memory":{"N":"128"},":state":{"S":"cold"}, ":timestampvalue":{"N":"1578873601000"}}' 
+
 ```
 
 ## Initiate Full Scheduled Test - AWS Lambda
