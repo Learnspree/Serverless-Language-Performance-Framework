@@ -215,12 +215,25 @@ curl https://<api-gateway-url>.execute-api.us-east-1.amazonaws.com/dev/runtimes/
 
 # Note - this should trigger (by default) the metrics gathering and logging lambda functions/API calls. 
 # Check DynamoDB table "ServerlessFunctionMetrics-<env>" to validate.
-# Example below to query for all "nodejs12x" runtime results
+
+# Examples below:
 aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --index-name "duration-index" \
     --key-condition-expression "LanguageRuntime = :runtime" \
     --expression-attribute-values "{\":runtime\": {\"S\": \"nodejs12x\"}}"
 
+aws dynamodb scan --table-name ServerlessFunctionMetrics-prod --select "COUNT" \
+    --filter-expression 'LanguageRuntime = :runtime AND #S = :state AND #T > :timestampvalue AND MemorySize = :memory' \
+    --expression-attribute-names '{"#S":"State", "#T":"Timestamp"}' \
+    --expression-attribute-values '{":runtime":{"S":"java8"}, ":memory":{"N":"128"},":state":{"S":"cold"}, ":timestampvalue":{"N":"1578873601000"}}' 
+
+aws dynamodb query \
+    --table-name ServerlessFunctionMetrics-prod \
+    --key-condition-expression "LanguageRuntime = :runtime" \
+    --projection-expression "LanguageRuntime, BilledDuration, ServerlessPlatformName" \
+    --filter-expression '#S = :state AND #T > :timestampvalue AND MemorySize = :memory' \
+    --expression-attribute-names '{"#S":"State", "#T":"Timestamp"}' \
+    --expression-attribute-values '{":runtime":{"S":"java8"}, ":memory":{"N":"128"},":state":{"S":"cold"}, ":timestampvalue":{"N":"1578873601000"}}' 
 ```
 Note potential values for runtime above:
 * nodejs12x
@@ -241,12 +254,7 @@ serverless invoke -f empty-nodejs -l
 aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --index-name "duration-index" \
     --key-condition-expression "LanguageRuntime = :runtime" \
-    --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"
-
-aws dynamodb scan --table-name ServerlessFunctionMetrics-prod --select "COUNT" \
-    --filter-expression 'LanguageRuntime = :runtime AND #S = :state AND #T > :timestampvalue AND MemorySize = :memory' \
-    --expression-attribute-names '{"#S":"State", "#T":"Timestamp"}' \
-    --expression-attribute-values '{":runtime":{"S":"java8"}, ":memory":{"N":"128"},":state":{"S":"cold"}, ":timestampvalue":{"N":"1578873601000"}}' 
+    --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"    
 
 ```
 
