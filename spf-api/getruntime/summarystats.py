@@ -66,23 +66,6 @@ def getSummaryStats(event, context):
             # params ready - do the query
             allMatchingRows = table.query(**query_params)
 
-            # if (queryFilterExpression is None):
-            #     allMatchingRows = table.query(
-            #         TableName=os.environ['DYNAMODB_TABLE'],
-            #         KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-            #         ProjectionExpression='LanguageRuntime, #duration, BilledDuration',
-            #         ExclusiveStartKey=lastEvaluatedKey,
-            #         ExpressionAttributeNames = { "#duration": "Duration" }
-            #     )
-            # else:
-            #     allMatchingRows = table.query(
-            #         TableName=os.environ['DYNAMODB_TABLE'],
-            #         KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-            #         ProjectionExpression='LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
-            #         ExpressionAttributeNames = { "#duration": "Duration" },
-            #         ExclusiveStartKey=lastEvaluatedKey,
-            #         FilterExpression = queryFilterExpression
-            #     )
         except ParamValidationError as e:
             print("Parameter validation error: %s" % e)        
         except ClientError as e:
