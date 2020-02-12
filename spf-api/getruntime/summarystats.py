@@ -44,7 +44,7 @@ def getSummaryStats(event, context):
     maxExecutionRow = None
     minExecutionRow = None
 
-    moreRecordsExist = true
+    moreRecordsExist = True
     lastEvaluatedKey = None
     totalRowCount = 0
 
@@ -64,7 +64,7 @@ def getSummaryStats(event, context):
                 query_params['ExclusiveStartKey'] = lastEvaluatedKey
 
             # params ready - do the query
-            allMatchingRows = table.query(query_params)
+            allMatchingRows = table.query(**query_params)
 
             # if (queryFilterExpression is None):
             #     allMatchingRows = table.query(
@@ -92,8 +92,8 @@ def getSummaryStats(event, context):
 
         try:
             if not allMatchingRows['Items']:
-                print ("no more records available for %s. Total Count: %d" % (inputRuntime, totalRowCount)
-                moreRecordsExist = false
+                f'no more records available for {inputRuntime}. Total Count: {totalRowCount}'
+                moreRecordsExist = False
                 lastEvaluatedKey = None
             else:
                 totalRowCount += allMatchingRows['Count']
