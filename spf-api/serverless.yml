@@ -58,6 +58,7 @@ functions:
   get-summary-stats:
       handler: getruntime/summarystats.getSummaryStats
       runtime: python3.8
+      memorySize: 256
       timeout: 5
       environment:
         DYNAMODB_TABLE: "ServerlessFunctionMetrics-${self:provider.stage}"

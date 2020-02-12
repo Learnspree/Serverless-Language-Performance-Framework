@@ -233,7 +233,7 @@ aws dynamodb query \
     --projection-expression "LanguageRuntime, BilledDuration, ServerlessPlatformName" \
     --filter-expression '#S = :state AND #T > :timestampvalue AND MemorySize = :memory' \
     --expression-attribute-names '{"#S":"State", "#T":"Timestamp"}' \
-    --expression-attribute-values '{":runtime":{"S":"java8"}, ":memory":{"N":"128"},":state":{"S":"cold"}, ":timestampvalue":{"N":"1578873601000"}}' 
+    --expression-attribute-values '{":runtime":{"S":"java8"}, ":memory":{"N":"128"},":state":{"S":"warm"}, ":timestampvalue":{"N":"1578873601000"}}' 
 ```
 Note potential values for runtime above:
 * nodejs12x
