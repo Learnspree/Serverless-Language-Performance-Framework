@@ -62,8 +62,7 @@ functions:
     - schedule: 
         rate: ${self:custom.warmStartInterval}
         name: warmstart-dotnet21-${self:provider.stage}-minute
-        enabled: false
-      
+        enabled: false      
   aws-warm-256-empty-dotnet21:
     <<: *dotnet21-param
     memorySize: 256
@@ -71,6 +70,14 @@ functions:
     - schedule: 
         rate: ${self:custom.warmStartInterval}
         name: warmstart-256-dotnet21-${self:provider.stage}-minute
+        enabled: false
+  aws-warm-512-empty-dotnet21:
+    <<: *dotnet21-param
+    memorySize: 512
+    events:
+    - schedule: 
+        rate: ${self:custom.warmStartInterval}
+        name: warmstart-512-dotnet21-${self:provider.stage}-minute
         enabled: false
 
   aws-warm-empty-go:
@@ -80,7 +87,6 @@ functions:
           rate: ${self:custom.warmStartInterval}
           name: warmstart-go-${self:provider.stage}-minute
           enabled: false
-
   aws-warm-256-empty-go:
     <<: *go1x-param
     memorySize: 256
@@ -89,6 +95,14 @@ functions:
           rate: ${self:custom.warmStartInterval}
           name: warmstart-256-go-${self:provider.stage}-minute
           enabled: false          
+  aws-warm-512-empty-go:
+    <<: *go1x-param
+    memorySize: 512
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-512-go-${self:provider.stage}-minute
+          enabled: false 
 
   aws-warm-empty-java8:
     <<: *java8-param
@@ -97,7 +111,6 @@ functions:
           rate: ${self:custom.warmStartInterval}
           name: warmstart-java8-${self:provider.stage}-minute
           enabled: false
-
   aws-warm-256-empty-java8:
     <<: *java8-param
     memorySize: 256
@@ -106,6 +119,14 @@ functions:
           rate: ${self:custom.warmStartInterval}
           name: warmstart-256-java8-${self:provider.stage}-minute
           enabled: false          
+  aws-warm-512-empty-java8:
+    <<: *java8-param
+    memorySize: 512
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-512-java8-${self:provider.stage}-minute
+          enabled: false   
 
   aws-warm-empty-nodejs12x:
     runtime: nodejs12.x
@@ -115,7 +136,6 @@ functions:
           rate: ${self:custom.warmStartInterval}
           name: warmstart-nodejs12x-${self:provider.stage}-minute
           enabled: false   
-
   aws-warm-256-empty-nodejs12x:
     runtime: nodejs12.x
     handler: aws-service-nodejs/handler.emptytestnodejs
@@ -124,7 +144,16 @@ functions:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
           name: warmstart-256-nodejs12x-${self:provider.stage}-minute
-          enabled: false            
+          enabled: false
+  aws-warm-512-empty-nodejs12x:
+    runtime: nodejs12.x
+    handler: aws-service-nodejs/handler.emptytestnodejs
+    memorySize: 512
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-512-nodejs12x-${self:provider.stage}-minute
+          enabled: false                     
 
   aws-warm-empty-python36:
     runtime: python3.6
@@ -134,7 +163,6 @@ functions:
           rate: ${self:custom.warmStartInterval}
           name: warmstart-python36-${self:provider.stage}-minute
           enabled: false
-
   aws-warm-256-empty-python36:
     runtime: python3.6
     handler: aws-service-python/handler.awsemptypython
@@ -144,6 +172,15 @@ functions:
           rate: ${self:custom.warmStartInterval}
           name: warmstart-256-python36-${self:provider.stage}-minute
           enabled: false          
+  aws-warm-512-empty-python36:
+    runtime: python3.6
+    handler: aws-service-python/handler.awsemptypython
+    memorySize: 512
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-512-python36-${self:provider.stage}-minute
+          enabled: false 
 
   # begin cold-start test functions. No events - they're triggered by the batch cold start schedulers below.      
   aws-cold-empty-dotnet21:
@@ -151,18 +188,27 @@ functions:
   aws-cold-256-empty-dotnet21:
     <<: *dotnet21-param
     memorySize: 256
+  aws-cold-512-empty-dotnet21:
+    <<: *dotnet21-param
+    memorySize: 512
 
   aws-cold-empty-go:
     <<: *go1x-param
   aws-cold-256-empty-go:
     <<: *go1x-param
     memorySize: 256
+  aws-cold-512-empty-go:
+    <<: *go1x-param
+    memorySize: 512
 
   aws-cold-empty-java8:
     <<: *java8-param
   aws-cold-256-empty-java8:
     <<: *java8-param
     memorySize: 256
+  aws-cold-512-empty-java8:
+    <<: *java8-param
+    memorySize: 512
 
   aws-cold-empty-nodejs12x:
     runtime: nodejs12.x
@@ -171,6 +217,10 @@ functions:
     runtime: nodejs12.x
     handler: aws-service-nodejs/handler.emptytestnodejs
     memorySize: 256
+  aws-cold-512-empty-nodejs12x:
+    runtime: nodejs12.x
+    handler: aws-service-nodejs/handler.emptytestnodejs
+    memorySize: 512
 
   aws-cold-empty-python36:
     runtime: python3.6
@@ -179,6 +229,10 @@ functions:
     runtime: python3.6
     handler: aws-service-python/handler.awsemptypython
     memorySize: 256
+  aws-cold-512-empty-python36:
+    runtime: python3.6
+    handler: aws-service-python/handler.awsemptypython
+    memorySize: 512
 
   # begin cold-start-scheduler functions
   awspython36-coldstart:
@@ -193,6 +247,7 @@ functions:
             targetFunctionName: 
               - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-python36
               - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-python36
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-python36
 
   awsnodejs12x-coldstart:
     <<: *coldstart-param
@@ -206,6 +261,7 @@ functions:
             targetFunctionName: 
               - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-nodejs12x
               - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-nodejs12x
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-nodejs12x
 
   awsjava8-coldstart:
     <<: *coldstart-param
@@ -219,6 +275,7 @@ functions:
             targetFunctionName: 
               - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-java8
               - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-java8
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-java8
 
   awsgo-coldstart:
     <<: *coldstart-param
@@ -232,6 +289,7 @@ functions:
             targetFunctionName: 
               - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-go
               - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-go
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-go
 
   awsdotnet2-coldstart:
     <<: *coldstart-param
@@ -245,5 +303,5 @@ functions:
             targetFunctionName: 
               - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21
               - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-dotnet21
-
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-dotnet21
 

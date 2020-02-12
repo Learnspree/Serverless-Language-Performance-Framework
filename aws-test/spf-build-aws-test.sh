@@ -65,26 +65,36 @@ else
     echo "***** SPF: testing each target function runs ok.... *****"
     cd $DIR
     sls invoke -f aws-warm-empty-dotnet21 --stage $environment
-    sls invoke -f aws-warm-256-empty-dotnet21 --stage $environment
     sls invoke -f aws-warm-empty-go --stage $environment
-    sls invoke -f aws-warm-256-empty-go --stage $environment
     sls invoke -f aws-warm-empty-java8 --stage $environment
-    sls invoke -f aws-warm-256-empty-java8 --stage $environment
     sls invoke -f aws-warm-empty-nodejs12x --stage $environment
-    sls invoke -f aws-warm-256-empty-nodejs12x --stage $environment
     sls invoke -f aws-warm-empty-python36 --stage $environment
+    sls invoke -f aws-warm-256-empty-dotnet21 --stage $environment
+    sls invoke -f aws-warm-256-empty-go --stage $environment        
+    sls invoke -f aws-warm-256-empty-java8 --stage $environment
+    sls invoke -f aws-warm-256-empty-nodejs12x --stage $environment
     sls invoke -f aws-warm-256-empty-python36 --stage $environment
+    sls invoke -f aws-warm-512-empty-dotnet21 --stage $environment
+    sls invoke -f aws-warm-512-empty-go --stage $environment        
+    sls invoke -f aws-warm-512-empty-java8 --stage $environment
+    sls invoke -f aws-warm-512-empty-nodejs12x --stage $environment
+    sls invoke -f aws-warm-512-empty-python36 --stage $environment
 
     sls invoke -f aws-cold-empty-dotnet21 --stage $environment
-    sls invoke -f aws-cold-256-empty-dotnet21 --stage $environment
     sls invoke -f aws-cold-empty-go --stage $environment
-    sls invoke -f aws-cold-256-empty-go --stage $environment
     sls invoke -f aws-cold-empty-java8 --stage $environment
-    sls invoke -f aws-cold-256-empty-java8 --stage $environment
     sls invoke -f aws-cold-empty-nodejs12x --stage $environment
-    sls invoke -f aws-cold-256-empty-nodejs12x --stage $environment
     sls invoke -f aws-cold-empty-python36 --stage $environment
+    sls invoke -f aws-cold-256-empty-dotnet21 --stage $environment
+    sls invoke -f aws-cold-256-empty-go --stage $environment        
+    sls invoke -f aws-cold-256-empty-java8 --stage $environment
+    sls invoke -f aws-cold-256-empty-nodejs12x --stage $environment
     sls invoke -f aws-cold-256-empty-python36 --stage $environment
+    sls invoke -f aws-cold-512-empty-dotnet21 --stage $environment
+    sls invoke -f aws-cold-512-empty-go --stage $environment        
+    sls invoke -f aws-cold-512-empty-java8 --stage $environment
+    sls invoke -f aws-cold-512-empty-nodejs12x --stage $environment
+    sls invoke -f aws-cold-512-empty-python36 --stage $environment
 
     echo "***** SPF: finished testing stage ($environment) *****"
 fi
