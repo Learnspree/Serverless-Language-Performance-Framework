@@ -22,78 +22,115 @@ def getSummaryStats(event, context):
     queryFilterExpression = queryfilter.getDynamoFilterExpression(event['queryStringParameters'])
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
-    # fetch metrics from the database
     print('Language Runtime Input: ', inputRuntime)
 
-    try:
-        if (queryFilterExpression is None):
-            allMatchingRows = table.query(
-                TableName=os.environ['DYNAMODB_TABLE'],
-                KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-                ProjectionExpression='LanguageRuntime, #duration, BilledDuration',
-                ExpressionAttributeNames = { "#duration": "Duration" }
-            )
-        else:
-            allMatchingRows = table.query(
-                TableName=os.environ['DYNAMODB_TABLE'],
-                KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-                ProjectionExpression='LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
-                ExpressionAttributeNames = { "#duration": "Duration" },
-                FilterExpression = queryFilterExpression
-            )
-    except ParamValidationError as e:
-        print("Parameter validation error: %s" % e)        
-    except ClientError as e:
-        print("Unexpected error: %s" % e)
-    except Exception as e:
-        print("Generic error: %s" % e)
-        
+    # set default return value
     returnValue = { 
-                    "meanDuration" : Decimal('-1.0'),
-                    "meanBilledDuration" : Decimal('-1.0'),
-                    "maxExecution" : None,
-                    "minExecution" : None,
-                    "count" : 0,
-                    "cost" : 0,
-                    "costPerMillion" : 0
-                  } 
+                "meanDuration" : Decimal('-1.0'),
+                "meanBilledDuration" : Decimal('-1.0'),
+                "maxExecution" : None,
+                "minExecution" : None,
+                "count" : 0,
+                "cost" : 0,
+                "costPerMillion" : 0
+                } 
 
+    # fetch metrics from the database
+    # initialize parameters set here for potential loops for paging
+    totalDuration = Decimal('0.0')
+    totalBilledDuration = Decimal('0.0')
+    currentMaxDuration = Decimal('0.0')
+    currentMinDuration = Decimal('1000000.0')
+    maxExecutionRow = None
+    minExecutionRow = None
+
+    moreRecordsExist = true
+    lastEvaluatedKey = None
+    totalRowCount = 0
+
+    # loop for potential paging
+    while moreRecordsExist:
+
+        try:
+            query_params = { 
+                'TableName': os.environ['DYNAMODB_TABLE'],
+                'KeyConditionExpression': Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
+                'ProjectionExpression': 'LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
+                'ExpressionAttributeNames': { "#duration": "Duration" }
+            }
+            if queryFilterExpression:
+                query_params['FilterExpression'] = queryFilterExpression
+            if lastEvaluatedKey:
+                query_params['ExclusiveStartKey'] = lastEvaluatedKey
+
+            # params ready - do the query
+            allMatchingRows = table.query(query_params)
+
+            # if (queryFilterExpression is None):
+            #     allMatchingRows = table.query(
+            #         TableName=os.environ['DYNAMODB_TABLE'],
+            #         KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
+            #         ProjectionExpression='LanguageRuntime, #duration, BilledDuration',
+            #         ExclusiveStartKey=lastEvaluatedKey,
+            #         ExpressionAttributeNames = { "#duration": "Duration" }
+            #     )
+            # else:
+            #     allMatchingRows = table.query(
+            #         TableName=os.environ['DYNAMODB_TABLE'],
+            #         KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
+            #         ProjectionExpression='LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
+            #         ExpressionAttributeNames = { "#duration": "Duration" },
+            #         ExclusiveStartKey=lastEvaluatedKey,
+            #         FilterExpression = queryFilterExpression
+            #     )
+        except ParamValidationError as e:
+            print("Parameter validation error: %s" % e)        
+        except ClientError as e:
+            print("Unexpected error: %s" % e)
+        except Exception as e:
+            print("Generic error: %s" % e)
+
+        try:
+            if not allMatchingRows['Items']:
+                print ("no more records available for %s. Total Count: %d" % (inputRuntime, totalRowCount)
+                moreRecordsExist = false
+                lastEvaluatedKey = None
+            else:
+                totalRowCount += allMatchingRows['Count']
+                moreRecordsExist = ('LastEvaluatedKey' in allMatchingRows)
+                if moreRecordsExist:
+                    lastEvaluatedKey = allMatchingRows['LastEvaluatedKey']
+
+                # process results of this "page" of the query
+                for row in allMatchingRows['Items']:
+                    rowDuration = row['Duration']
+                    totalDuration += rowDuration
+                    totalBilledDuration += row['BilledDuration']
+                    if rowDuration > currentMaxDuration:
+                        currentMaxDuration = rowDuration
+                        maxExecutionRow = row
+                    if rowDuration < currentMinDuration:
+                        currentMinDuration = rowDuration
+                        minExecutionRow = row
+        except Exception as e:
+            print("Error retrieval data from DynamoDB Table: %s" % e)  
+
+    # End of query loop - now total up and return the overall result 
     try:
-        if not allMatchingRows['Items']:
-            print ("no records available for %s" % inputRuntime)
-        else:
-            totalDuration = Decimal('0.0')
-            totalBilledDuration = Decimal('0.0')
-            currentMaxDuration = Decimal('0.0')
-            currentMinDuration = Decimal('1000000.0')
-            maxExecutionRow = allMatchingRows['Items'][0]
-            minExecutionRow = allMatchingRows['Items'][0]
+        meanBilledDuration = int(math.ceil((totalBilledDuration / totalRowCount) / Decimal(100.0))) * 100
+        memoryAllocationForCostCalc = queryfilter.getMemoryFromQueryString(event['queryStringParameters'])
 
-            for row in allMatchingRows['Items']:
-                rowDuration = row['Duration']
-                totalDuration += rowDuration
-                totalBilledDuration += row['BilledDuration']
-                if rowDuration > currentMaxDuration:
-                    currentMaxDuration = rowDuration
-                    maxExecutionRow = row
-                if rowDuration < currentMinDuration:
-                    currentMinDuration = rowDuration
-                    minExecutionRow = row
-
-            meanBilledDuration = int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100
-            memoryAllocationForCostCalc = queryfilter.getMemoryFromQueryString(event['queryStringParameters'])
-
-            returnValue = { 
-                            "meanDuration" : totalDuration / allMatchingRows['Count'],
-                            "meanBilledDuration" : meanBilledDuration,
-                            "maxExecution" : maxExecutionRow,
-                            "minExecution" : minExecutionRow,
-                            "count" : allMatchingRows['Count'],
-                            "cost" : calculatecost.getCostForFunctionDuration("AWS Lambda", Decimal(meanBilledDuration), memoryAllocationForCostCalc),
-                            "costPerMillion" : calculatecost.getCostPerMillionForBilledDuration("AWS Lambda", Decimal(meanBilledDuration), memoryAllocationForCostCalc)
-                          } 
+        returnValue = { 
+                        "meanDuration" : totalDuration / totalRowCount,
+                        "meanBilledDuration" : meanBilledDuration,
+                        "maxExecution" : maxExecutionRow,
+                        "minExecution" : minExecutionRow,
+                        "count" : totalRowCount,
+                        "cost" : calculatecost.getCostForFunctionDuration("AWS Lambda", Decimal(meanBilledDuration), memoryAllocationForCostCalc),
+                        "costPerMillion" : calculatecost.getCostPerMillionForBilledDuration("AWS Lambda", Decimal(meanBilledDuration), memoryAllocationForCostCalc)
+                        } 
     except Exception as e:
-        print("Generic error: %s" % e)  
+        print("Error calculating totals: %s" % e)  
     
     # create a response
     response = {
