@@ -25,14 +25,14 @@ custom:
 # function parameters declared for re-use
 coldstart-param-reuse: &coldstart-param
   runtime: python3.8
-  handler: aws-burst-invoker/handler.burst_invoker
+  handler: ../aws-burst-invoker/handler.burst_invoker
   memorySize: ${self:custom.coldStartBatchMemory}
 
 # individual function definitions
 functions:
   aws-warm-empty-python36:
     runtime: python3.6
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
@@ -40,7 +40,7 @@ functions:
           enabled: false
   aws-warm-256-empty-python36:
     runtime: python3.6
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
     memorySize: 256
     events:
       - schedule: 
@@ -49,7 +49,7 @@ functions:
           enabled: false          
   aws-warm-512-empty-python36:
     runtime: python3.6
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
     memorySize: 512
     events:
       - schedule: 
@@ -59,7 +59,7 @@ functions:
 
   aws-warm-empty-python38:
     runtime: python3.8
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
@@ -67,7 +67,7 @@ functions:
           enabled: false
   aws-warm-256-empty-python38:
     runtime: python3.8
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
     memorySize: 256
     events:
       - schedule: 
@@ -76,7 +76,7 @@ functions:
           enabled: false          
   aws-warm-512-empty-python38:
     runtime: python3.8
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
     memorySize: 512
     events:
       - schedule: 
@@ -87,26 +87,26 @@ functions:
   # begin cold-start test functions. No events - they're triggered by the batch cold start schedulers below.      
   aws-cold-empty-python36:
     runtime: python3.6
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
   aws-cold-256-empty-python36:
     runtime: python3.6
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
     memorySize: 256
   aws-cold-512-empty-python36:
     runtime: python3.6
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
     memorySize: 512
 
   aws-cold-empty-python38:
     runtime: python3.8
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
   aws-cold-256-empty-python38:
     runtime: python3.8
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
     memorySize: 256
   aws-cold-512-empty-python38:
     runtime: python3.8
-    handler: ./handler.awsemptypython
+    handler: handler.awsemptypython
     memorySize: 512    
 
   # begin cold-start-scheduler functions
