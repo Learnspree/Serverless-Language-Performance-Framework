@@ -1,0 +1,93 @@
+# Config file for aws empty-test functions 
+#
+service: aws-empty-test-functions-dotnet
+
+provider:
+  name: aws
+  memorySize: 128
+  timeout: 6
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region,'us-east-1'}
+  versionFunctions: true # Optional function versioning
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: "arn:aws:lambda:${self:provider.region}:*:function:aws-empty-test*" 
+
+custom:
+  # you can use rate() or cron() syntax
+  coldStartInterval: rate(60 minutes) # minutes => 1 hour 
+  coldStartBatchSize: 3 # e.g. if 3 every 60 minutes => 3 per hour
+  coldStartBatchMemory: 512
+  warmStartInterval: cron(56/1 * * * ? *) # every 1 minute starting at 56 past the hour => 4 per hour (but 1st will likely be cold)
+
+# package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
+package:
+  individually: true 
+
+# function parameters declared for re-use
+dotnet21-param-reuse: &dotnet21-param
+  runtime: dotnetcore2.1
+  handler: CsharpHandlers::ServerlessPerformanceFramework.Handler::EmptyTestDotNetCore2
+  package:
+    artifact: bin/release/netcoreapp2.1/deploy-package.zip
+
+coldstart-param-reuse: &coldstart-param
+  runtime: python3.8
+  handler: ../aws-burst-invoker/handler.burst_invoker
+  memorySize: ${self:custom.coldStartBatchMemory}
+
+# individual function definitions
+functions:
+  # begin warm-start test functions
+  aws-warm-empty-dotnet21:
+    <<: *dotnet21-param
+    events:
+    - schedule: 
+        rate: ${self:custom.warmStartInterval}
+        name: warmstart-dotnet21-${self:provider.stage}-minute
+        enabled: false      
+  aws-warm-256-empty-dotnet21:
+    <<: *dotnet21-param
+    memorySize: 256
+    events:
+    - schedule: 
+        rate: ${self:custom.warmStartInterval}
+        name: warmstart-256-dotnet21-${self:provider.stage}-minute
+        enabled: false
+  aws-warm-512-empty-dotnet21:
+    <<: *dotnet21-param
+    memorySize: 512
+    events:
+    - schedule: 
+        rate: ${self:custom.warmStartInterval}
+        name: warmstart-512-dotnet21-${self:provider.stage}-minute
+        enabled: false
+
+  # cold-start test functions. No events
+  # (they're triggered by the batch cold start scheduler below)
+  aws-cold-empty-dotnet21:
+    <<: *dotnet21-param
+  aws-cold-256-empty-dotnet21:
+    <<: *dotnet21-param
+    memorySize: 256
+  aws-cold-512-empty-dotnet21:
+    <<: *dotnet21-param
+    memorySize: 512
+
+  # cold-start-scheduler function
+  awsdotnet2-coldstart:
+    <<: *coldstart-param
+    events:
+      - schedule: 
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-dotnet21-${self:provider.stage}-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: 
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-dotnet21
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-dotnet21
+

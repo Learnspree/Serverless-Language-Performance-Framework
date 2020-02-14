@@ -16,6 +16,6 @@ cd $DIR/../spf-api
 # Remove the test functions next (logger depends on this stack's log groups)
 echo "***** SPF: Remove Test Functions *****"
 cd $DIR/../aws-test
-./spf-remove-aws-test.sh
+./spf-remove-aws-test.sh -e dev
 
 echo "***** SPF: Finished Remove *****"

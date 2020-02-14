@@ -1,0 +1,94 @@
+# Config file for aws empty-test functions
+#
+service: aws-empty-test-functions-go
+
+provider:
+  name: aws
+  memorySize: 128
+  timeout: 6
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region,'us-east-1'}
+  versionFunctions: true # Optional function versioning
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: "arn:aws:lambda:${self:provider.region}:*:function:aws-empty-test*" 
+
+custom:
+  # you can use rate() or cron() syntax
+  coldStartInterval: rate(60 minutes) # minutes => 1 hour 
+  coldStartBatchSize: 3 # e.g. if 3 every 60 minutes => 3 per hour
+  coldStartBatchMemory: 512
+  warmStartInterval: cron(56/1 * * * ? *) # every 1 minute starting at 56 past the hour => 4 per hour (but 1st will likely be cold)
+
+# package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
+package:
+  individually: true 
+
+go1x-param-reuse: &go1x-param
+  runtime: go1.x
+  handler: bin/go-empty-function
+  package:
+    exclude:
+      - ./aws-service-go/**
+    include:
+      - ./aws-service-go/bin/**
+
+coldstart-param-reuse: &coldstart-param
+  runtime: python3.8
+  handler: ../aws-burst-invoker/handler.burst_invoker
+  memorySize: ${self:custom.coldStartBatchMemory}
+
+# individual function definitions
+functions:
+  # begin warm-start test functions
+  aws-warm-empty-go:
+    <<: *go1x-param
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-go-${self:provider.stage}-minute
+          enabled: false
+  aws-warm-256-empty-go:
+    <<: *go1x-param
+    memorySize: 256
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-256-go-${self:provider.stage}-minute
+          enabled: false          
+  aws-warm-512-empty-go:
+    <<: *go1x-param
+    memorySize: 512
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-512-go-${self:provider.stage}-minute
+          enabled: false 
+
+  # begin cold-start test functions. 
+  # No events - they're triggered by the batch cold start schedulers below.      
+  aws-cold-empty-go:
+    <<: *go1x-param
+  aws-cold-256-empty-go:
+    <<: *go1x-param
+    memorySize: 256
+  aws-cold-512-empty-go:
+    <<: *go1x-param
+    memorySize: 512
+
+  # begin cold-start-scheduler functions
+  awsgo-coldstart:
+    <<: *coldstart-param
+    events:
+      - schedule: 
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-go-${self:provider.stage}-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: 
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-go
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-go
+              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-go
