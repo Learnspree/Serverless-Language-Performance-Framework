@@ -32,6 +32,7 @@ fi
 aws events disable-rule --name coldstart-python36-$environment-hourly-burst 
 aws events disable-rule --name coldstart-python38-$environment-hourly-burst 
 aws events disable-rule --name coldstart-nodejs12x-$environment-hourly-burst 
+aws events disable-rule --name coldstart-nodejs10x-$environment-hourly-burst 
 aws events disable-rule --name coldstart-java8-$environment-hourly-burst 
 aws events disable-rule --name coldstart-go-$environment-hourly-burst 
 aws events disable-rule --name coldstart-dotnet21-$environment-hourly-burst 
@@ -39,6 +40,7 @@ aws events disable-rule --name coldstart-dotnet21-$environment-hourly-burst
 # Warm Start
 # 128 MB
 aws events disable-rule --name warmstart-nodejs12x-$environment-minute 
+aws events disable-rule --name warmstart-nodejs10x-$environment-minute 
 aws events disable-rule --name warmstart-java8-$environment-minute 
 aws events disable-rule --name warmstart-dotnet21-$environment-minute 
 aws events disable-rule --name warmstart-python36-$environment-minute 
@@ -47,6 +49,7 @@ aws events disable-rule --name warmstart-go-$environment-minute
 
 # 256 MB
 aws events disable-rule --name warmstart-256-nodejs12x-$environment-minute 
+aws events disable-rule --name warmstart-256-nodejs10x-$environment-minute 
 aws events disable-rule --name warmstart-256-java8-$environment-minute 
 aws events disable-rule --name warmstart-256-dotnet21-$environment-minute 
 aws events disable-rule --name warmstart-256-python36-$environment-minute 
@@ -55,6 +58,7 @@ aws events disable-rule --name warmstart-256-go-$environment-minute
 
 # 512 MB
 aws events disable-rule --name warmstart-512-nodejs12x-$environment-minute 
+aws events disable-rule --name warmstart-512-nodejs10x-$environment-minute 
 aws events disable-rule --name warmstart-512-java8-$environment-minute 
 aws events disable-rule --name warmstart-512-dotnet21-$environment-minute 
 aws events disable-rule --name warmstart-512-python36-$environment-minute 

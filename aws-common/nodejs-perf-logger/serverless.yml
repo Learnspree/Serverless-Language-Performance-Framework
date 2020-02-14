@@ -44,7 +44,25 @@ functions:
           filter: 'REPORT'   
       - cloudwatchLog:
           logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-nodejs12x'
-          filter: 'REPORT'                          
+          filter: 'REPORT'     
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-empty-nodejs10x'
+          filter: 'REPORT'   
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-nodejs10x'
+          filter: 'REPORT'                  
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-256-empty-nodejs10x'
+          filter: 'REPORT'   
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-nodejs10x'
+          filter: 'REPORT'   
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-warm-512-empty-nodejs10x'
+          filter: 'REPORT'   
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-nodejs10x'
+          filter: 'REPORT'                                 
 
   logger-dotnet:
     handler: handler.logger
