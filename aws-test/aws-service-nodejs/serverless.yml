@@ -120,9 +120,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-nodejs12x
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-nodejs12x
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-nodejs12x
+              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-empty-nodejs12x
+              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs12x
+              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs12x
 
   awsnodejs10x-coldstart:
     <<: *coldstart-param
@@ -134,6 +134,6 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-nodejs10x
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-nodejs10x
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-nodejs10x
+              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-empty-nodejs10x
+              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs10x
+              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs10x

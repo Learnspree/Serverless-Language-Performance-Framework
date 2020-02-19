@@ -87,7 +87,7 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-java8
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-java8
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-java8
+              - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-empty-java8
+              - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-256-empty-java8
+              - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-512-empty-java8
 

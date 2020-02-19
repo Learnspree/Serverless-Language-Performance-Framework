@@ -87,7 +87,7 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-empty-dotnet21
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-256-empty-dotnet21
-              - aws-empty-test-functions-${self:provider.stage}-aws-cold-512-empty-dotnet21
+              - aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-empty-dotnet21
+              - aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-256-empty-dotnet21
+              - aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-512-empty-dotnet21
 
