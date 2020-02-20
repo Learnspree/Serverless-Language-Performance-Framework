@@ -6,6 +6,7 @@ service: aws-empty-test-functions-ruby
 provider:
   name: aws
   runtime: ruby2.5
+  memorySize: 128
   timeout: 6
   stage: ${opt:stage,'dev'}
   region: ${opt:region,'us-east-1'}
@@ -19,7 +20,6 @@ functions:
   # begin warm-start test functions
   aws-warm-empty-ruby25:
     handler: handler.emptytestruby
-    memorySize: 128
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
