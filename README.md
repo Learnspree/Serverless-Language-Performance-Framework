@@ -222,13 +222,13 @@ aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --key-condition-expression "LanguageRuntime = :runtime" \
     --expression-attribute-values "{\":runtime\": {\"S\": \"nodejs12x\"}}"
 
-aws dynamodb scan --table-name ServerlessFunctionMetrics-prod --select "COUNT" \
+aws dynamodb scan --table-name ServerlessFunctionMetrics-dev --select "COUNT" \
     --filter-expression 'LanguageRuntime = :runtime AND #S = :state AND #T > :timestampvalue AND MemorySize = :memory' \
     --expression-attribute-names '{"#S":"State", "#T":"Timestamp"}' \
     --expression-attribute-values '{":runtime":{"S":"java8"}, ":memory":{"N":"128"},":state":{"S":"cold"}, ":timestampvalue":{"N":"1578873601000"}}' 
 
 aws dynamodb query \
-    --table-name ServerlessFunctionMetrics-prod \
+    --table-name ServerlessFunctionMetrics-dev \
     --key-condition-expression "LanguageRuntime = :runtime" \
     --projection-expression "LanguageRuntime, BilledDuration, ServerlessPlatformName" \
     --filter-expression '#S = :state AND #T > :timestampvalue AND MemorySize = :memory' \
