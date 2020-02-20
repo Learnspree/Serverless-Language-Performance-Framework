@@ -81,7 +81,16 @@ then
 else
     echo "***** SPF: running testing stage ($environment) *****"
     echo "***** SPF: testing each target function runs ok.... *****"
-    
+
+    echo "***** SPF: testing ruby.... *****"
+    cd $DIR/aws-service-ruby
+    sls invoke -f aws-warm-empty-ruby --stage $environment
+    sls invoke -f aws-warm-256-empty-ruby --stage $environment
+    sls invoke -f aws-warm-512-empty-ruby --stage $environment
+    sls invoke -f aws-cold-empty-ruby --stage $environment
+    sls invoke -f aws-cold-256-empty-ruby --stage $environment
+    sls invoke -f aws-cold-512-empty-ruby --stage $environment
+
     echo "***** SPF: testing dotnetcore2.... *****"
     cd $DIR/aws-service-dotnetcore2
     sls invoke -f aws-warm-empty-dotnet21 --stage $environment
