@@ -241,7 +241,7 @@ Note potential values for runtime above:
 * java8
 * dotnet21
 * go
-* ruby
+* ruby25
 * python36
 * python38
 * empty-csharp (azure csharp)

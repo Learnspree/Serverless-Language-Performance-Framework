@@ -17,39 +17,39 @@ custom:
 # individual function definitions
 functions:
   # begin warm-start test functions
-  aws-warm-empty-ruby:
+  aws-warm-empty-ruby25:
     handler: handler.emptytestruby
     memorySize: 128
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
-          name: warmstart-ruby-${self:provider.stage}-minute
+          name: warmstart-ruby25-${self:provider.stage}-minute
           enabled: false
-  aws-warm-256-empty-ruby:
+  aws-warm-256-empty-ruby25:
     handler: handler.emptytestruby
     memorySize: 256
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
-          name: warmstart-256-ruby-${self:provider.stage}-minute
+          name: warmstart-256-ruby25-${self:provider.stage}-minute
           enabled: false          
-  aws-warm-512-empty-ruby:
+  aws-warm-512-empty-ruby25:
     handler: handler.emptytestruby
     memorySize: 512
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
-          name: warmstart-512-ruby-${self:provider.stage}-minute
+          name: warmstart-512-ruby25-${self:provider.stage}-minute
           enabled: false 
 
   # begin cold-start test functions. 
   # No events - they're triggered by the batch cold start schedulers below.      
-  aws-cold-empty-ruby:
+  aws-cold-empty-ruby25:
     handler: handler.emptytestruby
-  aws-cold-256-empty-ruby:
+  aws-cold-256-empty-ruby25:
     handler: handler.emptytestruby
     memorySize: 256
-  aws-cold-512-empty-ruby:
+  aws-cold-512-empty-ruby25:
     handler: handler.emptytestruby
     memorySize: 512
 
