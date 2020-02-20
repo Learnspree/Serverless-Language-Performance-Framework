@@ -76,18 +76,4 @@ functions:
     <<: *dotnet21-param
     memorySize: 512
 
-  # cold-start-scheduler function
-  awsdotnet2-coldstart:
-    <<: *coldstart-param
-    events:
-      - schedule: 
-          rate: ${self:custom.coldStartInterval}
-          name: coldstart-dotnet21-${self:provider.stage}-hourly-burst
-          enabled: false
-          input:
-            invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: 
-              - aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-empty-dotnet21
-              - aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-256-empty-dotnet21
-              - aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-512-empty-dotnet21
 

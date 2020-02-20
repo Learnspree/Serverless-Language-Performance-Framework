@@ -108,32 +108,4 @@ functions:
     runtime: python3.8
     handler: handler.awsemptypython
     memorySize: 512    
-
-  # begin cold-start-scheduler functions
-  awspython36-coldstart:
-    <<: *coldstart-param
-    events:
-      - schedule: 
-          rate: ${self:custom.coldStartInterval}
-          name: coldstart-python36-${self:provider.stage}-hourly-burst
-          enabled: false
-          input:
-            invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: 
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-empty-python36
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-256-empty-python36
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-512-empty-python36
-
-  awspython38-coldstart:
-    <<: *coldstart-param
-    events:
-      - schedule: 
-          rate: ${self:custom.coldStartInterval}
-          name: coldstart-python38-${self:provider.stage}-hourly-burst
-          enabled: false
-          input:
-            invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: 
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-empty-python38
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-256-empty-python38
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-512-empty-python38            
+         

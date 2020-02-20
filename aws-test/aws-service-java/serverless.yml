@@ -76,18 +76,4 @@ functions:
     <<: *java8-param
     memorySize: 512
 
-  # begin cold-start-scheduler functions
-  awsjava8-coldstart:
-    <<: *coldstart-param
-    events:
-      - schedule: 
-          rate: ${self:custom.coldStartInterval}
-          name: coldstart-java8-${self:provider.stage}-hourly-burst
-          enabled: false
-          input:
-            invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: 
-              - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-empty-java8
-              - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-256-empty-java8
-              - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-512-empty-java8
 

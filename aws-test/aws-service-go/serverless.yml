@@ -78,17 +78,3 @@ functions:
     <<: *go1x-param
     memorySize: 512
 
-  # begin cold-start-scheduler functions
-  awsgo-coldstart:
-    <<: *coldstart-param
-    events:
-      - schedule: 
-          rate: ${self:custom.coldStartInterval}
-          name: coldstart-go-${self:provider.stage}-hourly-burst
-          enabled: false
-          input:
-            invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: 
-              - aws-empty-test-functions-go-${self:provider.stage}-aws-cold-empty-go
-              - aws-empty-test-functions-go-${self:provider.stage}-aws-cold-256-empty-go
-              - aws-empty-test-functions-go-${self:provider.stage}-aws-cold-512-empty-go

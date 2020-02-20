@@ -109,31 +109,4 @@ functions:
     handler: ./handler.emptytestnodejs
     memorySize: 512    
 
-  # begin cold-start-scheduler functions
-  awsnodejs12x-coldstart:
-    <<: *coldstart-param
-    events:
-      - schedule: 
-          rate: ${self:custom.coldStartInterval}
-          name: coldstart-nodejs12x-${self:provider.stage}-hourly-burst
-          enabled: false
-          input:
-            invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: 
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-empty-nodejs12x
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs12x
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs12x
 
-  awsnodejs10x-coldstart:
-    <<: *coldstart-param
-    events:
-      - schedule: 
-          rate: ${self:custom.coldStartInterval}
-          name: coldstart-nodejs10x-${self:provider.stage}-hourly-burst
-          enabled: false
-          input:
-            invokeCount: ${self:custom.coldStartBatchSize}
-            targetFunctionName: 
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-empty-nodejs10x
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs10x
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs10x
