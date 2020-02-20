@@ -67,6 +67,9 @@ serverless deploy -v --stage $environment
 cd $DIR/aws-service-python
 serverless deploy -v --stage $environment
 
+cd $DIR/aws-burst-invoker
+serverless deploy -v --stage $environment
+
 echo "***** SPF: finished sls deploy stage ($environment) *****"
 
 if [ -z $testing ]
