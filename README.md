@@ -237,10 +237,13 @@ aws dynamodb query \
 ```
 Note potential values for runtime above:
 * nodejs12x
+* nodejs10x
 * java8
 * dotnet21
 * go
+* ruby
 * python36
+* python38
 * empty-csharp (azure csharp)
 * empty-nodejs (azure nodejs)
 

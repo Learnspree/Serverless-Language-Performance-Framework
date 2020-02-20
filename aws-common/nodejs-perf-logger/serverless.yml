@@ -168,5 +168,27 @@ functions:
           filter: 'REPORT'     
       - cloudwatchLog:
           logGroup: '/aws/lambda/aws-empty-test-functions-go-${self:provider.stage}-aws-cold-512-empty-go'
+          filter: 'REPORT' 
+          
+  logger-ruby:
+    handler: handler.logger
+    events:
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-empty-ruby'
           filter: 'REPORT'  
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-empty-ruby'
+          filter: 'REPORT'                  
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-256-empty-ruby'
+          filter: 'REPORT'     
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-256-empty-ruby'
+          filter: 'REPORT'                  
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-512-empty-ruby'
+          filter: 'REPORT'     
+      - cloudwatchLog:
+          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-512-empty-ruby'
+          filter: 'REPORT'            
 
