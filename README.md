@@ -24,7 +24,8 @@ Development of this performance testing framework used the following packages an
 | Node                   | 12.5.0               | https://nodejs.org/en/                     |
 | NPM                    | 6.13.6               | https://www.npmjs.com                      |
 | .NET Core SDK / CLI    | 2.2.300              | https://dotnet.microsoft.com/download |
-| Java (JDK)             | Oracle jdk1.8.0_212  | https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html|
+| Java8 (JDK)            | Oracle jdk1.8.0_212  | https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html|
+| Java11 (JDK)           |  OpenJDK 11.0.2      | https://www.oracle.com/java/technologies/javase-jdk11-downloads.html |
 | Apache Maven (for Java)| 3.6.1                | https://maven.apache.org/                  |
 | Golang                 | 1.12.6               | https://golang.org/doc/install             |
 | Azure CLI              | 2.0.29               | https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest|
@@ -44,11 +45,36 @@ See table above for versions and links
 6. Install Serverless Domain Manager plugin *(via `npm install serverless-domain-manager --save-dev`)*
 6. Configure AWS Credentials for Serverless Framework *(see links above)*
 7. Install .NET Core *(see links above)* (Note - for upgrade of existing .NET Core (if necessary) see https://docs.microsoft.com/en-us/dotnet/core/versions/remove-runtime-sdk-versions?tabs=macos)
-8. Install Java JDK 1.8
+8. Install Java JDK 8 and Java JDK 11 `brew cask install java8` and `brew cask install java11`. See below java setup details for more. 
 9. Install Maven (3.x)
 10. Install Golang (1.x)
 11. Install pip for python2.7 (`sudo easy_install pip`)
 12. Install boto3 to support python unit tests (`python -m pip install --user boto3`)
+
+### Java Setup (8 and 11)
+* Add the following aliases to .bash_profile:
+```
+export JAVA_8_HOME=$(/usr/libexec/java_home -v1.8)
+export JAVA_11_HOME=$(/usr/libexec/java_home -v11)
+
+alias java8='export JAVA_HOME=$JAVA_8_HOME'
+alias java11='export JAVA_HOME=$JAVA_11_HOME'
+
+# default to Java 11
+java11
+```
+
+* Reload .bash_profile for the aliases to take effect: `source ~/.bash_profile`
+
+* Use the alias to change version as needed (the SPF build scripts do this automatically as needed):
+
+```
+$ java8
+$ java -version
+java version "1.8.0_212"
+Java(TM) SE Runtime Environment (build 1.8.0_212-b10)
+Java HotSpot(TM) 64-Bit Server VM (build 25.212-b10, mixed mode)
+```
 
 ## Setup Azure Function Testing
 **NOTE:** Currently the Azure test components may need some re-work to adapt to changes in the main SPF API hosted in AWS (see above section). Any issues will be resolved soon in future updates.
