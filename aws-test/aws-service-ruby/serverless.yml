@@ -1,0 +1,99 @@
+
+# Config file for aws empty-test functions - ruby
+#
+service: aws-empty-test-functions-ruby
+
+provider:
+  name: aws
+  memorySize: 128
+  timeout: 6
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region,'us-east-1'}
+  versionFunctions: true # Optional function versioning
+
+custom:
+  warmStartInterval: cron(56/1 * * * ? *) # every 1 minute starting at 56 past the hour => 4 per hour (but 1st will likely be cold)
+
+# individual function definitions
+functions:
+  # begin warm-start test functions
+  aws-warm-empty-ruby25:
+    runtime: ruby2.5
+    handler: handler.emptytestruby
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-ruby25-${self:provider.stage}-minute
+          enabled: false
+  aws-warm-256-empty-ruby25:
+    runtime: ruby2.5
+    handler: handler.emptytestruby
+    memorySize: 256
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-256-ruby25-${self:provider.stage}-minute
+          enabled: false          
+  aws-warm-512-empty-ruby25:
+    runtime: ruby2.5
+    handler: handler.emptytestruby
+    memorySize: 512
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-512-ruby25-${self:provider.stage}-minute
+          enabled: false 
+
+  aws-warm-empty-ruby27:
+    runtime: ruby2.7
+    handler: handler.emptytestruby
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-ruby27-${self:provider.stage}-minute
+          enabled: false
+  aws-warm-256-empty-ruby27:
+    runtime: ruby2.7
+    handler: handler.emptytestruby
+    memorySize: 256
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-256-ruby27-${self:provider.stage}-minute
+          enabled: false          
+  aws-warm-512-empty-ruby27:
+    runtime: ruby2.7
+    handler: handler.emptytestruby
+    memorySize: 512
+    events:
+      - schedule: 
+          rate: ${self:custom.warmStartInterval}
+          name: warmstart-512-ruby27-${self:provider.stage}-minute
+          enabled: false           
+
+  # begin cold-start test functions. 
+  # No events - they're triggered by the batch cold start schedulers below.      
+  aws-cold-empty-ruby25:
+    runtime: ruby2.5
+    handler: handler.emptytestruby
+  aws-cold-256-empty-ruby25:
+    runtime: ruby2.5
+    handler: handler.emptytestruby
+    memorySize: 256
+  aws-cold-512-empty-ruby25:
+    runtime: ruby2.5
+    handler: handler.emptytestruby
+    memorySize: 512
+
+  aws-cold-empty-ruby27:
+    runtime: ruby2.7
+    handler: handler.emptytestruby
+  aws-cold-256-empty-ruby27:
+    runtime: ruby2.7
+    handler: handler.emptytestruby
+    memorySize: 256
+  aws-cold-512-empty-ruby27:
+    runtime: ruby2.7
+    handler: handler.emptytestruby
+    memorySize: 512    
+

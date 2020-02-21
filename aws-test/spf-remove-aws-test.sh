@@ -48,6 +48,9 @@ serverless remove -v --stage $environment
 cd $DIR/aws-service-python
 serverless remove -v --stage $environment
 
+cd $DIR/aws-service-ruby
+serverless remove -v --stage $environment
+
 cd $DIR/aws-burst-invoker
 serverless remove -v --stage $environment
 

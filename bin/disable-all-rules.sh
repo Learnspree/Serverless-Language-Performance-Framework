@@ -28,39 +28,39 @@ if [[ $environment != "dev" ]] && [[ $environment != "prod" ]]; then
     helpFunction
 fi
 
-# Cold Start - covers all memory allocations
-aws events disable-rule --name coldstart-python36-$environment-hourly-burst 
-aws events disable-rule --name coldstart-python38-$environment-hourly-burst 
-aws events disable-rule --name coldstart-nodejs12x-$environment-hourly-burst 
-aws events disable-rule --name coldstart-nodejs10x-$environment-hourly-burst 
-aws events disable-rule --name coldstart-java8-$environment-hourly-burst 
-aws events disable-rule --name coldstart-go-$environment-hourly-burst 
-aws events disable-rule --name coldstart-dotnet21-$environment-hourly-burst 
+disable_rules_for_runtime () {
+   echo "Starting disabling of $1 rules for $environment environment..."
+   echo ""
 
-# Warm Start
-# 128 MB
-aws events disable-rule --name warmstart-nodejs12x-$environment-minute 
-aws events disable-rule --name warmstart-nodejs10x-$environment-minute 
-aws events disable-rule --name warmstart-java8-$environment-minute 
-aws events disable-rule --name warmstart-dotnet21-$environment-minute 
-aws events disable-rule --name warmstart-python36-$environment-minute 
-aws events disable-rule --name warmstart-python38-$environment-minute 
-aws events disable-rule --name warmstart-go-$environment-minute 
+   # Cold Start - covers all memory allocations
+   aws events disable-rule --name coldstart-$1-$environment-hourly-burst && printf "."
 
-# 256 MB
-aws events disable-rule --name warmstart-256-nodejs12x-$environment-minute 
-aws events disable-rule --name warmstart-256-nodejs10x-$environment-minute 
-aws events disable-rule --name warmstart-256-java8-$environment-minute 
-aws events disable-rule --name warmstart-256-dotnet21-$environment-minute 
-aws events disable-rule --name warmstart-256-python36-$environment-minute 
-aws events disable-rule --name warmstart-256-python38-$environment-minute 
-aws events disable-rule --name warmstart-256-go-$environment-minute 
+   # Warm Start
+   # 128 MB
+   aws events disable-rule --name warmstart-$1-$environment-minute && printf "."
 
-# 512 MB
-aws events disable-rule --name warmstart-512-nodejs12x-$environment-minute 
-aws events disable-rule --name warmstart-512-nodejs10x-$environment-minute 
-aws events disable-rule --name warmstart-512-java8-$environment-minute 
-aws events disable-rule --name warmstart-512-dotnet21-$environment-minute 
-aws events disable-rule --name warmstart-512-python36-$environment-minute 
-aws events disable-rule --name warmstart-512-python38-$environment-minute 
-aws events disable-rule --name warmstart-512-go-$environment-minute 
+   # 256 MB
+   aws events disable-rule --name warmstart-256-$1-$environment-minute && printf "."
+
+   # 512 MB
+   aws events disable-rule --name warmstart-512-$1-$environment-minute && printf "."
+
+   echo ""
+   echo "Finished disabling $1 rules for $environment environment."
+   echo ""
+} 
+
+# call disable rules for each runtime
+disable_rules_for_runtime "python36"
+disable_rules_for_runtime "python38"
+disable_rules_for_runtime "nodejs12x"
+disable_rules_for_runtime "nodejs10x"
+disable_rules_for_runtime "java8"
+disable_rules_for_runtime "go"
+disable_rules_for_runtime "dotnet21"
+disable_rules_for_runtime "ruby25"
+disable_rules_for_runtime "ruby27"
+
+echo ""
+echo "Finished disabling all rules for $environment environment."
+echo ""
