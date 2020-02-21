@@ -5,7 +5,7 @@ echo "***** SPF: running in $DIR *****"
 
 # Remove the logger which takes test function log entries and delivers to the spf-api
 echo "***** SPF: Remove Logger Handlers *****"
-cd $DIR/../aws-common/nodejs-perf-logger
+cd $DIR/../aws-common
 ./spf-remove-aws-logger.sh
 
 # Remove spf-api next (logger depends on this stack's output)

@@ -6,3 +6,4 @@ aws-artifacts
 # Serverless directories
 .serverless
 
+.DS_Store

@@ -1,6 +1,6 @@
 # Config file for aws empty-test functions
 #
-service: aws-empty-test-functions-go
+service: aws-empty-test-functions-java11
 
 provider:
   name: aws
@@ -17,50 +17,49 @@ custom:
 package:
   individually: true 
 
-go1x-param-reuse: &go1x-param
-  runtime: go1.x
-  handler: bin/go-empty-function
+# function parameters declared for re-use
+java11-param-reuse: &java11-param
+  runtime: java11
+  handler: com.learnspree.EmptyJava11Handler
   package:
-    exclude:
-      - ./aws-service-go/**
-    include:
-      - ./aws-service-go/bin/**
+    artifact: target/awsjava11empty-${self:provider.stage}.jar
 
 # individual function definitions
 functions:
   # begin warm-start test functions
-  aws-warm-empty-go:
-    <<: *go1x-param
+  aws-warm-empty-java11:
+    <<: *java11-param
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
-          name: warmstart-go-${self:provider.stage}-minute
+          name: warmstart-java11-${self:provider.stage}-minute
           enabled: false
-  aws-warm-256-empty-go:
-    <<: *go1x-param
+  aws-warm-256-empty-java11:
+    <<: *java11-param
     memorySize: 256
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
-          name: warmstart-256-go-${self:provider.stage}-minute
+          name: warmstart-256-java11-${self:provider.stage}-minute
           enabled: false          
-  aws-warm-512-empty-go:
-    <<: *go1x-param
+  aws-warm-512-empty-java11:
+    <<: *java11-param
     memorySize: 512
     events:
       - schedule: 
           rate: ${self:custom.warmStartInterval}
-          name: warmstart-512-go-${self:provider.stage}-minute
-          enabled: false 
+          name: warmstart-512-java11-${self:provider.stage}-minute
+          enabled: false   
 
   # begin cold-start test functions. 
   # No events - they're triggered by the batch cold start schedulers below.      
-  aws-cold-empty-go:
-    <<: *go1x-param
-  aws-cold-256-empty-go:
-    <<: *go1x-param
+  aws-cold-empty-java11:
+    <<: *java11-param
+  aws-cold-256-empty-java11:
+    <<: *java11-param
     memorySize: 256
-  aws-cold-512-empty-go:
-    <<: *go1x-param
+  aws-cold-512-empty-java11:
+    <<: *java11-param
     memorySize: 512
+
 
