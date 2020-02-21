@@ -38,12 +38,12 @@ echo "***** SPF: running in $DIR *****"
 
 # build java8 test function - note see readme for setup of java8 and java 11 aliases
 cd $DIR/aws-service-java
-java8
+export JAVA_HOME=$JAVA_8_HOME
 mvn clean install -Dstage=$environment
 
 # build java11 test function - note see readme for setup of java8 and java 11 aliases
 cd $DIR/aws-service-java11
-java11
+export JAVA_HOME=$JAVA_11_HOME
 mvn clean install -Dstage=$environment
 
 # Build the .net core 2 test function
