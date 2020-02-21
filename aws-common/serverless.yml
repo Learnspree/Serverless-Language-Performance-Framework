@@ -1,7 +1,7 @@
 # This function is part of the AWS performance testing framework. It is triggered from cloud-watch
 # logs of any specified target functions (via their cloud watch logs) under "events:" below.
 
-service: nodejs-perf-logger
+service: aws-logger
 
 provider:
   name: aws
