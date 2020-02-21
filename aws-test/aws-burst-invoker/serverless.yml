@@ -70,6 +70,20 @@ functions:
               - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-256-empty-java8
               - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-512-empty-java8
 
+  awsjava11-coldstart:
+    <<: *coldstart-param
+    events:
+      - schedule: 
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-java11-${self:provider.stage}-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: 
+              - aws-empty-test-functions-java11-${self:provider.stage}-aws-cold-empty-java11
+              - aws-empty-test-functions-java11-${self:provider.stage}-aws-cold-256-empty-java11
+              - aws-empty-test-functions-java11-${self:provider.stage}-aws-cold-512-empty-java11              
+
   awsnodejs12x-coldstart:
     <<: *coldstart-param
     events:

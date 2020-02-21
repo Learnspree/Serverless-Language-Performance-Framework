@@ -36,8 +36,14 @@ echo "***** SPF: running build script ($environment) *****"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 echo "***** SPF: running in $DIR *****"
 
-# build java8 test function
+# build java8 test function - note see readme for setup of java8 and java 11 aliases
 cd $DIR/aws-service-java
+java8
+mvn clean install -Dstage=$environment
+
+# build java11 test function - note see readme for setup of java8 and java 11 aliases
+cd $DIR/aws-service-java11
+java11
 mvn clean install -Dstage=$environment
 
 # Build the .net core 2 test function
@@ -115,7 +121,7 @@ else
     sls invoke -f aws-cold-256-empty-go --stage $environment        
     sls invoke -f aws-cold-512-empty-go --stage $environment        
 
-    echo "***** SPF: testing java.... *****"
+    echo "***** SPF: testing java 8 *****"
     cd $DIR/aws-service-java
     sls invoke -f aws-warm-empty-java8 --stage $environment
     sls invoke -f aws-warm-256-empty-java8 --stage $environment
@@ -123,6 +129,15 @@ else
     sls invoke -f aws-cold-empty-java8 --stage $environment
     sls invoke -f aws-cold-256-empty-java8 --stage $environment
     sls invoke -f aws-cold-512-empty-java8 --stage $environment
+
+    echo "***** SPF: testing java 11 *****"
+    cd $DIR/aws-service-java11
+    sls invoke -f aws-warm-empty-java11 --stage $environment
+    sls invoke -f aws-warm-256-empty-java11 --stage $environment
+    sls invoke -f aws-warm-512-empty-java11 --stage $environment
+    sls invoke -f aws-cold-empty-java11 --stage $environment
+    sls invoke -f aws-cold-256-empty-java11 --stage $environment
+    sls invoke -f aws-cold-512-empty-java11 --stage $environment    
 
     echo "***** SPF: testing nodejs.... *****"
     cd $DIR/aws-service-nodejs
