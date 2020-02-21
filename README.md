@@ -242,6 +242,7 @@ Note potential values for runtime above:
 * dotnet21
 * go
 * ruby25
+* ruby27
 * python36
 * python38
 * empty-csharp (azure csharp)

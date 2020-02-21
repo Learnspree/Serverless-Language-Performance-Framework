@@ -28,49 +28,39 @@ if [[ $environment != "dev" ]] && [[ $environment != "prod" ]]; then
     helpFunction
 fi
 
-echo "Starting enabling of all rules for $environment environment..."
-echo ""
+enable_rules_for_runtime () {
+   echo "Starting enabling of $1 rules for $environment environment..."
+   echo ""
 
-# Cold Start - covers all memory allocations
-aws events enable-rule --name coldstart-python36-$environment-hourly-burst && printf "."
-aws events enable-rule --name coldstart-python38-$environment-hourly-burst && printf "."
-aws events enable-rule --name coldstart-nodejs12x-$environment-hourly-burst && printf "."
-aws events enable-rule --name coldstart-nodejs10x-$environment-hourly-burst && printf "."
-aws events enable-rule --name coldstart-java8-$environment-hourly-burst && printf "."
-aws events enable-rule --name coldstart-go-$environment-hourly-burst && printf "."
-aws events enable-rule --name coldstart-dotnet21-$environment-hourly-burst && printf "."
-aws events enable-rule --name coldstart-ruby25-$environment-hourly-burst && printf "."
+   # Cold Start - covers all memory allocations
+   aws events enable-rule --name coldstart-$1-$environment-hourly-burst && printf "."
 
-# Warm Start
-# 128 MB 
-aws events enable-rule --name warmstart-nodejs12x-$environment-minute && printf "."
-aws events enable-rule --name warmstart-nodejs10x-$environment-minute && printf "."
-aws events enable-rule --name warmstart-java8-$environment-minute && printf "."
-aws events enable-rule --name warmstart-dotnet21-$environment-minute && printf "."
-aws events enable-rule --name warmstart-python36-$environment-minute && printf "."
-aws events enable-rule --name warmstart-python38-$environment-minute && printf "."
-aws events enable-rule --name warmstart-go-$environment-minute && printf "."
-aws events enable-rule --name warmstart-ruby25-$environment-minute && printf "."
+   # Warm Start
+   # 128 MB
+   aws events enable-rule --name warmstart-$1-$environment-minute && printf "."
 
-# 256 MB 
-aws events enable-rule --name warmstart-256-nodejs12x-$environment-minute && printf "."
-aws events enable-rule --name warmstart-256-nodejs10x-$environment-minute && printf "."
-aws events enable-rule --name warmstart-256-java8-$environment-minute && printf "."
-aws events enable-rule --name warmstart-256-dotnet21-$environment-minute && printf "."
-aws events enable-rule --name warmstart-256-python36-$environment-minute && printf "."
-aws events enable-rule --name warmstart-256-python38-$environment-minute && printf "."
-aws events enable-rule --name warmstart-256-go-$environment-minute && printf "."
-aws events enable-rule --name warmstart-256-ruby25-$environment-minute && printf "."
+   # 256 MB
+   aws events enable-rule --name warmstart-256-$1-$environment-minute && printf "."
 
-# 512 MB 
-aws events enable-rule --name warmstart-512-nodejs12x-$environment-minute && printf "."
-aws events enable-rule --name warmstart-512-nodejs10x-$environment-minute && printf "."
-aws events enable-rule --name warmstart-512-java8-$environment-minute && printf "."
-aws events enable-rule --name warmstart-512-dotnet21-$environment-minute && printf "."
-aws events enable-rule --name warmstart-512-python36-$environment-minute && printf "."
-aws events enable-rule --name warmstart-512-python38-$environment-minute && printf "."
-aws events enable-rule --name warmstart-512-go-$environment-minute && printf "."
-aws events enable-rule --name warmstart-512-ruby25-$environment-minute && printf "."
+   # 512 MB
+   aws events enable-rule --name warmstart-512-$1-$environment-minute && printf "."
+
+   echo ""
+   echo "Finished enabling $1 rules for $environment environment."
+   echo ""
+} 
+
+# call enable rules for each runtime
+enable_rules_for_runtime "python36"
+enable_rules_for_runtime "python38"
+enable_rules_for_runtime "nodejs12x"
+enable_rules_for_runtime "nodejs10x"
+enable_rules_for_runtime "java8"
+enable_rules_for_runtime "go"
+enable_rules_for_runtime "dotnet21"
+enable_rules_for_runtime "ruby25"
+enable_rules_for_runtime "ruby27"
 
 echo ""
 echo "Finished enabling all rules for $environment environment."
+echo ""

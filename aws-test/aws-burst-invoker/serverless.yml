@@ -139,3 +139,17 @@ functions:
               - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-empty-ruby25
               - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-256-empty-ruby25
               - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-512-empty-ruby25
+
+  ruby27-coldstart:
+    <<: *coldstart-param
+    events:
+      - schedule: 
+          rate: ${self:custom.coldStartInterval}
+          name: coldstart-ruby27-${self:provider.stage}-hourly-burst
+          enabled: false
+          input:
+            invokeCount: ${self:custom.coldStartBatchSize}
+            targetFunctionName: 
+              - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-empty-ruby27
+              - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-256-empty-ruby27
+              - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-512-empty-ruby27              

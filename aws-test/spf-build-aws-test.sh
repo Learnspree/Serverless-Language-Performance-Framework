@@ -90,6 +90,12 @@ else
     sls invoke -f aws-cold-empty-ruby25 --stage $environment
     sls invoke -f aws-cold-256-empty-ruby25 --stage $environment
     sls invoke -f aws-cold-512-empty-ruby25 --stage $environment
+    sls invoke -f aws-warm-empty-ruby27 --stage $environment
+    sls invoke -f aws-warm-256-empty-ruby27 --stage $environment
+    sls invoke -f aws-warm-512-empty-ruby27 --stage $environment
+    sls invoke -f aws-cold-empty-ruby27 --stage $environment
+    sls invoke -f aws-cold-256-empty-ruby27 --stage $environment
+    sls invoke -f aws-cold-512-empty-ruby27 --stage $environment    
 
     echo "***** SPF: testing dotnetcore2.... *****"
     cd $DIR/aws-service-dotnetcore2
