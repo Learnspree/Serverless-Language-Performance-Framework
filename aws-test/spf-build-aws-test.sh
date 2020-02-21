@@ -67,6 +67,9 @@ serverless deploy -v --stage $environment
 cd $DIR/aws-service-java
 serverless deploy -v --stage $environment
 
+cd $DIR/aws-service-java11
+serverless deploy -v --stage $environment
+
 cd $DIR/aws-service-nodejs
 serverless deploy -v --stage $environment
 

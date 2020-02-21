@@ -42,6 +42,9 @@ serverless remove -v --stage $environment
 cd $DIR/aws-service-java
 serverless remove -v --stage $environment
 
+cd $DIR/aws-service-java11
+serverless remove -v --stage $environment
+
 cd $DIR/aws-service-nodejs
 serverless remove -v --stage $environment
 
