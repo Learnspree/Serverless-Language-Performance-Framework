@@ -9,17 +9,8 @@ provider:
   stage: ${opt:stage,'dev'}
   region: ${opt:region,'us-east-1'}
   versionFunctions: true # Optional function versioning
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - lambda:InvokeFunction
-      Resource: "arn:aws:lambda:${self:provider.region}:*:function:aws-empty-test*" 
 
 custom:
-  # you can use rate() or cron() syntax
-  coldStartInterval: rate(60 minutes) # minutes => 1 hour 
-  coldStartBatchSize: 3 # e.g. if 3 every 60 minutes => 3 per hour
-  coldStartBatchMemory: 512
   warmStartInterval: cron(56/1 * * * ? *) # every 1 minute starting at 56 past the hour => 4 per hour (but 1st will likely be cold)
 
 # package (e.g. .net zip) is specified per function rather than centrally as some don't need a package
@@ -29,14 +20,9 @@ package:
 # function parameters declared for re-use
 java11-param-reuse: &java11-param
   runtime: java11
-  handler: com.learnspree.Emptyjava11Handler
+  handler: com.learnspree.EmptyJava11Handler
   package:
     artifact: target/awsjava11empty-${self:provider.stage}.jar
-
-coldstart-param-reuse: &coldstart-param
-  runtime: python3.8
-  handler: aws-burst-invoker/handler.burst_invoker
-  memorySize: ${self:custom.coldStartBatchMemory}
 
 # individual function definitions
 functions:
