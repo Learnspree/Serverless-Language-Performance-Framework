@@ -153,7 +153,7 @@ Each target function will essentially be setup with two cloud-watch-batch based 
                 targetFunctionName: aws-empty-test-functions-dev-awsnodejs12x                 
 ```
 
-View "/aws-common/nodejs-perf-logger/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 8.10 function:
+View "/aws-common/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 12.x function:
 
 ```bash
     events:
@@ -174,7 +174,7 @@ cd /spf-api
 Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 
 ```bash
-cd /aws-common/nodejs-perf-logger
+cd /aws-common
 ./spf-build-aws-logger.sh
 ```
 

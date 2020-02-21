@@ -15,7 +15,7 @@ cd $DIR/../aws-test
 
 # Finally build the logger which takes test function log entries and delivers to the spf-api
 echo "***** SPF: Build Logger Handlers *****"
-cd $DIR/../aws-common/nodejs-perf-logger
+cd $DIR/../aws-common
 ./spf-build-aws-logger-prod.sh
 
 echo "***** SPF: Finished PRODUCTION Build *****"
