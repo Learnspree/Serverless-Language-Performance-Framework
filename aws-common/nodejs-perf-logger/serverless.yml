@@ -192,7 +192,7 @@ functions:
           logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-512-empty-ruby25'
           filter: 'REPORT'            
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-empty-ruby25'
+          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-empty-ruby27'
           filter: 'REPORT'  
       - cloudwatchLog:
           logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-empty-ruby27'
