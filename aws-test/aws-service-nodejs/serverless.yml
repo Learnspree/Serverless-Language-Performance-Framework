@@ -12,7 +12,7 @@ provider:
 
 custom:
   # you can use rate() or cron() syntax
-  warmStartInterval: cron(56/1 * * * ? *) # every 1 minute starting at 56 past the hour => 4 per hour (but 1st will likely be cold)
+  warmStartInterval: cron(0 0-15 0/4 ? * * *) # every 4 hours we do a 15-minute series starting at 0 past the hour => 15 per hour, 6 times a day
 
 # individual function definitions
 functions:
