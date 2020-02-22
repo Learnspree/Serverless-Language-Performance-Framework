@@ -265,6 +265,7 @@ Note potential values for runtime above:
 * nodejs12x
 * nodejs10x
 * java8
+* java11
 * dotnet21
 * go
 * ruby25
