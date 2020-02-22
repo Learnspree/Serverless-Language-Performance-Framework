@@ -150,7 +150,7 @@ Each target function will essentially be setup with two cloud-watch-batch based 
             enabled: false
             input:
                 invokeCount: ${self:custom.coldStartBatchSize}
-                targetFunctionName: aws-empty-test-functions-dev-awsnodejs12x                 
+                targetFunctionName: aws-test-dev-awsnodejs12x                 
 ```
 
 View "/aws-common/serverless.yml" to view the list of source cloud-watch-logs that are a trigger to measure performance of each target function deployed above. Example below for the node 12.x function:
@@ -158,7 +158,7 @@ View "/aws-common/serverless.yml" to view the list of source cloud-watch-logs th
 ```bash
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dev-awsnodejs12x'
+          logGroup: '/aws/lambda/aws-test-dev-awsnodejs12x'
           filter: 'REPORT'
 ```
 

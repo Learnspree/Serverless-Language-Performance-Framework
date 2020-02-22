@@ -1,6 +1,6 @@
 # Config file for aws empty-test functions
 #
-service: aws-empty-test-functions-java11
+service: aws-test-java11
 
 provider:
   name: aws

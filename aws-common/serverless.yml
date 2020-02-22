@@ -28,202 +28,202 @@ functions:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-warm-empty-nodejs12x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-warm-empty-nodejs12x'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-empty-nodejs12x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-cold-empty-nodejs12x'
           filter: 'REPORT'                  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-warm-256-empty-nodejs12x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-warm-256-empty-nodejs12x'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs12x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs12x'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-warm-512-empty-nodejs12x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-warm-512-empty-nodejs12x'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs12x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs12x'
           filter: 'REPORT'     
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-warm-empty-nodejs10x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-warm-empty-nodejs10x'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-empty-nodejs10x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-cold-empty-nodejs10x'
           filter: 'REPORT'                  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-warm-256-empty-nodejs10x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-warm-256-empty-nodejs10x'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs10x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs10x'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-warm-512-empty-nodejs10x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-warm-512-empty-nodejs10x'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs10x'
+          logGroup: '/aws/lambda/aws-test-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs10x'
           filter: 'REPORT'                                 
 
   logger-dotnet:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dotnet-${self:provider.stage}-aws-warm-empty-dotnet21'
+          logGroup: '/aws/lambda/aws-test-dotnet-${self:provider.stage}-aws-warm-empty-dotnet21'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-empty-dotnet21'
+          logGroup: '/aws/lambda/aws-test-dotnet-${self:provider.stage}-aws-cold-empty-dotnet21'
           filter: 'REPORT'           
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dotnet-${self:provider.stage}-aws-warm-256-empty-dotnet21'
+          logGroup: '/aws/lambda/aws-test-dotnet-${self:provider.stage}-aws-warm-256-empty-dotnet21'
           filter: 'REPORT'         
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-256-empty-dotnet21'
+          logGroup: '/aws/lambda/aws-test-dotnet-${self:provider.stage}-aws-cold-256-empty-dotnet21'
           filter: 'REPORT'          
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dotnet-${self:provider.stage}-aws-warm-512-empty-dotnet21'
+          logGroup: '/aws/lambda/aws-test-dotnet-${self:provider.stage}-aws-warm-512-empty-dotnet21'
           filter: 'REPORT'         
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-512-empty-dotnet21'
+          logGroup: '/aws/lambda/aws-test-dotnet-${self:provider.stage}-aws-cold-512-empty-dotnet21'
           filter: 'REPORT'   
 
   logger-java:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java-${self:provider.stage}-aws-warm-empty-java8'
+          logGroup: '/aws/lambda/aws-test-java-${self:provider.stage}-aws-warm-empty-java8'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java-${self:provider.stage}-aws-cold-empty-java8'
+          logGroup: '/aws/lambda/aws-test-java-${self:provider.stage}-aws-cold-empty-java8'
           filter: 'REPORT'          
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java-${self:provider.stage}-aws-warm-256-empty-java8'
+          logGroup: '/aws/lambda/aws-test-java-${self:provider.stage}-aws-warm-256-empty-java8'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java-${self:provider.stage}-aws-cold-256-empty-java8'
+          logGroup: '/aws/lambda/aws-test-java-${self:provider.stage}-aws-cold-256-empty-java8'
           filter: 'REPORT'          
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java-${self:provider.stage}-aws-warm-512-empty-java8'
+          logGroup: '/aws/lambda/aws-test-java-${self:provider.stage}-aws-warm-512-empty-java8'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java-${self:provider.stage}-aws-cold-512-empty-java8'
+          logGroup: '/aws/lambda/aws-test-java-${self:provider.stage}-aws-cold-512-empty-java8'
           filter: 'REPORT'   
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java11-${self:provider.stage}-aws-warm-empty-java11'
+          logGroup: '/aws/lambda/aws-test-java11-${self:provider.stage}-aws-warm-empty-java11'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java11-${self:provider.stage}-aws-cold-empty-java11'
+          logGroup: '/aws/lambda/aws-test-java11-${self:provider.stage}-aws-cold-empty-java11'
           filter: 'REPORT'          
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java11-${self:provider.stage}-aws-warm-256-empty-java11'
+          logGroup: '/aws/lambda/aws-test-java11-${self:provider.stage}-aws-warm-256-empty-java11'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java11-${self:provider.stage}-aws-cold-256-empty-java11'
+          logGroup: '/aws/lambda/aws-test-java11-${self:provider.stage}-aws-cold-256-empty-java11'
           filter: 'REPORT'          
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java11-${self:provider.stage}-aws-warm-512-empty-java11'
+          logGroup: '/aws/lambda/aws-test-java11-${self:provider.stage}-aws-warm-512-empty-java11'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-java11-${self:provider.stage}-aws-cold-512-empty-java11'
+          logGroup: '/aws/lambda/aws-test-java11-${self:provider.stage}-aws-cold-512-empty-java11'
           filter: 'REPORT' 
 
   logger-python:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-warm-empty-python36'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-warm-empty-python36'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-cold-empty-python36'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-cold-empty-python36'
           filter: 'REPORT' 
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-warm-256-empty-python36'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-warm-256-empty-python36'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-cold-256-empty-python36'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-cold-256-empty-python36'
           filter: 'REPORT' 
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-warm-512-empty-python36'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-warm-512-empty-python36'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-cold-512-empty-python36'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-cold-512-empty-python36'
           filter: 'REPORT' 
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-warm-empty-python38'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-warm-empty-python38'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-cold-empty-python38'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-cold-empty-python38'
           filter: 'REPORT' 
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-warm-256-empty-python38'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-warm-256-empty-python38'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-cold-256-empty-python38'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-cold-256-empty-python38'
           filter: 'REPORT' 
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-warm-512-empty-python38'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-warm-512-empty-python38'
           filter: 'REPORT'
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-python-${self:provider.stage}-aws-cold-512-empty-python38'
+          logGroup: '/aws/lambda/aws-test-python-${self:provider.stage}-aws-cold-512-empty-python38'
           filter: 'REPORT'           
 
   logger-go:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-go-${self:provider.stage}-aws-warm-empty-go'
+          logGroup: '/aws/lambda/aws-test-go-${self:provider.stage}-aws-warm-empty-go'
           filter: 'REPORT'  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-go-${self:provider.stage}-aws-cold-empty-go'
+          logGroup: '/aws/lambda/aws-test-go-${self:provider.stage}-aws-cold-empty-go'
           filter: 'REPORT'                  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-go-${self:provider.stage}-aws-warm-256-empty-go'
+          logGroup: '/aws/lambda/aws-test-go-${self:provider.stage}-aws-warm-256-empty-go'
           filter: 'REPORT'     
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-go-${self:provider.stage}-aws-cold-256-empty-go'
+          logGroup: '/aws/lambda/aws-test-go-${self:provider.stage}-aws-cold-256-empty-go'
           filter: 'REPORT'                  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-go-${self:provider.stage}-aws-warm-512-empty-go'
+          logGroup: '/aws/lambda/aws-test-go-${self:provider.stage}-aws-warm-512-empty-go'
           filter: 'REPORT'     
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-go-${self:provider.stage}-aws-cold-512-empty-go'
+          logGroup: '/aws/lambda/aws-test-go-${self:provider.stage}-aws-cold-512-empty-go'
           filter: 'REPORT' 
           
   logger-ruby:
     handler: handler.logger
     events:
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-empty-ruby25'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-warm-empty-ruby25'
           filter: 'REPORT'  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-empty-ruby25'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-cold-empty-ruby25'
           filter: 'REPORT'                  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-256-empty-ruby25'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-warm-256-empty-ruby25'
           filter: 'REPORT'     
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-256-empty-ruby25'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-cold-256-empty-ruby25'
           filter: 'REPORT'                  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-512-empty-ruby25'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-warm-512-empty-ruby25'
           filter: 'REPORT'     
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-512-empty-ruby25'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-cold-512-empty-ruby25'
           filter: 'REPORT'            
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-empty-ruby27'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-warm-empty-ruby27'
           filter: 'REPORT'  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-empty-ruby27'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-cold-empty-ruby27'
           filter: 'REPORT'                  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-256-empty-ruby27'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-warm-256-empty-ruby27'
           filter: 'REPORT'     
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-256-empty-ruby27'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-cold-256-empty-ruby27'
           filter: 'REPORT'                  
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-warm-512-empty-ruby27'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-warm-512-empty-ruby27'
           filter: 'REPORT'     
       - cloudwatchLog:
-          logGroup: '/aws/lambda/aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-512-empty-ruby27'
+          logGroup: '/aws/lambda/aws-test-ruby-${self:provider.stage}-aws-cold-512-empty-ruby27'
           filter: 'REPORT' 

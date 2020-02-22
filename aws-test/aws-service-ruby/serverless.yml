@@ -1,7 +1,7 @@
 
 # Config file for aws empty-test functions - ruby
 #
-service: aws-empty-test-functions-ruby
+service: aws-test-ruby
 
 provider:
   name: aws

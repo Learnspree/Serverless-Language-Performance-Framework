@@ -1,6 +1,6 @@
 # Config file for aws empty-test functions
 #
-service: aws-empty-test-functions-go
+service: aws-test-go
 
 provider:
   name: aws
