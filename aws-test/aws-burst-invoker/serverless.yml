@@ -19,7 +19,7 @@ provider:
     - Effect: Allow
       Action:
         - lambda:InvokeFunction
-      Resource: "arn:aws:lambda:${self:provider.region}:*:function:aws-empty-test*" 
+      Resource: "arn:aws:lambda:${self:provider.region}:*:function:aws-test*" 
 
 coldstart-param-reuse: &coldstart-param
   runtime: python3.8
