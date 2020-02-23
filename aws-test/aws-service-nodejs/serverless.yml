@@ -1,6 +1,6 @@
 # Config file for aws empty-test functions 
 #
-service: aws-empty-test-functions-nodejs
+service: aws-test-nodejs
 
 provider:
   name: aws

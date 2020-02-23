@@ -1,6 +1,6 @@
 # Config file for aws empty-test functions 
 #
-service: aws-empty-test-functions-dotnet
+service: aws-test-dotnet
 
 provider:
   name: aws

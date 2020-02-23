@@ -1,6 +1,6 @@
 # Config file for aws empty-test functions
 #
-service: aws-empty-test-functions-cold-burst
+service: aws-test-cold-burst
 
 custom:
   # you can use rate() or cron() syntax
@@ -19,7 +19,7 @@ provider:
     - Effect: Allow
       Action:
         - lambda:InvokeFunction
-      Resource: "arn:aws:lambda:${self:provider.region}:*:function:aws-empty-test*" 
+      Resource: "arn:aws:lambda:${self:provider.region}:*:function:aws-test*" 
 
 coldstart-param-reuse: &coldstart-param
   runtime: python3.8
@@ -38,9 +38,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-go-${self:provider.stage}-aws-cold-empty-go
-              - aws-empty-test-functions-go-${self:provider.stage}-aws-cold-256-empty-go
-              - aws-empty-test-functions-go-${self:provider.stage}-aws-cold-512-empty-go
+              - aws-test-go-${self:provider.stage}-aws-cold-empty-go
+              - aws-test-go-${self:provider.stage}-aws-cold-256-empty-go
+              - aws-test-go-${self:provider.stage}-aws-cold-512-empty-go
 
   awsdotnet2-coldstart:
     <<: *coldstart-param
@@ -52,9 +52,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-empty-dotnet21
-              - aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-256-empty-dotnet21
-              - aws-empty-test-functions-dotnet-${self:provider.stage}-aws-cold-512-empty-dotnet21
+              - aws-test-dotnet-${self:provider.stage}-aws-cold-empty-dotnet21
+              - aws-test-dotnet-${self:provider.stage}-aws-cold-256-empty-dotnet21
+              - aws-test-dotnet-${self:provider.stage}-aws-cold-512-empty-dotnet21
 
   awsjava8-coldstart:
     <<: *coldstart-param
@@ -66,9 +66,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-empty-java8
-              - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-256-empty-java8
-              - aws-empty-test-functions-java-${self:provider.stage}-aws-cold-512-empty-java8
+              - aws-test-java-${self:provider.stage}-aws-cold-empty-java8
+              - aws-test-java-${self:provider.stage}-aws-cold-256-empty-java8
+              - aws-test-java-${self:provider.stage}-aws-cold-512-empty-java8
 
   awsjava11-coldstart:
     <<: *coldstart-param
@@ -80,9 +80,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-java11-${self:provider.stage}-aws-cold-empty-java11
-              - aws-empty-test-functions-java11-${self:provider.stage}-aws-cold-256-empty-java11
-              - aws-empty-test-functions-java11-${self:provider.stage}-aws-cold-512-empty-java11              
+              - aws-test-java11-${self:provider.stage}-aws-cold-empty-java11
+              - aws-test-java11-${self:provider.stage}-aws-cold-256-empty-java11
+              - aws-test-java11-${self:provider.stage}-aws-cold-512-empty-java11              
 
   awsnodejs12x-coldstart:
     <<: *coldstart-param
@@ -94,9 +94,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-empty-nodejs12x
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs12x
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs12x
+              - aws-test-nodejs-${self:provider.stage}-aws-cold-empty-nodejs12x
+              - aws-test-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs12x
+              - aws-test-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs12x
 
   awsnodejs10x-coldstart:
     <<: *coldstart-param
@@ -108,9 +108,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-empty-nodejs10x
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs10x
-              - aws-empty-test-functions-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs10x
+              - aws-test-nodejs-${self:provider.stage}-aws-cold-empty-nodejs10x
+              - aws-test-nodejs-${self:provider.stage}-aws-cold-256-empty-nodejs10x
+              - aws-test-nodejs-${self:provider.stage}-aws-cold-512-empty-nodejs10x
   
   awspython36-coldstart:
     <<: *coldstart-param
@@ -122,9 +122,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-empty-python36
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-256-empty-python36
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-512-empty-python36
+              - aws-test-python-${self:provider.stage}-aws-cold-empty-python36
+              - aws-test-python-${self:provider.stage}-aws-cold-256-empty-python36
+              - aws-test-python-${self:provider.stage}-aws-cold-512-empty-python36
 
   awspython38-coldstart:
     <<: *coldstart-param
@@ -136,9 +136,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-empty-python38
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-256-empty-python38
-              - aws-empty-test-functions-python-${self:provider.stage}-aws-cold-512-empty-python38
+              - aws-test-python-${self:provider.stage}-aws-cold-empty-python38
+              - aws-test-python-${self:provider.stage}-aws-cold-256-empty-python38
+              - aws-test-python-${self:provider.stage}-aws-cold-512-empty-python38
 
   ruby25-coldstart:
     <<: *coldstart-param
@@ -150,9 +150,9 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-empty-ruby25
-              - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-256-empty-ruby25
-              - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-512-empty-ruby25
+              - aws-test-ruby-${self:provider.stage}-aws-cold-empty-ruby25
+              - aws-test-ruby-${self:provider.stage}-aws-cold-256-empty-ruby25
+              - aws-test-ruby-${self:provider.stage}-aws-cold-512-empty-ruby25
 
   ruby27-coldstart:
     <<: *coldstart-param
@@ -164,6 +164,6 @@ functions:
           input:
             invokeCount: ${self:custom.coldStartBatchSize}
             targetFunctionName: 
-              - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-empty-ruby27
-              - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-256-empty-ruby27
-              - aws-empty-test-functions-ruby-${self:provider.stage}-aws-cold-512-empty-ruby27              
+              - aws-test-ruby-${self:provider.stage}-aws-cold-empty-ruby27
+              - aws-test-ruby-${self:provider.stage}-aws-cold-256-empty-ruby27
+              - aws-test-ruby-${self:provider.stage}-aws-cold-512-empty-ruby27              
