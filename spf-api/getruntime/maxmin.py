@@ -37,7 +37,7 @@ def getMinMax(event, queryType):
                 TableName=os.environ['DYNAMODB_TABLE'],
                 IndexName='duration-index',
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-                ProjectionExpression='LanguageRuntime, #duration, BilledDuration, FunctionName, FunctionVersion, #timestamp, MemorySize, MemoryUsed, ServerlessPlatformName',
+                ProjectionExpression='LanguageRuntime, #duration, TotalDuration, InitDuration, BilledDuration, FunctionName, FunctionVersion, #timestamp, MemorySize, MemoryUsed, ServerlessPlatformName',
                 ExpressionAttributeNames = { "#duration": "Duration", "#timestamp": "Timestamp" },
                 ScanIndexForward=(queryType == QueryType.MIN) # sort descending ('false' for maximum) or ascending ('true' for minimum)
             )
@@ -46,7 +46,7 @@ def getMinMax(event, queryType):
                 TableName=os.environ['DYNAMODB_TABLE'],
                 IndexName='duration-index',
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-                ProjectionExpression='LanguageRuntime, #duration, BilledDuration, FunctionName, FunctionVersion, #timestamp, MemorySize, MemoryUsed, ServerlessPlatformName',
+                ProjectionExpression='LanguageRuntime, #duration, TotalDuration, InitDuration, BilledDuration, FunctionName, FunctionVersion, #timestamp, MemorySize, MemoryUsed, ServerlessPlatformName',
                 ExpressionAttributeNames = { "#duration": "Duration", "#timestamp": "Timestamp" },
                 ScanIndexForward=(queryType == QueryType.MIN), 
                 FilterExpression=queryFilterExpression

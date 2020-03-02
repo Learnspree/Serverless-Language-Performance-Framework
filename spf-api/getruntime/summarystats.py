@@ -16,6 +16,15 @@ from botocore.exceptions import ClientError, ParamValidationError
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
+# TotalDuration (and InitDuration which is part of TotalDuration) were added after initial data gathering commenced.
+# Handle both scenarios here - if TotalDuration is present, use it.
+# If not - use 'Duration' which will always be there 
+def getRowDuration(row):
+    if row['TotalDuration']:
+        return row['TotalDuration']
+    else
+        return row['Duration']
+
 def getSummaryStats(event, context):
 
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
@@ -86,7 +95,7 @@ def getSummaryStats(event, context):
 
                 # process results of this "page" of the query
                 for row in allMatchingRows['Items']:
-                    rowDuration = row['Duration']
+                    rowDuration = getRowDuration(row)
                     totalDuration += rowDuration
                     totalBilledDuration += row['BilledDuration']
                     if rowDuration > currentMaxDuration:

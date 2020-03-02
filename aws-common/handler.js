@@ -62,7 +62,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
       functionName : functionNameValue,
       functionVersion : functionVersionValue,
       languageRuntime : languageRuntimeFromFunctionName(functionNameValue),
-      initDuration : isNaN(initDurationValue) ? 0 : initDurationValue,
+      initDuration : isWarmStart ? 0 : initDurationValue,
       state: isWarmStart ? "warm" : "cold",
 
       // following values hardcoded for now as we know we're running in AWS Lambda. 
