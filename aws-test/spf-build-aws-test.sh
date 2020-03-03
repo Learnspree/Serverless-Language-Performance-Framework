@@ -59,25 +59,25 @@ echo "***** SPF: finished build stage ($environment) *****"
 echo "***** SPF: running sls deploy stage ($environment) *****"
 
 cd $DIR/aws-service-dotnetcore2
-serverless deploy -v --stage $environment
+serverless deploy -v --stage $environment &
 
 cd $DIR/aws-service-go
-serverless deploy -v --stage $environment
+serverless deploy -v --stage $environment &
 
 cd $DIR/aws-service-java
-serverless deploy -v --stage $environment
+serverless deploy -v --stage $environment &
 
 cd $DIR/aws-service-java11
-serverless deploy -v --stage $environment
+serverless deploy -v --stage $environment &
 
 cd $DIR/aws-service-nodejs
-serverless deploy -v --stage $environment
+serverless deploy -v --stage $environment &
 
 cd $DIR/aws-service-python
-serverless deploy -v --stage $environment
+serverless deploy -v --stage $environment &
 
 cd $DIR/aws-service-ruby
-serverless deploy -v --stage $environment
+serverless deploy -v --stage $environment &
 
 cd $DIR/aws-burst-invoker
 serverless deploy -v --stage $environment
