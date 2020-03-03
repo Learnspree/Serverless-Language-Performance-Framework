@@ -22,6 +22,11 @@ echo "***** SPF: finished test stage *****"
 echo "***** SPF: running sls deploy stage *****"
 
 cd $DIR
-serverless deploy -v
+
+# During serverless deploy, optionally setup custom domain base path mappings to map custom domain 
+# (like 'api.serverlessperformance.net') to API Gateway AWS URL
+npm install serverless-domain-manager --save-dev
+serverless create_domain --stage dev
+serverless deploy -v --stage dev
 
 echo "***** SPF: finished sls deploy stage *****"
