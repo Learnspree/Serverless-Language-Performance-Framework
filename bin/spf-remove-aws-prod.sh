@@ -11,7 +11,7 @@ cd $DIR/../aws-common
 # Remove spf-api next (logger depends on this stack's output)
 echo "***** SPF: Remove API *****"
 cd $DIR/../spf-api
-./spf-remove-api-prod.sh
+./spf-remove-api.sh -e prod -b
 
 # Remove the test functions next (logger depends on this stack's log groups)
 echo "***** SPF: Remove Test Functions *****"

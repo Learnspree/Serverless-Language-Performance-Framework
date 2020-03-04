@@ -4,14 +4,15 @@ helpFunction()
 {
    echo ""
    echo "Usage: $0 -e environment"
-   echo -e "\t-e target environment (dev or prod)"
+   echo -e "\t-e target environment (dev or prod) [-b] (-b creates a base-path mapping in api custom domain"
    exit 1 # Exit script after printing help
 }
 
-while getopts "te:" opt
+while getopts "be:" opt
 do
    case "$opt" in
       e ) environment="$OPTARG" ;;
+      b ) createbasepathmapping="yes" ;;
    esac
 done
 
@@ -54,8 +55,13 @@ cd $DIR
 
 # During serverless deploy, optionally setup custom domain base path mappings to map custom domain 
 # (like 'api.serverlessperformance.net') to API Gateway AWS URL
-npm install serverless-domain-manager --save-dev
-serverless create_domain --stage $environment
+if [ -n "$createbasepathmapping" ]
+then
+   npm install serverless-domain-manager --save-dev
+   serverless create_domain --stage $environment
+fi
+
+# do the deploy
 serverless deploy -v --stage $environment
 
 echo "***** SPF API ($environment): finished sls deploy stage *****"

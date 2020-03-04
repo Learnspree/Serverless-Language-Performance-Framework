@@ -22,7 +22,7 @@ dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 def getRowDuration(row):
     if row['TotalDuration']:
         return row['TotalDuration']
-    else
+    else:
         return row['Duration']
 
 def getMeanDuration(event, context):
