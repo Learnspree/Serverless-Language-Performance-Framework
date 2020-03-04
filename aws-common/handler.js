@@ -47,7 +47,10 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
     let billedDurationValue = parseFloatWith(/Billed Duration: (.*) ms/i, messageParts[2]);
     let memorySizeValue     = parseFloatWith(/Memory Size: (.*) MB/i, messageParts[3]);
     let memoryUsedValue     = parseFloatWith(/Max Memory Used: (.*) MB/i, messageParts[4]);
-    let isWarmStart         = isNaN(parseFloatWith(/Init Duration: (.*) ms/i, messageParts[5])); // Init Duration only in log entry if Cold Start
+
+    // Init Duration only in log entry if Cold Start
+    let initDurationValue   = parseFloatWith(/Init Duration: (.*) ms/i, messageParts[5]); 
+    let isWarmStart         = isNaN(initDurationValue); 
 
     return {
       timestamp : Date.now(), // TODO - better to get timestamp as input from executing function via  cloudwatch log entry
@@ -59,6 +62,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
       functionName : functionNameValue,
       functionVersion : functionVersionValue,
       languageRuntime : languageRuntimeFromFunctionName(functionNameValue),
+      initDuration : isWarmStart ? 0 : initDurationValue,
       state: isWarmStart ? "warm" : "cold",
 
       // following values hardcoded for now as we know we're running in AWS Lambda. 
@@ -83,7 +87,6 @@ module.exports.logger = (event, context, callback) => {
       const parsedPayload = JSON.parse(res.toString('utf8'));
       const functionNameValue = functionName(parsedPayload.logGroup);
       const functionVersionValue = functionVersion(parsedPayload.logStream);
-      let responseCode = 200;
       let successCount = 0;
       let failureCount = 0;
 

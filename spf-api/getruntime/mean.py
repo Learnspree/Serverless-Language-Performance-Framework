@@ -16,6 +16,15 @@ from botocore.exceptions import ClientError, ParamValidationError
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
+# TotalDuration (and InitDuration which is part of TotalDuration) were added after initial data gathering commenced.
+# Handle both scenarios here - if TotalDuration is present, use it.
+# If not - use 'Duration' which will always be there 
+def getRowDuration(row):
+    if row.get('TotalDuration'):
+        return row['TotalDuration']
+    else:
+        return row['Duration']
+
 def getMeanDuration(event, context):
     queryFilterExpression = queryfilter.getDynamoFilterExpression(event['queryStringParameters'])
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
@@ -60,7 +69,7 @@ def getMeanDuration(event, context):
             print ("no records available for %s" % inputRuntime)
         else:
             for row in allMatchingRows['Items']:
-                totalDuration += row['Duration']
+                totalDuration += getRowDuration(row)
                 totalBilledDuration += row['BilledDuration']
             
             meanBilledDuration = int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100

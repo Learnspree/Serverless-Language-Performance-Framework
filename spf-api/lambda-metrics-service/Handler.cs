@@ -93,6 +93,12 @@ namespace ServerlessPerformanceFramework
                   }},
                 { "State", new AttributeValue {
                       S = metrics.State
+                  }},
+                { "InitDuration", new AttributeValue {
+                      N = metrics.InitDuration
+                  }},
+                { "TotalDuration", new AttributeValue {
+                      N = metrics.TotalDuration
                   }}
             };
 
@@ -113,6 +119,8 @@ namespace ServerlessPerformanceFramework
       public string LanguageRuntime {get; set;}
       public string ServerlessPlatformName {get; set;}
       public string State {get; set;}
+      public string InitDuration { get; set; }
+      public string TotalDuration { get; set; }
 
       public AddMetricsRequest(
         string requestId,
@@ -125,7 +133,8 @@ namespace ServerlessPerformanceFramework
         string memoryUsed,
         string runtime,
         string platform,
-        string state) {
+        string state,
+        string initDuration) {
           RequestId = requestId;
           FunctionName = functionName;
           FunctionVersion = functionVersion;
@@ -137,6 +146,8 @@ namespace ServerlessPerformanceFramework
           LanguageRuntime = runtime;
           ServerlessPlatformName = platform;
           State = state;
+          InitDuration = initDuration;
+          TotalDuration = (Convert.ToDecimal(initDuration) + Convert.ToDecimal(duration)).ToString();
       }
     }
 }

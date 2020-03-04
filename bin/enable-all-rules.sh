@@ -30,7 +30,6 @@ fi
 
 enable_rules_for_runtime () {
    echo "Starting enabling of $1 rules for $environment environment..."
-   echo ""
 
    # Cold Start - covers all memory allocations
    aws events enable-rule --name coldstart-$1-$environment-hourly-burst && printf "."
@@ -45,8 +44,6 @@ enable_rules_for_runtime () {
    # 512 MB
    aws events enable-rule --name warmstart-512-$1-$environment-minute && printf "."
 
-   echo ""
-   echo "Finished enabling $1 rules for $environment environment."
    echo ""
 } 
 

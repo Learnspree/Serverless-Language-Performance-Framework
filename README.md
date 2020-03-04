@@ -167,7 +167,7 @@ View "/aws-common/serverless.yml" to view the list of source cloud-watch-logs th
 Build & Deploy the metrics persistance function (saves given metrics in DynamoDB table) which is exposed via API Gateway as a RESTful endpoing. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 ```bash
 cd /spf-api
-./spf-build-api.sh
+./spf-build-api.sh -e dev
 ```
 
 ### Deploy AWS Logger Function 

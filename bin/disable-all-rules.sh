@@ -30,7 +30,6 @@ fi
 
 disable_rules_for_runtime () {
    echo "Starting disabling of $1 rules for $environment environment..."
-   echo ""
 
    # Cold Start - covers all memory allocations
    aws events disable-rule --name coldstart-$1-$environment-hourly-burst && printf "."
@@ -45,8 +44,6 @@ disable_rules_for_runtime () {
    # 512 MB
    aws events disable-rule --name warmstart-512-$1-$environment-minute && printf "."
 
-   echo ""
-   echo "Finished disabling $1 rules for $environment environment."
    echo ""
 } 
 

@@ -34,25 +34,25 @@ echo "***** SPF: running in $DIR *****"
 
 # serverless framework will remove the cloud-formation stack
 cd $DIR/aws-service-dotnetcore2
-serverless remove -v --stage $environment
+serverless remove -v --stage $environment &
 
 cd $DIR/aws-service-go
-serverless remove -v --stage $environment
+serverless remove -v --stage $environment &
 
 cd $DIR/aws-service-java
-serverless remove -v --stage $environment
+serverless remove -v --stage $environment &
 
 cd $DIR/aws-service-java11
-serverless remove -v --stage $environment
+serverless remove -v --stage $environment &
 
 cd $DIR/aws-service-nodejs
-serverless remove -v --stage $environment
+serverless remove -v --stage $environment &
 
 cd $DIR/aws-service-python
-serverless remove -v --stage $environment
+serverless remove -v --stage $environment &
 
 cd $DIR/aws-service-ruby
-serverless remove -v --stage $environment
+serverless remove -v --stage $environment &
 
 cd $DIR/aws-burst-invoker
 serverless remove -v --stage $environment
