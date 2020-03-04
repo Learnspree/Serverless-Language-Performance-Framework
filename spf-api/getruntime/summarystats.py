@@ -20,7 +20,7 @@ dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 # Handle both scenarios here - if TotalDuration is present, use it.
 # If not - use 'Duration' which will always be there 
 def getRowDuration(row):
-    if row['TotalDuration']:
+    if row.get('TotalDuration'):
         return row['TotalDuration']
     else:
         return row['Duration']
