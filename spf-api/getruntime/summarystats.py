@@ -97,7 +97,6 @@ def getSummaryStats(event, context):
                 for row in allMatchingRows['Items']:
                     rowDuration = getRowDuration(row)
                     totalDuration += rowDuration
-                    totalBilledDuration += row['BilledDuration']
                     if rowDuration > currentMaxDuration:
                         currentMaxDuration = rowDuration
                         maxExecutionRow = row
@@ -109,11 +108,12 @@ def getSummaryStats(event, context):
 
     # End of query loop - now total up and return the overall result 
     try:
-        meanBilledDuration = int(math.ceil((totalBilledDuration / totalRowCount) / Decimal(100.0))) * 100
+        meanDuration = totalDuration / totalRowCount
+        meanBilledDuration = int(math.ceil(meanDuration / Decimal(100.0))) * 100
         memoryAllocationForCostCalc = queryfilter.getMemoryFromQueryString(event['queryStringParameters'])
 
         returnValue = { 
-                        "meanDuration" : totalDuration / totalRowCount,
+                        "meanDuration" : meanDuration,
                         "meanBilledDuration" : meanBilledDuration,
                         "maxExecution" : maxExecutionRow,
                         "minExecution" : minExecutionRow,
