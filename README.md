@@ -28,7 +28,8 @@ Development of this performance testing framework used the following packages an
 | Java11 (JDK)           |  OpenJDK 11.0.2      | https://www.oracle.com/java/technologies/javase-jdk11-downloads.html |
 | Apache Maven (for Java)| 3.6.1                | https://maven.apache.org/                  |
 | Golang                 | 1.12.6               | https://golang.org/doc/install             |
-| Azure CLI              | 2.0.29               | https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest|
+| Azure CLI              | 2.1.0                | https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos?view=azure-cli-latest|
+| Powershell Core        | 7.0.0                | https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7 |
 | Azure Functions VSCode | 0.18.1 (Preview)     | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
 | Azure Functions Core Tools | 2.7.1585         | https://github.com/Azure/azure-functions-core-tools|
 
@@ -82,6 +83,9 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.212-b10, mixed mode)
 If you want to additionally test Azure Functions (in addition to AWS Lambda) then follow these additional steps:
 1. Setup Microsoft Azure Account
 2. Install Azure CLI *(See link above or for macOS just use `brew update && brew install azure-cli`)*
+3. Install Azure Powershell Core for MacOS *(See link above or for macOS just use `brew update && brew cask install powershell`)*
+3. Install Azure "AZ" module on Powershell Core (via `pwsh` then `Install-Module -Name Az -AllowClobber -Scope CurrentUser`)
+3. Connect to Azure Account from Powershell using `Connect-AzAccount`
 3. Install Azure Serverless Framework Plugin via `npm install -g serverless-azure-functions`
 4. Install VSCode Azure Functions Plugin (see link above)
 4. Install Azure Core Tools via `npm install -g azure-functions-core-tools@core --unsafe-perm true` (MacOS - Windows command differs (see VSCode links above)
