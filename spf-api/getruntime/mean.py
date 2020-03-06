@@ -39,14 +39,14 @@ def getMeanDuration(event, context):
             allMatchingRows = table.query(
                 TableName=os.environ['DYNAMODB_TABLE'],
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-                ProjectionExpression='LanguageRuntime, #duration, BilledDuration',
+                ProjectionExpression='LanguageRuntime, #duration, InitDuration, TotalDuration, BilledDuration, ServerlessPlatformName',
                 ExpressionAttributeNames = { "#duration": "Duration" }
             )
         else:
             allMatchingRows = table.query(
                 TableName=os.environ['DYNAMODB_TABLE'],
                 KeyConditionExpression=Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-                ProjectionExpression='LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
+                ProjectionExpression='LanguageRuntime, #duration, InitDuration, TotalDuration, BilledDuration, ServerlessPlatformName',
                 ExpressionAttributeNames = { "#duration": "Duration" },
                 FilterExpression = queryFilterExpression
             )
@@ -70,9 +70,9 @@ def getMeanDuration(event, context):
         else:
             for row in allMatchingRows['Items']:
                 totalDuration += getRowDuration(row)
-                totalBilledDuration += row['BilledDuration']
             
-            meanBilledDuration = int(math.ceil((totalBilledDuration / allMatchingRows['Count']) / Decimal(100.0))) * 100
+            meanDuration = totalDuration / allMatchingRows['Count']
+            meanBilledDuration = int(math.ceil(meanDuration / Decimal(100.0))) * 100
             memoryAllocationForCostCalc = queryfilter.getMemoryFromQueryString(event['queryStringParameters'])
 
             returnValue = { 
