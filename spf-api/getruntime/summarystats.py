@@ -64,7 +64,7 @@ def getSummaryStats(event, context):
             query_params = { 
                 'TableName': os.environ['DYNAMODB_TABLE'],
                 'KeyConditionExpression': Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-                'ProjectionExpression': 'LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
+                'ProjectionExpression': 'LanguageRuntime, #duration, InitDuration, TotalDuration, BilledDuration, ServerlessPlatformName',
                 'ExpressionAttributeNames': { "#duration": "Duration" }
             }
             if queryFilterExpression:
