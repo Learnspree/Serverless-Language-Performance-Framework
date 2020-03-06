@@ -25,6 +25,9 @@ def getRowDuration(row):
     else:
         return row['Duration']
 
+def getRowExecutionDuration(row):
+    return row['Duration']
+
 def getSummaryStats(event, context):
 
     inputRuntime = '{}'.format(event['pathParameters']['runtimeId'])
@@ -47,7 +50,7 @@ def getSummaryStats(event, context):
     # fetch metrics from the database
     # initialize parameters set here for potential loops for paging
     totalDuration = Decimal('0.0')
-    totalBilledDuration = Decimal('0.0')
+    totalDurationForBilling = Decimal('0.0')
     currentMaxDuration = Decimal('0.0')
     currentMinDuration = Decimal('1000000.0')
     maxExecutionRow = None
@@ -64,7 +67,7 @@ def getSummaryStats(event, context):
             query_params = { 
                 'TableName': os.environ['DYNAMODB_TABLE'],
                 'KeyConditionExpression': Key('LanguageRuntime').eq('{}'.format(inputRuntime)),
-                'ProjectionExpression': 'LanguageRuntime, #duration, BilledDuration, ServerlessPlatformName',
+                'ProjectionExpression': 'LanguageRuntime, #duration, InitDuration, TotalDuration, BilledDuration, ServerlessPlatformName',
                 'ExpressionAttributeNames': { "#duration": "Duration" }
             }
             if queryFilterExpression:
@@ -97,7 +100,7 @@ def getSummaryStats(event, context):
                 for row in allMatchingRows['Items']:
                     rowDuration = getRowDuration(row)
                     totalDuration += rowDuration
-                    totalBilledDuration += row['BilledDuration']
+                    totalDurationForBilling += getRowExecutionDuration(row)
                     if rowDuration > currentMaxDuration:
                         currentMaxDuration = rowDuration
                         maxExecutionRow = row
@@ -109,7 +112,7 @@ def getSummaryStats(event, context):
 
     # End of query loop - now total up and return the overall result 
     try:
-        meanBilledDuration = int(math.ceil((totalBilledDuration / totalRowCount) / Decimal(100.0))) * 100
+        meanBilledDuration = int(math.ceil((totalDurationForBilling / totalRowCount) / Decimal(100.0))) * 100
         memoryAllocationForCostCalc = queryfilter.getMemoryFromQueryString(event['queryStringParameters'])
 
         returnValue = { 

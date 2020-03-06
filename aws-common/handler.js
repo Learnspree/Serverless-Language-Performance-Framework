@@ -49,6 +49,7 @@ let usageMetrics = function (eventPayload, functionNameValue, functionVersionVal
     let memoryUsedValue     = parseFloatWith(/Max Memory Used: (.*) MB/i, messageParts[4]);
 
     // Init Duration only in log entry if Cold Start
+    // For the first request served, the amount of time it took the runtime to load the function and run code outside of the handler method
     let initDurationValue   = parseFloatWith(/Init Duration: (.*) ms/i, messageParts[5]); 
     let isWarmStart         = isNaN(initDurationValue); 
 
