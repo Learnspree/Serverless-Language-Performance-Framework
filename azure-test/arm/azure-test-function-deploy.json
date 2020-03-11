@@ -94,6 +94,7 @@
                 "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2019-06-01').keys[0].value)]"
               },
               {
+                // A connection string to a storage account that the Functions runtime uses for internal queueing
                 "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
                 "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2019-06-01').keys[0].value)]"
               },
@@ -102,10 +103,14 @@
                 "value": "[toLower(variables('functionAppName'))]"
               },
               {
+                // This setting dictates whether functions runtime 1, 2 or 3 is used.
+                // The later version, the latest the runtimes available.
+                // See https://docs.microsoft.com/en-gb/azure/azure-functions/functions-versions
                 "name": "FUNCTIONS_EXTENSION_VERSION",
-                "value": "~2"
+                "value": "~3"
               },
               {
+                // Only needed if using the node language stack, specifies the version to use
                 "name": "WEBSITE_NODE_DEFAULT_VERSION",
                 "value": "~10"
               },
@@ -114,6 +119,8 @@
                 "value": "[reference(resourceId('microsoft.insights/components/', variables('applicationInsightsName')), '2015-05-01').InstrumentationKey]"
               },
               {
+                // The language stack to be used for functions in this app
+                // dotnet, node, java, python, or powershell
                 "name": "FUNCTIONS_WORKER_RUNTIME",
                 "value": "[variables('functionWorkerRuntime')]"
               }
