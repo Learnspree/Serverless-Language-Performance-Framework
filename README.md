@@ -31,7 +31,7 @@ Development of this performance testing framework used the following packages an
 | Azure CLI              | 2.1.0                | https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos?view=azure-cli-latest|
 | Powershell Core        | 7.0.0                | https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7 |
 | Azure Functions VSCode | 0.18.1 (Preview)     | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
-| Azure Functions Core Tools | 2.7.1585         | https://github.com/Azure/azure-functions-core-tools|
+| Azure Functions Core Tools | 2.7.2254         | https://github.com/Azure/azure-functions-core-tools|
 
 
 ## Setup AWS Lambda Testing
