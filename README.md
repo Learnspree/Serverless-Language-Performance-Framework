@@ -32,6 +32,8 @@ Development of this performance testing framework used the following packages an
 | Powershell Core        | 7.0.0                | https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7 |
 | Azure Functions VSCode | 0.18.1 (Preview)     | https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions|
 | Azure Functions Core Tools | 2.7.2254         | https://github.com/Azure/azure-functions-core-tools|
+| Azure Resource Manager (ARM) Tools for VSCode | 0.8.4 | https://marketplace.visualstudio.com/items?itemName=msazurermtools.azurerm-vscode-tools |
+| Powershell Plugin for VSCode | 2020.3.0 | https://marketplace.visualstudio.com/items?itemName=ms-vscode.PowerShell |
 
 
 ## Setup AWS Lambda Testing
