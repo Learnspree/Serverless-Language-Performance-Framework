@@ -1,5 +1,5 @@
-# Example usage from powershell:
-# ./deploy-test-function-app.ps1 -runtime "python" -region "East US"
+# Example usage:
+# [pwsh] ./deploy-test-function-app.ps1 -runtime "python" -region "East US"
 
 # Connect to the Azure Account
 ## Run 'pwsh' from macos terminal to start powershell
