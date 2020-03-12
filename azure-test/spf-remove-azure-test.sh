@@ -3,15 +3,16 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -r region"
-   echo -e "\t-r [target Azure region].... (e.g. 'East US')"
+   echo "Usage: $0 -r region [-l runtime]"
+   echo -e "\t-r [target Azure region].... (e.g. 'East US') [-l language-runtime]"
    exit 1 # Exit script after printing help
 }
 
-while getopts "r:" opt
+while getopts "l:r:" opt
 do
    case "$opt" in
       r ) region="$OPTARG" ;;
+      l ) languageRuntime="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
@@ -39,8 +40,15 @@ echo ""
 
 cd $DIR/arm
 
-# do the removal of the function app in the target region per runtime
-remove_azure_function_app "dotnet" "$region"
-remove_azure_function_app "node" "$region"
+# Remove just the given runtime if provided, otherwise remove all
+if [ -n "$languageRuntime" ]
+then
+   remove_azure_function_app "$languageRuntime" "$region"
+else
+   # default - do the removal of the function app in the target region per runtime
+   remove_azure_function_app "dotnet" "$region"
+   remove_azure_function_app "node" "$region"
+   remove_azure_function_app "python" "$region"
+fi
 
 echo "***** SPF: finished remove stage for Azure Test Functions *****"
