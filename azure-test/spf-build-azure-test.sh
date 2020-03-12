@@ -3,7 +3,7 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -r region"
+   echo "Usage: $0 -r region [-l runtime]"
    echo -e "\t-r [target Azure region].... (e.g. 'East US') [-l language-runtime]"
    exit 1 # Exit script after printing help
 }
