@@ -23,19 +23,24 @@ then
    helpFunction
 fi
 
-echo "***** SPF: running build script for Azure Test *****"
+deploy_azure_function_app () {
+
+    echo ""
+    echo "****************************************************"
+    echo "***** SPF: running deploy - runtime: $1, region: $2 ... *****"
+    echo ""
+    pwsh -f deploy-test-function-app.ps1 -runtime "$1" -region "$2"
+}
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-echo "***** SPF: running in $DIR *****"
+echo "***** SPF: running in $DIR/arm *****"
+echo "***** SPF: running build script for Azure Function app for region '$region' *****"
+echo ""
 
-echo "***** SPF: finished build stage *****"
-
-echo "***** SPF: running deploy stage *****"
-
-echo "Region: ${region}"
 cd $DIR/arm
-pwsh -f deploy-test-function-app.ps1 -runtime "dotnet" -region "$region"
-#$DIR/arm/deploy-test-function-app.ps1 -runtime "node" -region "East US"
-#$DIR/arm/deploy-test-function-app.ps1 -runtime "python" -region "East US"
 
-echo "***** SPF: finished deploy stage *****"
+# do the deployment of the function app in the target region per runtime
+deploy_azure_function_app "dotnet" "$region"
+deploy_azure_function_app "node" "$region"
+
+echo "***** SPF: finished deploy stage for Azure Test Functions *****"
