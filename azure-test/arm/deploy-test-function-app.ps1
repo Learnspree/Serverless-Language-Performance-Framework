@@ -1,10 +1,12 @@
+# Example usage from powershell:
+# ./deploy-test-function-app.ps1 -runtime "python" -region "East US" -regionLowercase "east-us"
+
 # Connect to the Azure Account
 ## Run 'pwsh' from macos terminal to start powershell
 ## Run 'Connect-AzAccount' before running this script for now (will setup a service principal in future)
 
-$runtime = "node"
-$region = "East US"
-$regionLowercase = "east-us"
+# Note - param() must be the first statement in the script
+param([string]$runtime="node",[string]$region="East US",[string]$regionLowercase="east-us") 
 
 # Register Resource Providers if they're not already registered
 Register-AzResourceProvider -ProviderNamespace "microsoft.web"
