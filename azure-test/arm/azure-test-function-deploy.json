@@ -135,7 +135,7 @@
         "name": "[variables('applicationInsightsName')]",
         "type": "microsoft.insights/components",
         "kind": "web",
-        "location": "East US",
+        "location": "[parameters('location')]",
         "tags": {
           "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', variables('applicationInsightsName'))]": "Resource"
         },
