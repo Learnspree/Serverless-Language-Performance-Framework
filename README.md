@@ -86,14 +86,40 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 1. Setup Microsoft Azure Account
 2. Install Azure CLI *(See link above or for macOS just use `brew update && brew install azure-cli`)*
 3. Install Azure Powershell Core for MacOS *(See link above or for macOS just use `brew update && brew cask install powershell`)*
-3. Install Azure "AZ" module on Powershell Core (via `pwsh` then `Install-Module -Name Az -AllowClobber -Scope CurrentUser`)
-3. Connect to Azure Account from Powershell using `Connect-AzAccount`
-3. Install Azure Serverless Framework Plugin via `npm install -g serverless-azure-functions`
-4. Install VSCode Azure Functions Plugin (see link above)
-4. Install Azure Core Tools via `npm install -g azure-functions-core-tools@core --unsafe-perm true` (MacOS - Windows command differs (see VSCode links above)
-5. Follow instructions to setup Azure CLI [credentials](https://serverless.com/framework/docs/providers/azure/guide/credentials/) to work with Serverless Framework 
-6. Follow instructions to [setup](https://serverless.com/framework/docs/providers/azure/guide/quick-start/) Serverless Framework for Azure.
+4. Install Azure "AZ" module on Powershell Core (via `pwsh` then `Install-Module -Name Az -AllowClobber -Scope CurrentUser`)
+5. Connect to Azure Account from Powershell using `Connect-AzAccount`
+6. Install VSCode Azure Functions Plugin (see link above)
+7. Install Azure Core Tools via `npm install -g azure-functions-core-tools@core --unsafe-perm true` (MacOS - Windows command differs (see VSCode links above)
 
+### Setup Azure Service Principal for Automated Deployments
+These steps will allow the creation of service principal to be used to automate service deployments without need for manual login via Connect-AzAccount in powershell first. See [here](https://docs.microsoft.com/en-us/powershell/azure/create-azure-service-principal-azureps?view=azps-3.6.1&viewFallbackFrom=azps-1.3.0) for guide.
+
+1. Run `pwsh` to start powershell
+2. Run `Connect-AzAccount` and login to your Azure subscription
+3. Run the following commands to create a new username/password-based service principal (use a strong password!)
+
+```
+# Import the PSADPasswordCredential object
+Import-Module Az.Resources 
+
+$credentials = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential -Property @{ StartDate=Get-Date; EndDate=Get-Date -Year 2024; Password=<Choose a strong password>} 
+
+$sp = New-AzAdServicePrincipal -DisplayName SPFDeploymentServicePrincipal -PasswordCredential $credentials
+
+# record the tenant-id that was used at the time of service principal creation - we need to keep this for future logins
+(Get-AzContext).Tenant.Id 
+
+# verify service principal creation/details
+# Note the "ApplicationId" value which will be a GUID 
+Get-AzADServicePrincipal -DisplayNameBeginsWith SPF
+
+# verify ability to login with service principal
+# Use the application ID as the username, and the secret as password
+$securepassword = ConvertTo-SecureString -String <strong password chosen earlier> -AsPlainText -Force
+$applicationId = <GUID from above Get-AzADServicePrincipal call>
+$credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $applicationId, $securepassword
+Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant <tenant ID saved earlier>
+```
 
 ## Build & Deploy - AWS
 The easiest way to deploy the common SPF API and all the AWS test function components is to run the single aggregator script (which has dev and prod versions). For example:
