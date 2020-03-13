@@ -106,19 +106,12 @@ $credentials = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordC
 
 $sp = New-AzAdServicePrincipal -DisplayName SPFDeploymentServicePrincipal -PasswordCredential $credentials
 
-# record the tenant-id that was used at the time of service principal creation - we need to keep this for future logins
-(Get-AzContext).Tenant.Id 
-
-# verify service principal creation/details
-# Note the "ApplicationId" value which will be a GUID 
-Get-AzADServicePrincipal -DisplayNameBeginsWith SPF
-
 # verify ability to login with service principal
 # Use the application ID as the username, and the secret as password
 $securepassword = ConvertTo-SecureString -String <strong password chosen earlier> -AsPlainText -Force
-$applicationId = <GUID from above Get-AzADServicePrincipal call>
-$credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $applicationId, $securepassword
-Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant <tenant ID saved earlier>
+$principalName = "http://SPFDeploymentServicePrincipal"
+$credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $principalName, $securepassword
+Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant (Get-AzContext).Tenant.Id
 ```
 
 4. Note - the created service principal can be viewed (with associated ApplicationId and TenantId needed for login calls) via the console in Azure Active Directory->App Registrations (or via Powershell/AzureCLI commands)
