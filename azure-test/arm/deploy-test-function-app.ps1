@@ -1,10 +1,5 @@
 # Example usage:
 # [pwsh] ./deploy-test-function-app.ps1 -runtime "python" -region "East US"
-
-# Connect to the Azure Account
-## Run 'pwsh' from macos terminal to start powershell
-## Run 'Connect-AzAccount' before running this script for now (will setup a service principal in future)
-
 # Note - param() must be the first statement in the script
 param([string]$runtime="node",[string]$region="East US") 
 
