@@ -102,9 +102,16 @@ These steps will allow the creation of service principal to be used to automate 
 # Import the PSADPasswordCredential object
 Import-Module Az.Resources 
 
+# create credentials for service principal
 $credentials = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential -Property @{ StartDate=Get-Date; EndDate=Get-Date -Year 2024; Password=<Choose a strong password>} 
 
+# create service principal
 $sp = New-AzAdServicePrincipal -DisplayName SPFDeploymentServicePrincipal -PasswordCredential $credentials
+
+# create role assignment
+$subId = (Get-AzSubscription).Id
+$principalObjectId = (Get-AzADServicePrincipal -DisplayName "SPFDeploymentServicePrincipal").Id
+New-AzRoleAssignment -ObjectId $principalObjectId -RoleDefinitionName "Contributor" -Scope "/subscriptions/$subId"
 
 # verify ability to login with service principal
 # Use the application ID as the username, and the secret as password
