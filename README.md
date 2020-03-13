@@ -121,6 +121,8 @@ $credentials = New-Object -TypeName System.Management.Automation.PSCredential -A
 Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant <tenant ID saved earlier>
 ```
 
+4. Note - the created service principal can be viewed (with associated ApplicationId and TenantId needed for login calls) via the console in Azure Active Directory->App Registrations (or via Powershell/AzureCLI commands)
+
 ## Build & Deploy - AWS
 The easiest way to deploy the common SPF API and all the AWS test function components is to run the single aggregator script (which has dev and prod versions). For example:
 
