@@ -1,0 +1,9 @@
+{
+  "bindings": [{
+    "type": "timerTrigger",
+    "direction": "in",
+    "name": "csxEmptyFunctionTimer",
+    "schedule": "30 * * * * *"
+  }],
+  "disabled": true
+}
