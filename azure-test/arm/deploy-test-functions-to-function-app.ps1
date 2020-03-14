@@ -7,9 +7,10 @@ param([string]$runtime="node",[string]$region="East US",[string]$sourcepath)
 # Zip the package
 $regionLowercase = "${region}".ToLower().Replace(' ', '-')
 $zippath = "./azure-$runtime-test-$regionLowercase.zip"
-Compress-Archive -Path $sourcepath -DestinationPath $zippath
+Compress-Archive -Path $sourcepath -DestinationPath $zippath -Force
 
 # Deploy the functions
-$appName = "spf-azure-test-${runtime}-${regionLowercase}-rg"
+$rgName = "spf-azure-test-${runtime}-${regionLowercase}-rg"
+$appName = "spf-azure-test-${runtime}-${regionLowercase}"
 
-Publish-AzWebapp -ResourceGroupName $appName -Name $appName -ArchivePath $zippath
+Publish-AzWebapp -ResourceGroupName $rgName -Name $appName -ArchivePath $zippath
