@@ -80,7 +80,6 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.212-b10, mixed mode)
 ```
 
 ## Setup Azure Function Testing
-**NOTE:** Currently the Azure test components may need some re-work to adapt to changes in the main SPF API hosted in AWS (see above section). Any issues will be resolved soon in future updates.
 
 If you want to additionally test Azure Functions (in addition to AWS Lambda) then follow these additional steps:
 1. Setup Microsoft Azure Account
@@ -88,7 +87,7 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 3. Install Azure Powershell Core for MacOS *(See link above or for macOS just use `brew update && brew cask install powershell`)*
 4. Install Azure "AZ" module on Powershell Core (via `pwsh` then `Install-Module -Name Az -AllowClobber -Scope CurrentUser`)
 5. Connect to Azure Account from Powershell using `Connect-AzAccount`
-6. Install VSCode Azure Functions Plugin (see link above)
+6. Install VSCode Azure Functions Plugin (see link in table above)
 7. Install Azure Core Tools via `npm install -g azure-functions-core-tools@core --unsafe-perm true` (MacOS - Windows command differs (see VSCode links above)
 
 ### Setup Azure Service Principal for Automated Deployments
@@ -96,32 +95,15 @@ These steps will allow the creation of service principal to be used to automate 
 
 1. Run `pwsh` to start powershell
 2. Run `Connect-AzAccount` and login to your Azure subscription
-3. Run the following commands to create a new username/password-based service principal (use a strong password!)
-
+3. Run the following script to create a new username/password-based service principal (use a strong password!):
 ```
-# Import the PSADPasswordCredential object
-Import-Module Az.Resources 
-
-# create credentials for service principal
-$credentials = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential -Property @{ StartDate=Get-Date; EndDate=Get-Date -Year 2024; Password=<Choose a strong password>} 
-
-# create service principal
-$sp = New-AzAdServicePrincipal -DisplayName SPFDeploymentServicePrincipal -PasswordCredential $credentials
-
-# create role assignment
-$subId = (Get-AzSubscription).Id
-$principalObjectId = (Get-AzADServicePrincipal -DisplayName "SPFDeploymentServicePrincipal").Id
-New-AzRoleAssignment -ObjectId $principalObjectId -RoleDefinitionName "Contributor" -Scope "/subscriptions/$subId"
-
-# verify ability to login with service principal
-# Use the application ID as the username, and the secret as password
-$securepassword = ConvertTo-SecureString -String <strong password chosen earlier> -AsPlainText -Force
-$principalName = "http://SPFDeploymentServicePrincipal"
-$credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $principalName, $securepassword
-Connect-AzAccount -ServicePrincipal -Credential $credentials -Tenant (Get-AzContext).Tenant.Id
+cd azure-test/arm
+setup-azure-testing.ps1 "<strong-password>"
 ```
 
-4. Note - the created service principal can be viewed (with associated ApplicationId and TenantId needed for login calls) via the console in Azure Active Directory->App Registrations (or via Powershell/AzureCLI commands)
+Notes:
+* The created service principal can be viewed (with associated ApplicationId and TenantId needed for login calls) via the console in Azure Active Directory->App Registrations (or via Powershell/AzureCLI commands)
+* The service principal created here has general 'Contributor' access to the entire subscription - so it's very permissive. This should be restricted somewhat in future releases.
 
 ## Build & Deploy - AWS
 The easiest way to deploy the common SPF API and all the AWS test function components is to run the single aggregator script (which has dev and prod versions). For example:
