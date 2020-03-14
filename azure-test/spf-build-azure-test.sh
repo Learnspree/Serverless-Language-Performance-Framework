@@ -32,7 +32,10 @@ deploy_azure_function_app () {
     echo "****************************************************"
     echo "***** SPF: running deploy - runtime: $1, region: $2 ... *****"
     echo ""
+    echo "***** SPF: deploy function app *****"
     pwsh -f deploy-test-function-app.ps1 -runtime "$1" -region "$2"
+    echo "***** SPF: deploy functions to function app *****"
+    pwsh -f deploy-test-functions-to-function-app.ps1 -runtime "$1" -region "$2" -sourcepath "../azure-service-$1"
 }
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
