@@ -54,7 +54,6 @@ else
    # default - do the removal of the function app in the target region per runtime
    remove_azure_function_app "dotnet" "$region"
    remove_azure_function_app "node" "$region"
-   remove_azure_function_app "python" "$region"
 fi
 
 echo "***** SPF: finished remove stage for Azure Test Functions *****"

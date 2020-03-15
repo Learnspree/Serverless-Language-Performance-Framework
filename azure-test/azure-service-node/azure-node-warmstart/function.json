@@ -5,7 +5,7 @@
             "type": "timerTrigger",
             "direction": "in",
             "name": "nodeJSEmptyFunctionTimer",
-            "schedule": "0 0 0/1 1/1 * ? *"
+            "schedule": "0 54-59 * * * *"
         }
     ],
     "entryPoint": "empty",
