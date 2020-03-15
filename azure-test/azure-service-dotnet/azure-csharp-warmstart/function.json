@@ -2,8 +2,8 @@
   "bindings": [{
     "type": "timerTrigger",
     "direction": "in",
-    "name": "csxEmptyFunctionTimer",
-    "schedule": "30 * * * * *"
+    "name": "myTimer",
+    "schedule": "0 54-59 * * * *"
   }],
   "disabled": true
 }
