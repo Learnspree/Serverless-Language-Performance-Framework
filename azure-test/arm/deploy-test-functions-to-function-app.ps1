@@ -10,7 +10,7 @@ $zippath = "./azure-$runtime-test-$regionLowercase.zip"
 Compress-Archive -Path $sourcepath -DestinationPath $zippath -Force
 
 # Deploy the functions
-$rgName = "spf-azure-test-${runtime}-${regionLoawercase}-rg"
+$rgName = "spf-azure-test-${runtime}-${regionLowercase}-rg"
 $appName = "spf-azure-test-${runtime}-${regionLowercase}"
 
 Publish-AzWebapp -ResourceGroupName $rgName -Name $appName -ArchivePath $zippath -Force
