@@ -58,7 +58,6 @@ else
    # default - do the deployment of the function app in the target region per runtime
    deploy_azure_function_app "dotnet" "$region"
    deploy_azure_function_app "node" "$region"
-   deploy_azure_function_app "python" "$region"
 fi
 
 echo "***** SPF: finished deploy stage for Azure Test Functions *****"

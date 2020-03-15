@@ -6,7 +6,7 @@ module.exports.empty = function (context, nodeJSEmptyFunctionTimer) {
 
   context.res = {
     // status: 200, /* Defaults to 200 */
-    body: 'Empty function executed successfully!',
+    body: 'Empty azure node function executed successfully!',
   };
 
   context.done();
