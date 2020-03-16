@@ -35,8 +35,7 @@ Development of this performance testing framework used the following packages an
 | Azure Resource Manager (ARM) Tools for VSCode | 0.8.4 | https://marketplace.visualstudio.com/items?itemName=msazurermtools.azurerm-vscode-tools |
 | Powershell Plugin for VSCode | 2020.3.0 | https://marketplace.visualstudio.com/items?itemName=ms-vscode.PowerShell |
 
-
-## Setup AWS Lambda Testing
+## Setup Environment
 The following setup steps assume Mac OS X (all project development was done on this platform).
 See table above for versions and links
 
@@ -79,7 +78,7 @@ Java(TM) SE Runtime Environment (build 1.8.0_212-b10)
 Java HotSpot(TM) 64-Bit Server VM (build 25.212-b10, mixed mode)
 ```
 
-## Setup Azure Function Testing
+### Azure Setup
 
 If you want to additionally test Azure Functions (in addition to AWS Lambda) then follow these additional steps:
 1. Setup Microsoft Azure Account
@@ -90,7 +89,7 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 6. Install VSCode Azure Functions Plugin (see link in table above)
 7. Install Azure Core Tools via `npm install -g azure-functions-core-tools@core --unsafe-perm true` (MacOS - Windows command differs (see VSCode links above)
 
-### Setup Azure Service Principal for Automated Deployments
+#### Setup Azure Service Principal for Automated Deployments
 These steps will allow the creation of service principal to be used to automate service deployments without need for manual login via Connect-AzAccount in powershell first. See [here](https://docs.microsoft.com/en-us/powershell/azure/create-azure-service-principal-azureps?view=azps-3.6.1&viewFallbackFrom=azps-1.3.0) for guide.
 
 1. Run `pwsh` to start powershell
@@ -105,7 +104,9 @@ Notes:
 * The created service principal can be viewed (with associated ApplicationId and TenantId needed for login calls) via the console in Azure Active Directory->App Registrations (or via Powershell/AzureCLI commands)
 * The service principal created here has general 'Contributor' access to the entire subscription - so it's very permissive. This should be restricted somewhat in future releases.
 
-## Build & Deploy - AWS
+
+# Setting up SPF API and AWS Testing
+
 The easiest way to deploy the common SPF API and all the AWS test function components is to run the single aggregator script (which has dev and prod versions). For example:
 
 
@@ -116,13 +117,15 @@ cd /bin
 
 Alternatively, you can build/deploy invidual framework components as described in the sections that follow below.
 
-**Route53 / DNS** (Optional)
+## SPF API - Route53 / DNS *(Optional)*
 
 Pre-requisites: *(there are many guides from AWS to show how to do this)*:
 * Use AWS Route53 to register your new domain using AWS.
 * Create SSL certificate using ACM to match your domain. Use DNS verification.
 
-See https://serverless.com/blog/serverless-api-gateway-domain/ and https://seed.run/blog/how-to-set-up-a-custom-domain-name-for-api-gateway-in-your-serverless-app.html for instructions on using domain setup plugin for serverless. Steps:
+See [serverless api gateway domain setup](https://serverless.com/blog/serverless-api-gateway-domain/) and [serverless framework domain plugin setup](https://seed.run/blog/how-to-set-up-a-custom-domain-name-for-api-gateway-in-your-serverless-app.html) for instructions on using domain setup plugin for serverless. 
+
+Summary of steps:
 * cd `<spf-api directory>`
 * npm install serverless-domain-manager --save-dev
 * serverless create_domain --stage dev
@@ -135,15 +138,17 @@ Test new domain link to API Gateway:
 
 `curl https://api.<domain>/dev/runtimes/java8/mean`
 
-### Build and Deploy all AWS Test Functions
+## Build and Deploy - AWS Test Functions
 This section describes how to re-build and re-deploy the individual target test functions only. These are contained in the folder "/aws-test/". For example, the AWS test for nodejs12x is located in "/aws-test/aws-service-nodejs12x". There is a single serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions in the "aws-test" directory. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 
 ```bash
 cd /aws-test
+
+# the optional -t option below runs basic integration tests after deployment
 ./spf-build-aws-test.sh -e dev [-t]
 ```
 
-Each target function will essentially be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. These can be modified in the "/aws-test/serverless.yml" file. These batch triggers will be disabled by default. Example below:
+Each target function will essentially be setup with two cloud-watch-batch based triggers, representing both cold-start and warm-start test schedules. The warm-start can be modified in the "/aws-test/aws-service-\<runtime\>/serverless.yml" file and the cold-start in "/aws-test/aws-burst-invoker/serverless.yml". These batch triggers will be disabled by default. Example below:
 
 ```
     awsnodejs12x:
@@ -156,7 +161,7 @@ Each target function will essentially be setup with two cloud-watch-batch based 
             enabled: false    
 
     awsnodejs12x-coldstart:
-        runtime: python3.7
+        runtime: python3.8
         handler: aws-burst-invoker/handler.burst_invoker
         memorySize: ${self:custom.coldStartBatchMemory}
         events:
@@ -178,7 +183,7 @@ View "/aws-common/serverless.yml" to view the list of source cloud-watch-logs th
           filter: 'REPORT'
 ```
 
-### Deploy API For Metrics Storage
+## Build and Deploy - SPF API
 
 Build & Deploy the metrics persistance function (saves given metrics in DynamoDB table) which is exposed via API Gateway as a RESTful endpoing. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 ```bash
@@ -186,7 +191,7 @@ cd /spf-api
 ./spf-build-api.sh -e dev
 ```
 
-### Deploy AWS Logger Function 
+## Build and Deploy - AWS Logger Functions
 Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 
 ```bash
@@ -194,59 +199,7 @@ cd /aws-common
 ./spf-build-aws-logger.sh
 ```
 
-## Build and Deploy - Azure (*Rework Needed*)
-**NOTE:** Currently the Azure test components may need some re-work to adapt to changes in the main SPF API hosted in AWS (see above section). Any issues will be resolved soon in future updates.
-
-### Azure NodeJS
-Build and deploy the individual target test functions. These are contained in the folder "/azure-test/".
-The Azure Functions test for nodeJS is located in "/azure-test/azure-service-nodejs":
-
-```bash
-cd /azure-test/aws-service-nodejs
-npm install
-serverless deploy -v 
-```
-
-### Azure CSharp (CSX)
-The Azure Functions test code for CSharp Empty Function is located in "/azure-test/azure-service-csharp":
-
-Note: Current issues with 2.0.1-beta of Core Tools integration with Node v9.5 (used for this project) means cannot use Azure Function Core Tools to deploy via CLI currently. Serverless framework 1.26.1 also not currently supporting csharp functions for Azure either. This test function will have to be currently deployed `manually` via Azure Portal within the existing FunctionApp created and configured for Azure NodeJS function above:
-* Login to Azure Portal
-* Select "Function Apps"
-* Select existing “azure-service-test" function-app
-* Add new CSharp Timer-based function to this existing function-app
-    * Choose Language - C#
-    * Choose name `empty-csharp`
-    * Choose default timer cron of 1-per-hour `0 */60 * * * *`
-* Copy the contents of `/azure-test/azure-service-csharp/empty-csharp/run.csx` to the generated run.csx file.
-
-### Azure Insights Metrics Export
-Setup "Continuous Export" of the application-insights data for the function-app just deployed.
-To do this, follow the steps in this Azure Portal [Guide](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-export-telemetry).
-
-Note - choose following options when creating the continuous export (if storage account/container does not exist, the portal wizard will guide you through the steps to create them):
-* Destination Storage Account Name = e.g. "azureperfmetrics" (these names are globally unique so you may need to adjust)
-* Destination Storage Account Container = "perf-metrics"
-* Data Types To Export: Turn ON "Request" data, turn OFF all others.
-
-### Azure Performance Logger Function
-This function is triggered from metrics saved by Azure Insights into Azure Storage. It parses these and delivers to the AWS-hosted API to save the metrics.
-
-```bash
-# Deploy the Azure Logs Performance Metric Parser Function
-cd azure-common/azure-perf-logger
-npm install request # just a one-off command - don't need to do this every build
-serverless package 
-
-# Connection String for azure storage: see access-keys in azure storage account created above>
-serverless deploy -v 
-
-# Important - Set AppSettings value on new perf-logger function so that it triggers from the StorageAccount generated for the test-target functions (empty-nodejs / empty-csharp). 
-# See https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account#manage-your-storage-account  for guide on retrieving the storage connection string
-az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='<connection string retrieved from storage settings - see link in comment above'
-```
-
-### End-to-End Test - AWS Lambda
+## End-to-End Test - AWS Lambda
 Full end-to-end test measuring sample target function:
 ```bash
 cd /aws-test
@@ -288,22 +241,6 @@ Note potential values for runtime above:
 * ruby27
 * python36
 * python38
-* empty-csharp (azure csharp)
-* empty-nodejs (azure nodejs)
-
-### End-to-End Test - Azure Functions
-Full end-to-end test measuring sample target function:
-```bash
-cd /azure-test/azure-service-nodejs
-serverless invoke -f empty-nodejs -l 
-
-# Verify results 
-aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
-    --index-name "duration-index" \
-    --key-condition-expression "LanguageRuntime = :runtime" \
-    --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"    
-
-```
 
 ## Initiate Full Scheduled Test - AWS Lambda
 Start a scheduled test by enabling the appropriate cloudwatch events on the test target functions you want to measure. For convenience, to start a full test of warm and cold start:
@@ -312,20 +249,6 @@ Start a scheduled test by enabling the appropriate cloudwatch events on the test
 cd /bin
 ./enable-all-rules.sh -e dev
 ```
-
-## Initiate Full Schedule Test - Azure Functions
-See commands below to check status of existing function apps and also start/stop the "azure-service-test" functionapp which will enable and disable the test functions and their associated timers.
-
-```bash
-az functionapp list
-
-# Start Test
-az functionapp start --name azure-service-test --resource-group azure-service-test-rg
-
-# Stop Test
-az functionapp stop --name azure-service-test --resource-group azure-service-test-rg
-```
-
 ## Cancel Scheduled Testing - AWS
 Do not forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful! 
 
@@ -334,7 +257,7 @@ cd /bin
 ./disable-all-rules.sh -e dev
 ```
 
-## Cleanup
+## Cleanup - AWS
 To remove all cloud-formation stacks created in your AWS account (by the serverless framework) for the performance testing, follow these commands to remove all functions:
 
 ```bash
@@ -350,4 +273,92 @@ Optionally, you can manually remove the dynamodb metrics table. Note: this will 
 
 ```bash
 aws dynamodb delete-table --table-name ServerlessFunctionMetrics-dev [--profile <aws-profile>]
+```
+
+
+# Setting up Azure Testing
+
+Before performing any function deployments in azure, we need to setup a service principal that can be used in automated deployments. There is a script created for this. See usage below:
+
+```bash
+cd /azure-test/arm
+pwsh setup-azure-testing.ps1 -servicePrincipalPass "<use-a-strong-password>"
+```
+
+## Azure Test Function Deployment
+Serverless Framework is not used for Azure function deployment as it is for AWS. This is due to it's relatively basic Azure support compared to AWS. Instead, a single script can be used to build and deploy each azure test function app: 
+
+```bash
+cd /azure-test/
+./spf-build-azure-test.sh -r <region> -l <runtime> -p <service-principal-password>
+
+# Example:
+./spf-build-azure-test.sh -r "Central US" -l "node" -p "my-service-principle-password"
+```
+There are multiple azure function apps created - one for each runtime type as per azure standards. These are each contained in the folder "/azure-test/azure-service-\<runtime\>". For example, the Azure Functions tests for node runtime are located in "/azure-test/azure-service-node".
+
+Current supported runtime values are:
+* `node` (NodeJS - 10x and 12x)
+* `dotnet` (csx and .NETCore)
+* `python` (python3.6, 3.7 and 3.8) - *coming soon*
+
+## Azure Insights Metrics Export
+Setup "Continuous Export" of the application-insights data for the function-apps just deployed.
+To do this, follow the steps in this Azure Portal [Guide](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-export-telemetry).
+
+Note - choose following options when creating the continuous export (if storage account/container does not exist, the portal wizard will guide you through the steps to create them):
+* Destination Storage Account Name = e.g. "azureperfmetrics" (these names are globally unique so you may need to adjust)
+* Destination Storage Account Container = "perf-metrics"
+* Data Types To Export: Turn ON "Request" data, turn OFF all others.
+
+## Azure Performance Logger Function
+This function is triggered from metrics saved by Azure Insights into Azure Storage. It parses these and delivers to the AWS-hosted API to save the metrics.
+
+```bash
+# Deploy the Azure Logs Performance Metric Parser Function
+cd azure-common/azure-perf-logger
+npm install request # just a one-off command - don't need to do this every build
+serverless package 
+
+# Connection String for azure storage: see access-keys in azure storage account created above>
+serverless deploy -v 
+
+# Important - Set AppSettings value on new perf-logger function so that it triggers from the StorageAccount generated for the test-target functions (empty-nodejs / empty-csharp). 
+# See https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account#manage-your-storage-account  for guide on retrieving the storage connection string
+az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='<connection string retrieved from storage settings - see link in comment above'
+```
+
+## End-to-End Test - Azure Functions
+Full end-to-end test measuring sample target function:
+```bash
+cd /azure-test/azure-service-nodejs
+serverless invoke -f empty-nodejs -l 
+
+# Verify results 
+aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
+    --index-name "duration-index" \
+    --key-condition-expression "LanguageRuntime = :runtime" \
+    --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"    
+
+```
+
+## Initiate Full Schedule Test - Azure Functions
+See commands below to check status of existing function apps and also start/stop the "azure-service-test" functionapp which will enable and disable the test functions and their associated timers.
+
+```bash
+az functionapp list
+
+# Start Test
+az functionapp start --name azure-service-test --resource-group azure-service-test-rg
+
+# Stop Test
+az functionapp stop --name azure-service-test --resource-group azure-service-test-rg
+```
+
+## Cleanup - Azure
+To remove all Azure test-function resources, run the following script which will remove all resource-groups created for the test functions and their resources:
+
+```bash
+cd /azure-test
+./spf-remove-azure-test.sh 
 ```
