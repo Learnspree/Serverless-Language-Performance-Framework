@@ -6,9 +6,10 @@ param(
     [string]$region
 ) 
 
-# Register Resource Providers if they're not already registered
-Register-AzResourceProvider -ProviderNamespace "microsoft.web"
-Register-AzResourceProvider -ProviderNamespace "microsoft.storage"
+# Register Resource Providers if they're not already registered 
+# Commenting out - NOT NEEDED HERE??
+#Register-AzResourceProvider -ProviderNamespace "microsoft.web"
+#Register-AzResourceProvider -ProviderNamespace "microsoft.storage"
 
 # create lowercase version of region with hyphens instead of spaces to help with resource naming
 $regionLowercase = "${region}".ToLower().Replace(' ', '-')
@@ -23,13 +24,10 @@ $TemplateParams = @{"appName" = "spf-azure-logger-${regionLowercase}"}
 # Deploy the function app ARM template
 New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile "azure-logger-function-deploy.json" -TemplateParameterObject $TemplateParams -Verbose -Force
 
-# install function dependencies
-npm install
-
 # Zip the logger function package
 $zippath = "./azure-logger-$regionLowercase.zip"
-Compress-Archive -Path . -DestinationPath $zippath -Force
+Compress-Archive -Path ../azure-logger/* -DestinationPath $zippath -Force
 
 # Deploy the function
-#$appName = "spf-azure-logger-${regionLowercase}"
-#Publish-AzWebapp -ResourceGroupName $rgName -Name $appName -ArchivePath $zippath -Force
+$appName = "spf-azure-logger-${regionLowercase}"
+Publish-AzWebapp -ResourceGroupName $rgName -Name $appName -ArchivePath $zippath -Force

@@ -2,7 +2,10 @@
 # [pwsh] ./login-with-service-principal.ps1 -servicePrincipalPass "<password>"
 
 # Note - param() must be the first statement in the script
-param([string]$servicePrincipalPass) 
+param(
+    [Parameter(Mandatory=$True)]
+    [string]$servicePrincipalPass
+) 
 
 # Setup credentials
 $securepassword = ConvertTo-SecureString -String $servicePrincipalPass -AsPlainText -Force

@@ -40,14 +40,19 @@ echo "***** SPF: running in $DIR/arm *****"
 echo "***** SPF: running build script for Azure Logger function app for region '$region' *****"
 echo ""
 
-cd $DIR/arm
+# install node dependencies (build phase)
+cd $DIR/azure-logger/logger-function
+npm install
 
 # Login with service principal 
+cd $DIR/../azure-test/arm
 echo "***** SPF: Logging in with SPFDeploymentServicePrincipal *****"
 echo ""
-pwsh -f $DIR/../azure-test/arm/login-with-service-principal.ps1 -servicePrincipalPass $servicePrincipalPassword
+pwsh -f login-with-service-principal.ps1 -servicePrincipalPass $servicePrincipalPassword
 
 # deploy the logger app
+cd $DIR/arm
 deploy_azure_logger_app "$region"
 
 echo "***** SPF: finished deploy stage for Azure Logger Function *****"
+
