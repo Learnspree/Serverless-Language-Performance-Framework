@@ -1,0 +1,9 @@
+{
+  "name": "azure-logger",
+  "version": "1.0.0",
+  "description": "Azure Logger Function - triggered off metrics logged by test functions and delivers data to SPF API",
+  "main": "handler.js",
+  "dependencies": {
+    "request": "^2.85.0"
+  }
+}
