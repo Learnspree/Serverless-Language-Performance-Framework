@@ -4,6 +4,6 @@
   "description": "Azure Logger Function - triggered off metrics logged by test functions and delivers data to SPF API",
   "main": "handler.js",
   "dependencies": {
-    "request": "^2.85.0"
+    "request": "^2.88.2"
   }
 }
