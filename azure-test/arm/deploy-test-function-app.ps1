@@ -1,7 +1,13 @@
 # Example usage:
 # [pwsh] ./deploy-test-function-app.ps1 -runtime "python" -region "East US"
 # Note - param() must be the first statement in the script
-param([string]$runtime="node",[string]$region="East US") 
+param(
+    [Parameter(Mandatory=$True)]
+    [string]$runtime,
+    
+    [Parameter(Mandatory=$True)]
+    [string]$region
+) 
 
 # Register Resource Providers if they're not already registered
 Register-AzResourceProvider -ProviderNamespace "microsoft.web"
