@@ -1,0 +1,7 @@
+{
+    "disabled": false,
+    "bindings": [
+    ],
+    "entryPoint": "logger",
+    "scriptFile": "handler.js"
+}
