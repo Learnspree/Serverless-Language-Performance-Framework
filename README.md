@@ -362,3 +362,11 @@ To remove all Azure test-function resources, run the following script which will
 cd /azure-test
 ./spf-remove-azure-test.sh 
 ```
+
+## Useful Links - Azure Functions
+
+* [Automate Function App Deployment with ARM Template](https://docs.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code#consumption)
+* [Zip deployment for Azure Functions](https://docs.microsoft.com/en-gb/azure/azure-functions/deployment-zip-push)
+* [Azure Functions Runtime Versions](https://docs.microsoft.com/en-gb/azure/azure-functions/functions-versions)
+* [Settings Reference for Azure Functions](https://docs.microsoft.com/en-gb/azure/azure-functions/functions-app-settings#functions_worker_runtime)
+* [ARM Template Structure and Syntax](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-syntax)
