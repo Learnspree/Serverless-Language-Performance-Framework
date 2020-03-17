@@ -41,7 +41,7 @@ echo "***** SPF: running build script for Azure Logger function app for region '
 echo ""
 
 # install node dependencies (build phase)
-cd $DIR/azure-logger/logger-function
+cd $DIR/azure-logger
 npm install
 
 # Login with service principal 
