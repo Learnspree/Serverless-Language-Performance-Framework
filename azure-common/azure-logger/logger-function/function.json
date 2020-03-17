@@ -5,8 +5,8 @@
             "type": "blobTrigger",
             "direction": "in",
             "name": "metricsBlob",
-            "path": "perf-metrics/{name}",
-            "connection": "AzurePerfLoggerStorage"
+            "path": "perfmetrics/{name}",
+            "connection": "AzureWebJobsStorage"
         }
     ],
     "entryPoint": "logger",
