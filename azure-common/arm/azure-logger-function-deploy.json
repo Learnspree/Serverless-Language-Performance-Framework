@@ -31,7 +31,7 @@
       "functionAppName": "[parameters('appName')]",
       "hostingPlanName": "[parameters('appName')]",
       "applicationInsightsName": "[parameters('appName')]",
-      "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'azfunctions')]",
+      "storageAccountName": "spfazuremetricsstorage",
       "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
     },
     "resources": [
@@ -44,7 +44,17 @@
         "kind": "Storage",
         "sku": {
           "name": "[parameters('storageAccountType')]"
-        }
+        },
+        "resources": [
+          {
+              "name": "[concat('default/', 'perfmetrics')]",
+              "type": "blobServices/containers",
+              "apiVersion": "2018-07-01",
+              "dependsOn": [
+                  "[variables('storageAccountName')]"
+              ]
+          }
+        ]
       },
       {
         // Setup a consumption plan (pay-per-request) for the functions app
