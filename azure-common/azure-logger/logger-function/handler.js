@@ -88,9 +88,11 @@ let usageMetrics = function (context, metricsData) {
 
 module.exports.logger = function (context, metricsBlob) {
   context.log('Begin Logger Function');
-  context.log("Received metrics: " + JSON.stringify(metricsBlob));
 
-  let metricsDataPayload = usageMetrics(context, metricsBlob);
+  let decodedBlob = new TextDecoder().decode(metricsBlob);
+  context.log("Received metrics: " + decodedBlob);
+
+  let metricsDataPayload = usageMetrics(context, JSON.parse(decodedBlob));
   if (metricsDataPayload != null) 
   {
     // call the API to store data 
@@ -98,7 +100,7 @@ module.exports.logger = function (context, metricsBlob) {
     // Otherwise it's sitting idle waiting for the response     
     request.post(
       //process.env.POST_METRICS_URL,
-      "https://f4fkn6ulhj.execute-api.us-east-1.amazonaws.com/dev/metrics",
+      "https://api.serverlessperformance.net/dev/metrics",
       { json: metricsDataPayload },
       function (error, response, body) {
         context.log('API call completed');
