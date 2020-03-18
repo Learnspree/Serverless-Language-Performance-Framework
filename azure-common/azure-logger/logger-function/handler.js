@@ -75,6 +75,10 @@ let usageMetrics = function (context, metricsData) {
     functionVersion : "#LATEST", // Just default for now
     languageRuntime : languageRuntimeValue,
 
+    // following values temporarily hardcoded until we can work out how to calculate them in Azure like we do in AWS
+    state : 'warm',
+    initDuration : 0,
+
     // following values hardcoded for now as we know we're running in Azure. 
     durationUnits : 'ms',
     memoryUnits : 'MB',
