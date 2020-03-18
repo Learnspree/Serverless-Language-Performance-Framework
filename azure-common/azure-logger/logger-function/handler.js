@@ -65,7 +65,7 @@ let usageMetrics = function (context, metricsData) {
   context.log('memory used: ' + maxMemoryUsed);
 
   let metricsInput = {
-    timestamp : eventTimestamp, 
+    timestamp : Date.parse(eventTimestamp), 
     requestId : requestIdValue,
     duration : durationValueMilliseconds,
     billedDuration : billedDurationValue, // Azure bills in 100ms blocks
