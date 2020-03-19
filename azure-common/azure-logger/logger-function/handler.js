@@ -9,7 +9,7 @@ let emptyIfStringMetricNull = function (stringMetricValue) {
 };
   
 let zeroIfNumericMetricNull = function (numericMetricValue) {
-return (numericMetricValue == null) ? "" : numericMetricValue;
+return (numericMetricValue == null) ? 0.0 : numericMetricValue;
 };
 
 let memoryUsage = function (context, metricsData) {
@@ -43,14 +43,21 @@ let usageMetrics = function (context, metricsData) {
 
   let requestIdValue = emptyIfStringMetricNull(metricsData.request[0].id);
   let durationValue = zeroIfNumericMetricNull(metricsData.request[0].durationMetric.value);
-  // Divide duration as it's not in "ticks", not milliseconds. 10,000 ticks per ms.
-  let durationValueMilliseconds = durationValue / 10000;
-  let billedDurationValue = Math.ceil(durationValueMilliseconds/100)*100;
   let functionNameValue = emptyIfStringMetricNull(metricsData.request[0].name);
   let eventTimestamp = emptyIfStringMetricNull(metricsData.context.data.eventTime);
 
+  // Divide duration as it's not in "ticks", not milliseconds. 10,000 ticks per ms.
+  let durationValueMilliseconds = durationValue / 10000;
+  let billedDurationValue = Math.ceil(durationValueMilliseconds/100)*100;
+
+  // Subtract init-duration from the total duration provided in the "durationValue" metric
+  // Use "FunctionExecutionTimeMs" as the actual execution duration
+  let functionExecutionDuration = parseFloat(emptyIfStringMetricNull(metricsData.custom.dimensions[1].FunctionExecutionTimeMs));
+  let functionInitDuration = durationValueMilliseconds - functionExecutionDuration;
+
   context.log('Id: ' + requestIdValue);
-  context.log('Duration: ' + durationValueMilliseconds);
+  context.log('Duration: ' + functionExecutionDuration);
+  context.log('Init Duration: ' + functionInitDuration);
   context.log('Function Name: ' + functionNameValue);
   context.log('Time: ' + eventTimestamp);
   context.log('Billed Duration: ' + billedDurationValue);
@@ -67,7 +74,7 @@ let usageMetrics = function (context, metricsData) {
   let metricsInput = {
     timestamp : Date.parse(eventTimestamp), 
     requestId : requestIdValue,
-    duration : durationValueMilliseconds,
+    duration : functionExecutionDuration,
     billedDuration : billedDurationValue, // Azure bills in 100ms blocks
     memorySize : maxMemoryUsed, // Assign same value as memory used as azure is dynamic not preset like AWS
     memoryUsed : maxMemoryUsed,  
@@ -77,7 +84,7 @@ let usageMetrics = function (context, metricsData) {
 
     // following values temporarily hardcoded until we can work out how to calculate them in Azure like we do in AWS
     state : 'warm',
-    initDuration : 0,
+    initDuration : functionInitDuration,
 
     // following values hardcoded for now as we know we're running in Azure. 
     durationUnits : 'ms',
