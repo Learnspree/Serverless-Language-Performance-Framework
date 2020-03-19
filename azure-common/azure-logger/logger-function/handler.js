@@ -52,8 +52,11 @@ let usageMetrics = function (context, metricsData) {
 
   // Subtract init-duration from the total duration provided in the "durationValue" metric
   // Use "FunctionExecutionTimeMs" as the actual execution duration
-  let functionExecutionDuration = parseFloat(emptyIfStringMetricNull(metricsData.custom.dimensions[1].FunctionExecutionTimeMs));
+  let functionExecutionDimensions = metricsData.context.custom.dimensions.filter(dim => { return dim.FunctionExecutionTimeMs != null })
+  console.log(JSON.stringify(functionExecutionDimensions));
+  let functionExecutionDuration = parseFloat(emptyIfStringMetricNull(functionExecutionDimensions[0].FunctionExecutionTimeMs));
   let functionInitDuration = durationValueMilliseconds - functionExecutionDuration;
+
 
   context.log('Id: ' + requestIdValue);
   context.log('Duration: ' + functionExecutionDuration);
