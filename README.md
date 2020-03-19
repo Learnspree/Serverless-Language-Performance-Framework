@@ -370,3 +370,5 @@ cd /azure-test
 * [Azure Functions Runtime Versions](https://docs.microsoft.com/en-gb/azure/azure-functions/functions-versions)
 * [Settings Reference for Azure Functions](https://docs.microsoft.com/en-gb/azure/azure-functions/functions-app-settings#functions_worker_runtime)
 * [ARM Template Structure and Syntax](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-syntax)
+* [Continuous Export Insights Schema](https://docs.microsoft.com/en-us/azure/azure-monitor/app/export-data-model)
+* [App Insights Memory/Perf Data](https://github.com/Azure/Azure-Functions/wiki/Consumption-Plan-Cost-Billing-FAQ#how-can-i-access-execution-count-and-gb-seconds-programmatically)
