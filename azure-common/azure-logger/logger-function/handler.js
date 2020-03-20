@@ -12,28 +12,6 @@ let zeroIfNumericMetricNull = function (numericMetricValue) {
 return (numericMetricValue == null) ? 0.0 : numericMetricValue;
 };
 
-let memoryUsage = function (context, metricsData) {
-    if (metricsData == null || metricsData.request == null || metricsData.context == null) {
-      context.log('Invalid Metrics Data in memoryUsage()');
-      return -1;
-    } 
-
-    /*
-    // COMMENTING OUT UNTIL GET THIS WORKING
-
-    // call the API for Azure Monitoring Data   
-    request.get(
-      "https://management.azure.com/subscriptions/1ad4a40f-7ad8-4789-8cdc-945e47748810/resourceGroups/azure-service-nodejs-rg/providers/Microsoft.Web/sites/azure-service-nodejs/providers/microsoft.insights/metrics?$filter=aggregationType eq 'Maximum' and startTime eq 2018-04-02T15:36:00Z and endTime eq 2018-04-02T16:38:00Z and timeGrain eq duration'PT1M'&api-version=2016-09-01",
-      { json: true },
-      function (error, response, body) {
-        if (err) { context.log('Monitor API call error'); }
-        context.log('Monitor API call completed');
-    });*/
-
-    // Default to 128
-    return 128;
-}
-
 let usageMetrics = function (context, metricsData) {  
   
   if (metricsData == null || metricsData.request == null || metricsData.context == null) {
@@ -70,9 +48,9 @@ let usageMetrics = function (context, metricsData) {
   let languageRuntimeValue = emptyIfStringMetricNull(functionNameParts[functionNameParts.length - 1]);
   context.log('Language Runtime: ' + languageRuntimeValue);
 
-  // get memory usage via insights API (not provided in request data)
-  let maxMemoryUsed = memoryUsage(context, metricsData);
-  context.log('memory used: ' + maxMemoryUsed);
+  // hardcoding memory to 128 as minimum billable amount - all empty functions tested will fall under this
+  // alternative is complicated API calls to Azure Monitor
+  let maxMemoryUsed = 128;
 
   let metricsInput = {
     timestamp : Date.parse(eventTimestamp), 
