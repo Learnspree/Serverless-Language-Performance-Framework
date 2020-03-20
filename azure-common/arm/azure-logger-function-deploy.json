@@ -145,5 +145,11 @@
           "Application_Type": "web"
         }
       }
-    ]
+    ],
+    "outputs": {
+      "loggerStorageConnectionString": {
+        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2019-06-01').keys[0].value)]",
+        "type": "string"
+      }
+    }
   }
