@@ -17,10 +17,27 @@ Register-AzResourceProvider -ProviderNamespace "microsoft.storage"
 $regionLowercase = "${region}".ToLower().Replace(' ', '-')
 
 # Create a resource group for the function app
-New-AzResourceGroup -Name "spf-azure-test-${runtime}-${regionLowercase}-rg" -Location "${region}" -Force
+$rgName = "spf-azure-test-${runtime}-${regionLowercase}-rg"
+$appName = "spf-azure-test-${runtime}-${regionLowercase}"
+New-AzResourceGroup -Name $rgName -Location "${region}" -Force
 
 # Create the parameters for the file
-$TemplateParams = @{"appName" = "spf-azure-test-${runtime}-${regionLowercase}"; "runtime" = "${runtime}"}
+$TemplateParams = @{"appName" = "${appName}"; "runtime" = "${runtime}"}
 
 # Deploy the template
-New-AzResourceGroupDeployment -ResourceGroupName "spf-azure-test-${runtime}-${regionLowercase}-rg" -TemplateFile "azure-test-function-deploy.json" -TemplateParameterObject $TemplateParams -Verbose -Force
+New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile "azure-test-function-deploy.json" -TemplateParameterObject $TemplateParams -Verbose -Force
+
+# Setup continuous export to logger storage account for metrics delivery
+$loggerstoragecontainername = "perfmetrics"
+$loggerstorageaccount = "spfazuremetricsstorage"
+$loggerrg = "spf-azure-logger-east-us-rg"
+$subid = (Get-AzSubscription).Id
+$storConnectionString = (Get-AzResourceGroupDeployment -ResourceGroupName spf-azure-logger-east-us-rg).Outputs.loggerStorageConnectionString.value
+$storagecontext = New-AzStorageContext -ConnectionString $storConnectionString
+
+# generate access token for logger storage account
+$sastoken = New-AzStorageContainerSASToken -Name $loggerstoragecontainername -Context $storagecontext -ExpiryTime (Get-Date).AddYears(50) -Permission w
+$sasuri = "https://${loggerstorageaccount}.blob.core.windows.net/${loggerstoragecontainername}" + $sastoken
+
+# Create the continous export to logger's storage
+New-AzApplicationInsightsContinuousExport -ResourceGroupName $rgName -Name $appName -DocumentType "Request" -StorageAccountId "/subscriptions/{$subid}/resourceGroups/{$loggerrg}/providers/Microsoft.Storage/storageAccounts/${loggerstorageaccount}" -StorageLocation $appName -StorageSASUri $sasuri 
