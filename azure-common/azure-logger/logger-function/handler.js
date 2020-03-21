@@ -30,11 +30,6 @@ let processMultipleJSONRootString = function (jsonContent) {
 
 let usageMetrics = function (context, metricsData) {  
   
-  if (metricsData == null || metricsData.request == null || metricsData.context == null) {
-      context.log('Invalid Metrics Data');
-      return null;
-  }
-
   let requestIdValue = emptyIfStringMetricNull(metricsData.request[0].id);
   let durationValue = zeroIfNumericMetricNull(metricsData.request[0].durationMetric.value);
   let functionNameValue = emptyIfStringMetricNull(metricsData.request[0].name);
@@ -102,22 +97,41 @@ module.exports.logger = function (context, metricsBlob) {
 
   let modifiedBlob = processMultipleJSONRootString(decodedBlob);
   context.log("Modified metrics: " + modifiedBlob);
+  let metricsRequests = JSON.parse(modifiedBlob);
 
-  let metricsDataPayload = usageMetrics(context, JSON.parse(modifiedBlob));
-  if (metricsDataPayload != null) 
+  if (metricsRequests == null || 
+    metricsRequests.functionmetrics == null || 
+    metricsRequests.functionmetrics[0] == null) 
   {
-    // call the API to store data 
-    // TODO - make this asynchronous call as we don't really care about the response too much.
-    // Otherwise it's sitting idle waiting for the response     
-    request.post(
-      //process.env.POST_METRICS_URL,
-      "https://api.serverlessperformance.net/dev/metrics",
-      { json: metricsDataPayload },
-      function (error, response, body) {
-        context.log('API call completed');
-    });
+      context.log('Invalid Metrics Data');
+      return null;
   }
   
+  for (const metricsData of metricsRequests.functionmetrics ) {
+    // check for valid data
+    if (metricsData == null ||
+        metricsData.request == null ||
+        metricsData.context == null)
+    {
+          context.log('Invalid Metrics Data in array');
+          continue;
+    }
+
+    // parse the metrics and send the POST request to SPF API
+    let metricsDataPayload = usageMetrics(context, metricsData);
+    if (metricsDataPayload != null) 
+    {
+      // call the API to store data 
+      request.post(
+        //process.env.POST_METRICS_URL,
+        "https://api.serverlessperformance.net/dev/metrics",
+        { json: metricsDataPayload },
+        function (error, response, body) {
+          context.log('API call completed: ');
+          context.log('StatusCode:', response && response.statusCode); 
+      });
+    }
+  }
 
   context.res = {
     // status: 200, /* Defaults to 200 */
