@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "description": "Azure Logger Function - triggered off metrics logged by test functions and delivers data to SPF API",
   "main": "handler.js",
+  "scripts": {
+    "test": "mocha"
+  },
   "dependencies": {
     "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "mocha": "^7.1.1"
   }
 }

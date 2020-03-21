@@ -12,6 +12,22 @@ let zeroIfNumericMetricNull = function (numericMetricValue) {
 return (numericMetricValue == null) ? 0.0 : numericMetricValue;
 };
 
+// Sometimes metrics data are grouped in a single blob file but not formatted like
+// a JSON array - instead it's a JSON file with multiple roots (invalid format).
+// Change to an array in this case.
+let processMultipleJSONRootString = function (jsonContent) {
+  // add necessary elements to make the blob of request objects an array
+  var modifiedJson = "{ \"functionmetrics\": [" + jsonContent + "] }";
+
+  // add commas between "elements" in the array (i.e. request objects)
+  modifiedJson = modifiedJson.replace(/{"request/g, ",{\"request");
+
+  // remove the first comma added by the above command - first request object doesn't need it
+  modifiedJson = modifiedJson.replace(/,{"request/, "{\"request");
+
+  return modifiedJson;
+}
+
 let usageMetrics = function (context, metricsData) {  
   
   if (metricsData == null || metricsData.request == null || metricsData.context == null) {
@@ -84,7 +100,10 @@ module.exports.logger = function (context, metricsBlob) {
   let decodedBlob = new TextDecoder().decode(metricsBlob);
   context.log("Received metrics: " + decodedBlob);
 
-  let metricsDataPayload = usageMetrics(context, JSON.parse(decodedBlob));
+  let modifiedBlob = processMultipleJSONRootString(decodedBlob);
+  context.log("Modified metrics: " + modifiedBlob);
+
+  let metricsDataPayload = usageMetrics(context, JSON.parse(modifiedBlob));
   if (metricsDataPayload != null) 
   {
     // call the API to store data 
