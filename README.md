@@ -87,7 +87,7 @@ If you want to additionally test Azure Functions (in addition to AWS Lambda) the
 4. Install Azure "AZ" module on Powershell Core (via `pwsh` then `Install-Module -Name Az -AllowClobber -Scope AllUsers`)
 5. Connect to Azure Account from Powershell using `Connect-AzAccount`
 6. Install VSCode Azure Functions Plugin (see link in table above)
-7. Install Azure Core Tools via `npm install -g azure-functions-core-tools@core --unsafe-perm true` (MacOS - Windows command differs (see VSCode links above)
+7. Install Azure Core Tools via `npm install -g azure-functions-core-tools@core --unsafe-perm true` (see VSCode links above)
 
 #### Setup Azure Service Principal for Automated Deployments
 These steps will allow the creation of service principal to be used to automate service deployments without need for manual login via Connect-AzAccount in powershell first. See [here](https://docs.microsoft.com/en-us/powershell/azure/create-azure-service-principal-azureps?view=azps-3.6.1&viewFallbackFrom=azps-1.3.0) for guide.
@@ -285,8 +285,19 @@ cd /azure-test/arm
 pwsh setup-azure-testing.ps1 -servicePrincipalPass "<use-a-strong-password>"
 ```
 
+## Azure Performance Logger Function
+This function is triggered from metrics saved by Azure Insights into Azure Storage. It parses these and delivers to the AWS-hosted API to save the metrics. 
+
+Note - this function only needs to be deployed once in a single region, but the ability is provided to choose that region with a parameter in the build script.
+
+```bash
+# Deploy the Azure Logs Performance Metric Parser Function
+cd azure-common/azure-logger
+./spf-build-azure-common.sh -r "East US" -p "my-service-principle-password"
+```
+
 ## Azure Test Function Deployment
-Serverless Framework is not used for Azure function deployment as it is for AWS. This is due to it's relatively basic Azure support compared to AWS. Instead, a single script can be used to build and deploy each azure test function app: 
+Serverless Framework is not used for Azure function deployment as it is for AWS. This is due to it's relatively basic Azure support compared to AWS. Instead, a single script can be used to build and deploy each azure test function app (one per runtime being tested): 
 
 ```bash
 cd /azure-test/
@@ -295,64 +306,35 @@ cd /azure-test/
 # Example:
 ./spf-build-azure-test.sh -r "Central US" -l "node" -p "my-service-principle-password"
 ```
-There are multiple azure function apps created - one for each runtime type as per azure standards. These are each contained in the folder "/azure-test/azure-service-\<runtime\>". For example, the Azure Functions tests for node runtime are located in "/azure-test/azure-service-node".
+There are multiple azure function apps in the SPF project - one for each runtime type as per azure standards. These are each contained in the folder "/azure-test/azure-service-\<runtime\>". For example, the Azure Functions tests for node runtime are located in "/azure-test/azure-service-node".
+
+"Continuous Export" of the application-insights data ('Request' data only) for the function-apps is automatically setup by the above scripts. This exports the test function execution metrics to the azure-logger's storage account, acting as a trigger for the logger function to parse and deliver the metrics to the main SPF data store behind the SPF API.
 
 Current supported runtime values are:
 * `node` (NodeJS - 10x and 12x)
 * `dotnet` (csx and .NETCore)
 * `python` (python3.6, 3.7 and 3.8) - *coming soon*
 
-## Azure Insights Metrics Export
-Setup "Continuous Export" of the application-insights data for the function-apps just deployed.
-To do this, follow the steps in this Azure Portal [Guide](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-export-telemetry).
 
-Note - choose following options when creating the continuous export (if storage account/container does not exist, the portal wizard will guide you through the steps to create them):
-* Destination Storage Account Name = e.g. "azureperfmetrics" (these names are globally unique so you may need to adjust)
-* Destination Storage Account Container = "perf-metrics"
-* Data Types To Export: Turn ON "Request" data, turn OFF all others.
-
-## Azure Performance Logger Function
-This function is triggered from metrics saved by Azure Insights into Azure Storage. It parses these and delivers to the AWS-hosted API to save the metrics.
+## Initiate Full Schedule Test - Azure Functions
+See commands below to check status of existing function apps and also start/stop the "azure-service-\<runtime\>" functionapps (one per runtime tested) which will enable and disable the warm/cold test functions and their associated timers.
 
 ```bash
-# Deploy the Azure Logs Performance Metric Parser Function
-cd azure-common/azure-perf-logger
-npm install request # just a one-off command - don't need to do this every build
-serverless package 
+# Get list of functions (look for those named 'spf-azure-test...')
+az functionapp list | grep -i '"name"' | grep -v azurewebsites
 
-# Connection String for azure storage: see access-keys in azure storage account created above>
-serverless deploy -v 
+# Start Test
+az functionapp start --name '<test-function-app-name>' --resource-group '<test-function-app-name>-rg'
 
-# Important - Set AppSettings value on new perf-logger function so that it triggers from the StorageAccount generated for the test-target functions (empty-nodejs / empty-csharp). 
-# See https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account#manage-your-storage-account  for guide on retrieving the storage connection string
-az functionapp config appsettings set --name azure-perf-logger --resource-group azure-perf-logger-rg --settings AzurePerfLoggerStorage='<connection string retrieved from storage settings - see link in comment above'
-```
+# Stop Test
+az functionapp stop --name '<test-function-app-name>' --resource-group '<test-function-app-name>-rg'
 
-## End-to-End Test - Azure Functions
-Full end-to-end test measuring sample target function:
-```bash
-cd /azure-test/azure-service-nodejs
-serverless invoke -f empty-nodejs -l 
-
-# Verify results 
+# Verify results (example for csx runtime)
 aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --index-name "duration-index" \
     --key-condition-expression "LanguageRuntime = :runtime" \
-    --expression-attribute-values "{\":runtime\": {\"S\": \"empty-nodejs\"}}"    
+    --expression-attribute-values "{\":runtime\": {\"S\": \"csx\"}}"    
 
-```
-
-## Initiate Full Schedule Test - Azure Functions
-See commands below to check status of existing function apps and also start/stop the "azure-service-test" functionapp which will enable and disable the test functions and their associated timers.
-
-```bash
-az functionapp list
-
-# Start Test
-az functionapp start --name azure-service-test --resource-group azure-service-test-rg
-
-# Stop Test
-az functionapp stop --name azure-service-test --resource-group azure-service-test-rg
 ```
 
 ## Cleanup - Azure
@@ -372,3 +354,5 @@ cd /azure-test
 * [ARM Template Structure and Syntax](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-syntax)
 * [Continuous Export Insights Schema](https://docs.microsoft.com/en-us/azure/azure-monitor/app/export-data-model)
 * [App Insights Memory/Perf Data](https://github.com/Azure/Azure-Functions/wiki/Consumption-Plan-Cost-Billing-FAQ#how-can-i-access-execution-count-and-gb-seconds-programmatically)
+* [Measuring the cost of Azure Functions](https://www.nigelfrank.com/blog/ask-the-expert-measuring-the-cost-of-azure-functions/)
+* [Continuous Export for Azure Insights](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-export-telemetry)
