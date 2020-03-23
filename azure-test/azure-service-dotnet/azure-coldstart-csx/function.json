@@ -7,5 +7,6 @@
       "direction": "in",
       "schedule": "0 */60 * * * *"
     }
-  ]
+  ],
+  "scriptFile": "../shared-azure-csx/run.csx"
 }
