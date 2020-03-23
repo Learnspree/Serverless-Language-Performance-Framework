@@ -4,14 +4,7 @@
 
 function invocationCountIncrement(context){
     invocationCountIncrement.counter++;
-    context.log("counter:" + invocationCountIncrement.counter);
-
-    if (invocationCountIncrement.counter > 1) {
-      context.log("warm start");
-    }
-    else {
-      context.log("cold start");
-    }
+    context.log((invocationCountIncrement.counter > 1) ? "warm" : "cold" + " start");
 }
 
 invocationCountIncrement.counter = 0;
