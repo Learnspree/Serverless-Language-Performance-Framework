@@ -5,5 +5,6 @@
     "name": "myTimer",
     "schedule": "0 54-59 * * * *"
   }],
-  "disabled": true
+  "disabled": true,
+  "scriptFile": "../shared-azure-csx/run.csx"
 }
