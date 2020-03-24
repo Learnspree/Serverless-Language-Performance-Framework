@@ -2,7 +2,19 @@
 # [pwsh] ./deploy-test-functions.ps1 -runtime "dotnet" -region "East US" -sourcepath "./azure-test/azure-service-dotnet"
 
 # Note - param() must be the first statement in the script
-param([string]$runtime="node",[string]$region="East US",[string]$sourcepath) 
+param(
+    [Parameter(Mandatory=$True)]
+    [string]$runtime,
+    
+    [Parameter(Mandatory=$True)]
+    [string]$region,
+
+    [Parameter(Mandatory=$True)]
+    [string]$teststate,
+    
+    [Parameter(Mandatory=$True)]
+    [string]$sourcepath
+) 
 
 # Zip the package
 $regionLowercase = "${region}".ToLower().Replace(' ', '-')
