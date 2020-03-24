@@ -1,12 +1,15 @@
 # Example usage:
-# [pwsh] ./deploy-test-function-app.ps1 -runtime "python" -region "East US"
+# [pwsh] ./deploy-test-function-app.ps1 -runtime "python" -region "East US" -teststate "cold/warm/all" 
 # Note - param() must be the first statement in the script
 param(
     [Parameter(Mandatory=$True)]
     [string]$runtime,
     
     [Parameter(Mandatory=$True)]
-    [string]$region
+    [string]$region,
+
+    [Parameter(Mandatory=$True)]
+    [string]$teststate
 ) 
 
 # Register Resource Providers if they're not already registered
@@ -17,8 +20,9 @@ Register-AzResourceProvider -ProviderNamespace "microsoft.storage"
 $regionLowercase = "${region}".ToLower().Replace(' ', '-')
 
 # Create a resource group for the function app
-$rgName = "spf-azure-test-${runtime}-${regionLowercase}-rg"
-$appName = "spf-azure-test-${runtime}-${regionLowercase}"
+$namePrefix = "spf-azure-test${teststate}";
+$rgName = "${namePrefix}-${runtime}-${regionLowercase}-rg"
+$appName = "${namePrefix}-${runtime}-${regionLowercase}"
 New-AzResourceGroup -Name $rgName -Location "${region}" -Force
 
 # Create the parameters for the file
