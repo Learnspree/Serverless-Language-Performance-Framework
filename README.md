@@ -356,3 +356,4 @@ cd /azure-test
 * [App Insights Memory/Perf Data](https://github.com/Azure/Azure-Functions/wiki/Consumption-Plan-Cost-Billing-FAQ#how-can-i-access-execution-count-and-gb-seconds-programmatically)
 * [Measuring the cost of Azure Functions](https://www.nigelfrank.com/blog/ask-the-expert-measuring-the-cost-of-azure-functions/)
 * [Continuous Export for Azure Insights](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-export-telemetry)
+* [Managing your function app](https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings)
