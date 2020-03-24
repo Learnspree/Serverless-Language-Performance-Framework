@@ -9,5 +9,5 @@
         }
     ],
     "entryPoint": "empty",
-    "scriptFile": "../shared-azure-node/handler.js"
+    "scriptFile": "handler.js"
 }

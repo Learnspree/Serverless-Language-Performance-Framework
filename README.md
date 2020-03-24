@@ -306,13 +306,13 @@ cd /azure-test/
 # Example:
 ./spf-build-azure-test.sh -r "Central US" -l "node" -p "my-service-principle-password"
 ```
-There are multiple azure function apps in the SPF project - one for each runtime type as per azure standards. These are each contained in the folder "/azure-test/azure-service-\<runtime\>". For example, the Azure Functions tests for node runtime are located in "/azure-test/azure-service-node".
+There are multiple azure function apps in the SPF project - one for each runtime type as per azure standards. These are each contained in the folder "/azure-test/azure-service-\<runtime\>". Note, the Azure Functions tests for node runtime are located in two separate function apps (unlike .NET) e.g. "/azure-test/azure-service-coldstart-node". This is due to the detection method in node test function for cold vs warm start relying on environment variables.
 
 "Continuous Export" of the application-insights data ('Request' data only) for the function-apps is automatically setup by the above scripts. This exports the test function execution metrics to the azure-logger's storage account, acting as a trigger for the logger function to parse and deliver the metrics to the main SPF data store behind the SPF API.
 
 Current supported runtime values are:
-* `node` (NodeJS - 10x and 12x)
-* `dotnet` (csx and .NETCore)
+* `node` (NodeJS - 10x) - *12x coming soon*
+* `dotnet` (csx)
 * `python` (python3.6, 3.7 and 3.8) - *coming soon*
 
 
