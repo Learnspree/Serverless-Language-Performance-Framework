@@ -2,21 +2,16 @@
 
 /* eslint-disable no-param-reassign */
 
-function invocationCountIncrement(context){
-    invocationCountIncrement.counter++;
-    context.log(((invocationCountIncrement.counter > 1) ? "warm" : "cold") + " start");
-}
-
-invocationCountIncrement.counter = 0;
-
 module.exports.empty = function (context, nodeJSEmptyFunctionTimer) {
 
-  // todo - global variables shared across azure functions (e.g. cold and warm functions) so doesn't work for cold/warm detection
-  // instead - use env variables
-  // Read: let value = process.env.ENV_VARIABLE
-  // Write: process.env.ENV_VARIABLE = value
+  // Using env variables to detect cold vs warm start
+  context.log("Context: " + JSON.stringify(context));
 
-  var invocationCountIncrementer = new invocationCountIncrement(context);  
+  let currentInvocationCount = parseInt(("INVOCATION_COUNT" in process.env) ? process.env.INVOCATION_COUNT : "0");
+  context.log("currentInvocationCount: " + currentInvocationCount);
+  context.log(((currentInvocationCount > 0) ? "warm" : "cold") + " start");
+  process.env.INVOCATION_COUNT = currentInvocationCount + 1;
+
   context.res = {
     // status: 200, /* Defaults to 200 */
     body: 'Empty azure node function executed successfully!',
