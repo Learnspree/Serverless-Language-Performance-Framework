@@ -1,0 +1,6 @@
+{
+  "name": "azure-coldtart-node",
+  "version": "1.0.0",
+  "description": "Azure Test Function - empty",
+  "main": "azure-coldstart-node/handler.js"
+}

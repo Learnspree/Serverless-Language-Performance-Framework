@@ -1,0 +1,6 @@
+{
+  "name": "azure-warmstart-node",
+  "version": "1.0.0",
+  "description": "Azure Test Function - empty",
+  "main": "azure-warmstart-node/handler.js"
+}
