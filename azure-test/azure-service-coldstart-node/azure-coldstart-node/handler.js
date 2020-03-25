@@ -10,7 +10,7 @@ module.exports.empty = function (context, nodeJSEmptyFunctionTimer) {
 
   // write to log so app-insights can pick it up and trigger a match with the default logged function 'request' metrics picked up by the logger
   // this will write associated trace properties to app insights automatically including crucial "hostId" value
-  context.log.error( "SPF Function State: " + functionState);
+  context.log( "SPF Function State: " + functionState);
 
   context.res = {
     // status: 200, /* Defaults to 200 */
