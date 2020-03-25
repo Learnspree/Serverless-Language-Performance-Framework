@@ -53,18 +53,10 @@ pwsh -f login-with-service-principal.ps1 -servicePrincipalPass $servicePrincipal
 # Deploy the given runtime provided
 if [ "$languageRuntime" == "node" ]
 then
-   # install dependencies for metrics app-insights export (for cold/warm reporting)
-   cd $DIR/azure-service-warmstart-$languageRuntime
-   npm install
-   cd $DIR/azure-service-coldstart-$languageRuntime
-   npm install
-
    # node is deployed in two separate function apps for cold/warm due to how it detects whether it's a cold or warm start state
-   cd $DIR/arm
    deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-warmstart-$languageRuntime/*" "warm"
    deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-coldstart-$languageRuntime/*" "cold"
 else
-   cd $DIR/arm
    deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-$languageRuntime/*"
 fi
 
