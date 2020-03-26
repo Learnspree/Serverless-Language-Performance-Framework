@@ -29,7 +29,7 @@ $appName = "${namePrefix}-${runtime}-${regionLowercase}"
 New-AzResourceGroup -Name $rgName -Location "${region}" -Force
 
 # Create the parameters for the file
-if ($runtime == "node") {
+if ($runtime -eq "node") {
     $TemplateParams = @{"appName" = "${appName}"; "runtime" = "${runtime}"; "nodeVersion" = "~${runtimeVersion}"}
 }
 else {

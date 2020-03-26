@@ -36,7 +36,7 @@ deploy_azure_function_app () {
     echo "***** SPF: deploy function app *****"
     pwsh -f deploy-test-function-app.ps1 -runtime "$1" -region "$2" -teststate ${4:-"all"} -runtimeVersion ${5:-"10"}
     echo "***** SPF: deploy functions to function app *****"
-    pwsh -f deploy-test-functions-to-function-app.ps1 -runtime "$1" -region "$2" -sourcepath "$3" -teststate ${4:-"all"}
+    pwsh -f deploy-test-functions-to-function-app.ps1 -runtime "$1" -region "$2" -sourcepath "$3" -teststate ${4:-"all"} -runtimeVersion ${5:-"10"}
 }
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -55,10 +55,10 @@ pwsh -f login-with-service-principal.ps1 -servicePrincipalPass $servicePrincipal
 if [ "$languageRuntime" == "node" ]
 then
    # node is deployed in two separate function apps for cold/warm due to how it detects whether it's a cold or warm start state
-   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-warmstart-$languageRuntime/*" "warm" "$runtimeVersion"
-   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-coldstart-$languageRuntime/*" "cold" "$runtimeVersion"
+   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-warmstart-$languageRuntime" "warm" "$runtimeVersion"
+   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-coldstart-$languageRuntime" "cold" "$runtimeVersion"
 else
-   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-$languageRuntime/*"
+   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-$languageRuntime"
 fi
 
 echo "***** SPF: finished deploy stage for Azure Test Functions *****"
