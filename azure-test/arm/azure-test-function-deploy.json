@@ -33,7 +33,15 @@
         "metadata": {
           "description": "The language worker runtime to load in the function app."
         }
-      }
+      },
+      "nodeVersion": {
+        "type": "string",
+        "defaultValue": "~10",
+        "allowedValues": ["~10", "~12"],
+        "metadata": {
+          "description": "The version of node to use if the runtime is 'node'"
+        }
+      }      
     },
     "variables": {
       "functionAppName": "[parameters('appName')]",
@@ -112,7 +120,7 @@
               {
                 // Only needed if using the node language stack, specifies the version to use
                 "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                "value": "~10"
+                "value": "[parameters('nodeVersion')]"
               },
               {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
