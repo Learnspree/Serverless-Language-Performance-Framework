@@ -1,5 +1,5 @@
 # Example usage:
-# [pwsh] ./remove-test-function-app.ps1 -runtime "python" -region "East US" [-teststate "cold/warm"]
+# [pwsh] ./remove-test-function-app.ps1 -runtime "python" -region "East US" -teststate "cold/warm"
 # Note - param() must be the first statement in the script
 param(
     [Parameter(Mandatory=$True)]
@@ -8,7 +8,7 @@ param(
     [Parameter(Mandatory=$True)]
     [string]$region,
 
-    [Parameter(Mandatory=$False)]
+    [Parameter(Mandatory=$True)]
     [string]$teststate
 ) 
 
