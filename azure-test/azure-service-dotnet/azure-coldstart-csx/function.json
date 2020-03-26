@@ -1,5 +1,5 @@
 {
-  "disabled": true,
+  "disabled": false,
   "bindings": [
     {
       "name": "myTimer",
@@ -8,5 +8,5 @@
       "schedule": "0 */60 * * * *"
     }
   ],
-  "scriptFile": "../shared-azure-csx/run.csx"
+  "scriptFile": "run.csx"
 }
