@@ -8,8 +8,7 @@ module.exports.empty = function (context, nodeJSEmptyFunctionTimer) {
   let functionState = ((currentInvocationCount > 0) ? "warm" : "cold");
   process.env.INVOCATION_COUNT = currentInvocationCount + 1;
 
-  // write to log so app-insights can pick it up and trigger a match with the default logged function 'request' metrics picked up by the logger
-  // this will write associated trace properties to app insights automatically including crucial "hostId" value
+  // write state to log 
   context.log( "SPF Function State: " + functionState);
 
   context.res = {
@@ -17,5 +16,8 @@ module.exports.empty = function (context, nodeJSEmptyFunctionTimer) {
     body: 'Empty azure node function executed successfully!',
   };
 
-  context.done();
+  // set error for context.done() call - if we got an accidental cold-start (this is warm-start test function) then ignore the results
+  // passing 'null' to context.done indicates everything ran OK
+  let errorMessage = functionState == "cold" ? "Cold start detected - ignore results for warm-start test function" : null;
+  context.done(errorMessage);
 };

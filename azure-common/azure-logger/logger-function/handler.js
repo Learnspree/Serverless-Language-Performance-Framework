@@ -5,12 +5,24 @@ const request = require('request');
 /* eslint-disable no-param-reassign */
 
 let emptyIfStringMetricNull = function (stringMetricValue) {
-    return (stringMetricValue == null) ? "" : stringMetricValue;
+  return (stringMetricValue == null) ? "" : stringMetricValue;
 };
   
 let zeroIfNumericMetricNull = function (numericMetricValue) {
-return (numericMetricValue == null) ? 0.0 : numericMetricValue;
+  return (numericMetricValue == null) ? 0.0 : numericMetricValue;
 };
+
+let getWarmOrColdStart = function (functionNameParts) {
+  // e.g. functionname is "azure-warmstart-node". We want the "warm" bit.
+  let stateIndicator = functionNameParts[functionNameParts.length - 2];
+  let state = stateIndicator.replace("start", "");
+  if (state !== "warm" && state !== "cold") {
+    return "unknown";
+  }
+  else {
+    return state;
+  }
+}
 
 // Sometimes metrics data are grouped in a single blob file but not formatted like
 // a JSON array - instead it's a JSON file with multiple roots (invalid format).
@@ -57,7 +69,9 @@ let usageMetrics = function (context, metricsData) {
   // Function Name -> Language Runtime last segment
   let functionNameParts = functionNameValue.split('-');
   let languageRuntimeValue = emptyIfStringMetricNull(functionNameParts[functionNameParts.length - 1]);
+  let functionState = getWarmOrColdStart(functionNameParts);
   context.log('Language Runtime: ' + languageRuntimeValue);
+  context.log('State: ' + functionState);
 
   // hardcoding memory to 128 as minimum billable amount - all empty functions tested will fall under this
   // alternative is complicated API calls to Azure Monitor
@@ -75,7 +89,7 @@ let usageMetrics = function (context, metricsData) {
     languageRuntime : languageRuntimeValue,
 
     // following values temporarily hardcoded until we can work out how to calculate them in Azure like we do in AWS
-    state : 'warm',
+    state : functionState,
     initDuration : functionInitDuration,
 
     // following values hardcoded for now as we know we're running in Azure. 

@@ -31,7 +31,7 @@ remove_azure_function_app () {
     echo "****************************************************"
     echo "***** SPF: running remove - runtime: $1, region: $2, state: $3 ... *****"
     echo ""
-    pwsh -f remove-test-function-app.ps1 -runtime "$1" -region "$2" -teststate ${3:-""}
+    pwsh -f remove-test-function-app.ps1 -runtime "$1" -region "$2" -teststate ${3:-"all"}
 }
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -47,7 +47,7 @@ echo ""
 pwsh -f login-with-service-principal.ps1 -servicePrincipalPass $servicePrincipalPassword
 
 # Remove the given runtime provided
-if ["$languageRuntime" == "node"]
+if [ "$languageRuntime" == "node" ]
 then
    # node is deployed in two separate function apps for cold/warm due to how it detects whether it's a cold or warm start state
    remove_azure_function_app "$languageRuntime" "$region" "warm"

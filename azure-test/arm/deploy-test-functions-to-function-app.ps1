@@ -18,7 +18,7 @@ param(
 
 # Zip the package
 $regionLowercase = "${region}".ToLower().Replace(' ', '-')
-$zippath = "./azure-$runtime-test-$regionLowercase.zip"
+$zippath = "./azure-$runtime-test${teststate}-$regionLowercase.zip"
 Compress-Archive -Path $sourcepath -DestinationPath $zippath -Force
 
 # Deploy the functions
