@@ -12,6 +12,10 @@ let zeroIfNumericMetricNull = function (numericMetricValue) {
   return (numericMetricValue == null) ? 0.0 : numericMetricValue;
 };
 
+let falseIfBooleanMetricNull = function (booleanMetricValue) {
+  return (booleanMetricValue == null) ? false : booleanMetricValue;
+};
+
 let getWarmOrColdStart = function (functionNameParts) {
   // e.g. functionname is "azure-warmstart-node". We want the "warm" bit.
   let stateIndicator = functionNameParts[functionNameParts.length - 2];
@@ -42,7 +46,16 @@ let processMultipleJSONRootString = function (jsonContent) {
 
 let usageMetrics = function (context, metricsData) {  
   
+  // first check if it was a successful test - we need to ignore test functions that ran cold instead of expected warm
+  // and vice versa. These will have a failure state.
   let requestIdValue = emptyIfStringMetricNull(metricsData.request[0].id);
+  let successfulTestRequest = falseIfBooleanMetricNull(metricsData.request[0].success);
+  if (!successfulTestRequest) {
+    context.log('Ignoring failed request id: ' + requestIdValue);
+    return null;
+  }
+
+  // get core metrics
   let durationValue = zeroIfNumericMetricNull(metricsData.request[0].durationMetric.value);
   let functionNameValue = emptyIfStringMetricNull(metricsData.request[0].name);
   let eventTimestamp = emptyIfStringMetricNull(metricsData.context.data.eventTime);
