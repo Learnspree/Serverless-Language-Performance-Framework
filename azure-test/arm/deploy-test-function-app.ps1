@@ -1,5 +1,5 @@
 # Example usage:
-# [pwsh] ./deploy-test-function-app.ps1 -runtime "python" -region "East US" -teststate "cold/warm/all" 
+# [pwsh] ./deploy-test-function-app.ps1 -runtime "python" -region "East US" -teststate "cold/warm/all" [-runtimeVersion <version> e.g. 10 for node10] 
 # Note - param() must be the first statement in the script
 param(
     [Parameter(Mandatory=$True)]
@@ -9,7 +9,10 @@ param(
     [string]$region,
 
     [Parameter(Mandatory=$True)]
-    [string]$teststate
+    [string]$teststate,
+
+    [Parameter(Mandatory=$False)]
+    [string]$runtimeVersion
 ) 
 
 # Register Resource Providers if they're not already registered
@@ -26,7 +29,13 @@ $appName = "${namePrefix}-${runtime}-${regionLowercase}"
 New-AzResourceGroup -Name $rgName -Location "${region}" -Force
 
 # Create the parameters for the file
-$TemplateParams = @{"appName" = "${appName}"; "runtime" = "${runtime}"}
+if ($runtime == "node") {
+    $TemplateParams = @{"appName" = "${appName}"; "runtime" = "${runtime}"; "nodeVersion" = "~${runtimeVersion}"}
+}
+else {
+    $TemplateParams = @{"appName" = "${appName}"; "runtime" = "${runtime}"}
+}
+
 
 # Deploy the template
 New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile "azure-test-function-deploy.json" -TemplateParameterObject $TemplateParams -Verbose -Force
