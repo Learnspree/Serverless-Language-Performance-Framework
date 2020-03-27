@@ -7,6 +7,10 @@ param([string]$servicePrincipalPass)
 # Import the PSADPasswordCredential object
 Import-Module Az.Resources 
 
+# Register Resource Providers if they're not already registered
+Register-AzResourceProvider -ProviderNamespace "microsoft.web"
+Register-AzResourceProvider -ProviderNamespace "microsoft.storage"
+
 # create credentials for service principal
 $credentials = New-Object Microsoft.Azure.Commands.ActiveDirectory.PSADPasswordCredential -Property @{ StartDate=Get-Date; EndDate=Get-Date -Year 2024; Password=$servicePrincipalPass} 
 
