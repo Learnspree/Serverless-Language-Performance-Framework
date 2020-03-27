@@ -12,33 +12,23 @@ param(
     [string]$teststate,
 
     [Parameter(Mandatory=$False)]
-    [string]$runtimeVersion
+    [string]$environment = "dev",
+
+    [Parameter(Mandatory=$False)]
+    [string]$runtimeVersion = "x"
 ) 
 
-# Register Resource Providers if they're not already registered
-Register-AzResourceProvider -ProviderNamespace "microsoft.web"
-Register-AzResourceProvider -ProviderNamespace "microsoft.storage"
+# include helper
+. ./resource-name-helper.ps1
 
-# create lowercase version of region with hyphens instead of spaces to help with resource naming
-$regionLowercase = "${region}".ToLower().Replace(' ', '-')
-
-# Create a resource group for the function app
-$namePrefix = "spf-azure-test${teststate}";
-$rgName = "${namePrefix}-${runtime}-${regionLowercase}-rg"
-$appName = "${namePrefix}-${runtime}-${regionLowercase}"
+# create resource-group
+$rgName = buildResourceGroupName "${teststate}" "${runtime}" "${runtimeVersion}" "${region}" "${environment}"
 New-AzResourceGroup -Name $rgName -Location "${region}" -Force
 
-# Create the parameters for the file
-if ($runtime -eq "node") {
-    $TemplateParams = @{"appName" = "${appName}"; "runtime" = "${runtime}"; "nodeVersion" = "~${runtimeVersion}"}
-}
-else {
-    $TemplateParams = @{"appName" = "${appName}"; "runtime" = "${runtime}"}
-}
-
-
-# Deploy the template
-New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile "azure-test-function-deploy.json" -TemplateParameterObject $TemplateParams -Verbose -Force
+# Deploy the ARM template for the Function App
+$appName = buildFunctionAppName "${teststate}" "${runtime}" "${runtimeVersion}" "${region}" "${environment}"
+$TemplateParams = buildFunctionAppARMTemplateParameters $appName, $runtime, $runtimeVersion
+#New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile "azure-test-function-deploy.json" -TemplateParameterObject $TemplateParams -Verbose -Force
 
 # Setup continuous export to logger storage account for metrics delivery
 $loggerstoragecontainername = "perfmetrics"
@@ -53,4 +43,4 @@ $sastoken = New-AzStorageContainerSASToken -Name $loggerstoragecontainername -Co
 $sasuri = "https://${loggerstorageaccount}.blob.core.windows.net/${loggerstoragecontainername}" + $sastoken
 
 # Create the continous export to logger's storage
-New-AzApplicationInsightsContinuousExport -ResourceGroupName $rgName -Name $appName -DocumentType "Request" -StorageAccountId "/subscriptions/{$subid}/resourceGroups/{$loggerrg}/providers/Microsoft.Storage/storageAccounts/${loggerstorageaccount}" -StorageLocation $appName -StorageSASUri $sasuri 
+#New-AzApplicationInsightsContinuousExport -ResourceGroupName $rgName -Name $appName -DocumentType "Request" -StorageAccountId "/subscriptions/{$subid}/resourceGroups/{$loggerrg}/providers/Microsoft.Storage/storageAccounts/${loggerstorageaccount}" -StorageLocation $appName -StorageSASUri $sasuri 
