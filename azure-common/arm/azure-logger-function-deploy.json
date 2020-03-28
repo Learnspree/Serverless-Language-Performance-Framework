@@ -19,6 +19,14 @@
           "description": "Storage Account type"
         }
       },
+      "spfenvironment": {
+        "type": "string",
+        "defaultValue": "dev",
+        "allowedValues": ["dev", "prod"],
+        "metadata": {
+          "description": "Environment (dev or prod) to save data in SPF (Serverless Performance Framework)"
+        }
+      },      
       "location": {
         "type": "string",
         "defaultValue": "[resourceGroup().location]",
@@ -31,7 +39,7 @@
       "functionAppName": "[parameters('appName')]",
       "hostingPlanName": "[parameters('appName')]",
       "applicationInsightsName": "[parameters('appName')]",
-      "storageAccountName": "spfazuremetricsstorage",
+      "storageAccountName": "[concat('spfazuremetricsstorage-', parameters('spfenvironment'))]",
       "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
     },
     "resources": [
@@ -124,6 +132,11 @@
                 // dotnet, node, java, python, or powershell
                 "name": "FUNCTIONS_WORKER_RUNTIME",
                 "value": "node"
+              },
+              {
+                // The SPF URL to send saved metrics to
+                "name": "SPF_BASE_URL",
+                "value": "[concat('https://api.serverlessperformance.net/', parameters('spfenvironment'), '/')]"
               }
             ]
           }
