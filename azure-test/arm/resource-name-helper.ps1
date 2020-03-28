@@ -19,7 +19,7 @@ function buildResourceGroupName
     $regionLowercase = getLowercaseRegionName($region)
     $namePrefix = getTestFunctionNamePrefix($teststate)
     $rgName = "${namePrefix}-${runtime}${runtimeVersion}-${regionLowercase}-${environment}-rg"
-    return "{$rgName}"
+    return $rgName
 }
 
 function buildFunctionAppName 
@@ -41,7 +41,7 @@ function buildFunctionAppName
     $regionLowercase = getLowercaseRegionName($region)
     $namePrefix = getTestFunctionNamePrefix($teststate)
     $appName = "${namePrefix}-${runtime}${runtimeVersion}-${regionLowercase}-${environment}"
-    return "{$appName}"
+    return $appName
 }
 
 function buildFunctionAppARMTemplateParameters($appName, $runtime, $runtimeVersion) {

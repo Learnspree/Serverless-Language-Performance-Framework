@@ -27,8 +27,8 @@ New-AzResourceGroup -Name $rgName -Location "${region}" -Force
 
 # Deploy the ARM template for the Function App
 $appName = buildFunctionAppName "${teststate}" "${runtime}" "${runtimeVersion}" "${region}" "${environment}"
-$TemplateParams = buildFunctionAppARMTemplateParameters $appName, $runtime, $runtimeVersion
-#New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile "azure-test-function-deploy.json" -TemplateParameterObject $TemplateParams -Verbose -Force
+$TemplateParams = buildFunctionAppARMTemplateParameters $appName $runtime $runtimeVersion
+New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile "azure-test-function-deploy.json" -TemplateParameterObject $TemplateParams -Verbose -Force
 
 # Setup continuous export to logger storage account for metrics delivery
 $loggerstoragecontainername = "perfmetrics"
@@ -43,4 +43,4 @@ $sastoken = New-AzStorageContainerSASToken -Name $loggerstoragecontainername -Co
 $sasuri = "https://${loggerstorageaccount}.blob.core.windows.net/${loggerstoragecontainername}" + $sastoken
 
 # Create the continous export to logger's storage
-#New-AzApplicationInsightsContinuousExport -ResourceGroupName $rgName -Name $appName -DocumentType "Request" -StorageAccountId "/subscriptions/{$subid}/resourceGroups/{$loggerrg}/providers/Microsoft.Storage/storageAccounts/${loggerstorageaccount}" -StorageLocation $appName -StorageSASUri $sasuri 
+New-AzApplicationInsightsContinuousExport -ResourceGroupName $rgName -Name $appName -DocumentType "Request" -StorageAccountId "/subscriptions/{$subid}/resourceGroups/{$loggerrg}/providers/Microsoft.Storage/storageAccounts/${loggerstorageaccount}" -StorageLocation $appName -StorageSASUri $sasuri 
