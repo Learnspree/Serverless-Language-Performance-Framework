@@ -3,24 +3,24 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -r region -p deploy_password -l runtime [-v runtime-version]"
-   echo -e "\t-r [target Azure region].... (e.g. 'East US') -p deploy_password -l language-runtime [-v runtime-version]"
+   echo "Usage: $0 -r region -p deploy_password -l runtime -e environment [-v runtime-version]"
    exit 1 # Exit script after printing help
 }
 
-while getopts "l:r:p:v:" opt
+while getopts "l:r:p:v:e:" opt
 do
    case "$opt" in
       r ) region="$OPTARG" ;;
       l ) languageRuntime="$OPTARG" ;;
       p ) servicePrincipalPassword="$OPTARG" ;;
       v ) runtimeVersion="$OPTARG" ;;
+      e ) environment="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
 
 # Print helpFunction in case parameters are empty
-if [ -z "$region" ] || [ -z "$servicePrincipalPassword" ] || [-z "$languageRuntime"]
+if [ -z "$region" ] || [ -z "$servicePrincipalPassword" ] || [ -z "$languageRuntime" ] || [ -z "$environment" ]
 then
    echo "Some or all of the required parameters are empty";
    helpFunction
@@ -31,12 +31,12 @@ deploy_azure_function_app () {
 
     echo ""
     echo "****************************************************"
-    echo "***** SPF: running deploy - runtime: $1, region: $2, sourcepath: $3, state: $4, runtimeVersion: $5 ... *****"
+    echo "***** SPF: running deploy - runtime: $1, region: $2, sourcepath: $3, environment: $4, state: $5, runtimeVersion: $6 ... *****"
     echo ""
     echo "***** SPF: deploy function app *****"
-    pwsh -f deploy-test-function-app.ps1 -runtime "$1" -region "$2" -teststate ${4:-"all"} -runtimeVersion ${5:-"10"}
+    pwsh -f deploy-test-function-app.ps1 -runtime "$1" -region "$2" -environment "$4" -teststate ${5:-"all"} -runtimeVersion ${6:-"10"}
     echo "***** SPF: deploy functions to function app *****"
-    pwsh -f deploy-test-functions-to-function-app.ps1 -runtime "$1" -region "$2" -sourcepath "$3" -teststate ${4:-"all"} -runtimeVersion ${5:-"10"}
+    pwsh -f deploy-test-functions-to-function-app.ps1 -runtime "$1" -region "$2" -sourcepath "$3" -environment "$4" -teststate ${5:-"all"} -runtimeVersion ${6:-"10"}
 }
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -55,10 +55,10 @@ pwsh -f login-with-service-principal.ps1 -servicePrincipalPass $servicePrincipal
 if [ "$languageRuntime" == "node" ]
 then
    # node is deployed in two separate function apps for cold/warm due to how it detects whether it's a cold or warm start state
-   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-warmstart-$languageRuntime" "warm" "$runtimeVersion"
-   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-coldstart-$languageRuntime" "cold" "$runtimeVersion"
+   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-warmstart-$languageRuntime" "$environment" "warm" "$runtimeVersion"
+   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-coldstart-$languageRuntime" "$environment" "cold" "$runtimeVersion"
 else
-   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-$languageRuntime"
+   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-$languageRuntime" "$environment"
 fi
 
 echo "***** SPF: finished deploy stage for Azure Test Functions *****"
