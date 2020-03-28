@@ -16,27 +16,35 @@ param(
     [string]$sourcepath,
 
     [Parameter(Mandatory=$False)]
-    [string]$runtimeVersion
+    [string]$environment = "dev",
+
+    [Parameter(Mandatory=$False)]
+    [string]$runtimeVersion = "x"
 ) 
 
-# setup function name via the folder name for the function being deployed
+# include helper
+. ./resource-name-helper.ps1
+
+# set folder for zipping - default to the actual source folder (e.g. azure-test/azure-service-coldstart-node)
 $deploymentSourcePath = $sourcepath
+
+# For node, setup function name to be deployed by setting the folder name containing the function being deployed
+# then we'll zip it up. This is done so that we can re-use the azure-service-node function for multiple node runtime versions
+# and to match the runtime name to the same name set by AWS testing for node (e.g. nodejs12x, nodejs10x)
 if ($runtime -eq "node") {
     $deploymentSourcePath = "./deploymentSourcePath"
     Copy-Item -Path $sourcepath -Recurse -Destination "${deploymentSourcePath}"
-    Get-ChildItem -Path $deploymentSourcePath azure-*-node | Rename-Item -NewName { $_.Name -replace 'node',"nodejs${runtimeVersion}x" }
+    Get-ChildItem -Path $deploymentSourcePath "azure-*-${runtime}" | Rename-Item -NewName { $_.Name -replace "${runtime}","nodejs${runtimeVersion}x" }
 }
 
 # Zip the package
-$regionLowercase = "${region}".ToLower().Replace(' ', '-')
-$zippath = "./azure-${runtime}${runtimeVersion}-test${teststate}-${regionLowercase}.zip"
+$regionLowercase = getLowercaseRegionName "${region}"
+$zippath = "./azure-${runtime}${runtimeVersion}-test-${teststate}-${regionLowercase}-${environment}.zip"
 Compress-Archive -Path "${deploymentSourcePath}/*" -DestinationPath $zippath -Force
 
 # Deploy the functions
-$namePrefix = "spf-azure-test${teststate}";
-$rgName = "${namePrefix}-${runtime}-${regionLowercase}-rg"
-$appName = "${namePrefix}-${runtime}-${regionLowercase}"
-
+$rgName = buildResourceGroupName "${teststate}" "${runtime}" "${runtimeVersion}" "${region}" "${environment}"
+$appName = buildFunctionAppName "${teststate}" "${runtime}" "${runtimeVersion}" "${region}" "${environment}"
 Publish-AzWebapp -ResourceGroupName $rgName -Name $appName -ArchivePath $zippath -Force
 
 # cleanup - zip file
