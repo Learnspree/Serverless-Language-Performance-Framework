@@ -9,13 +9,18 @@ param(
     [string]$region,
 
     [Parameter(Mandatory=$True)]
-    [string]$teststate
+    [string]$teststate,
+
+    [Parameter(Mandatory=$False)]
+    [string]$environment = "dev",
+
+    [Parameter(Mandatory=$False)]
+    [string]$runtimeVersion = "x"
 ) 
 
-# create lowercase version of region with hyphens instead of spaces to help with resource naming
-$regionLowercase = "${region}".ToLower().Replace(' ', '-')
+# include helper
+. ./resource-name-helper.ps1
 
-# Create a resource group for the function app
-$namePrefix = "spf-azure-test${teststate}";
-$rgName = "${namePrefix}-${runtime}-${regionLowercase}-rg"
+# delete the resource group
+$rgName = buildResourceGroupName "${teststate}" "${runtime}" "${runtimeVersion}" "${region}" "${environment}"
 Remove-AzResourceGroup -Name "${rgName}" -Force
