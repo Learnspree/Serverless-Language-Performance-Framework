@@ -3,23 +3,24 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -r region -p deploy_password -l runtime -e environment"
+   echo "Usage: $0 -r region -p deploy_password -l runtime -e environment [-v runtime-version]"
    exit 1 # Exit script after printing help
 }
 
-while getopts "l:r:p:e:" opt
+while getopts "l:r:p:e:v:" opt
 do
    case "$opt" in
       r ) region="$OPTARG" ;;
       l ) languageRuntime="$OPTARG" ;;
       p ) servicePrincipalPassword="$OPTARG" ;;
-      e ) environment"$OPTARG" ;;
+      v ) runtimeVersion="$OPTARG" ;;
+      e ) environment="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
 
 # Print helpFunction in case parameters are empty
-if [ -z "$region" ] || [ -z "$servicePrincipalPassword" ] || [ -z "$languageRuntime"] || [ -z "$environment"]
+if [ -z "$region" ] || [ -z "$servicePrincipalPassword" ] || [ -z "$languageRuntime" ] || [ -z "$environment" ]
 then
    echo "Some or all of the parameters are empty";
    helpFunction
@@ -29,9 +30,9 @@ remove_azure_function_app () {
 
     echo ""
     echo "****************************************************"
-    echo "***** SPF: running remove - runtime: $1, region: $2, environment: $3, state $4 ... *****"
+    echo "***** SPF: running remove - runtime: $1, region: $2, environment: $3, state $4, runtimeVersion: $5 .... *****"
     echo ""
-    pwsh -f remove-test-function-app.ps1 -runtime "$1" -region "$2" -environment "$3" -teststate ${4:-"all"} 
+    pwsh -f remove-test-function-app.ps1 -runtime "$1" -region "$2" -environment ${3:-"dev"} -teststate ${4:-"all"}  -runtimeVersion ${5:-"10"}
 }
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -50,10 +51,10 @@ pwsh -f login-with-service-principal.ps1 -servicePrincipalPass $servicePrincipal
 if [ "$languageRuntime" == "node" ]
 then
    # node is deployed in two separate function apps for cold/warm due to how it detects whether it's a cold or warm start state
-   remove_azure_function_app "$languageRuntime" "$region" "$environment" "warm" 
-   remove_azure_function_app "$languageRuntime" "$region" "$environment" "cold" 
+   remove_azure_function_app "$languageRuntime" "$region" "$environment" "warm" "$runtimeVersion"
+   remove_azure_function_app "$languageRuntime" "$region" "$environment" "cold" "$runtimeVersion"
 else
-   remove_azure_function_app "$languageRuntime" "$region" "$environment"
+   remove_azure_function_app "$languageRuntime" "$region" "$environment" "$runtimeVersion"
 fi
 
 echo "***** SPF: finished remove stage for Azure Test Functions *****"

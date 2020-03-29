@@ -7,6 +7,8 @@ helpFunction()
    exit 1 # Exit script after printing help
 }
 
+environment = "dev"
+runtimeVersion = "10" # default to 10 for node10x
 while getopts "l:r:p:v:e:" opt
 do
    case "$opt" in
