@@ -150,8 +150,7 @@ module.exports.logger = function (context, metricsBlob) {
     {
       // call the API to store data 
       request.post(
-        //process.env.POST_METRICS_URL,
-        "https://api.serverlessperformance.net/dev/metrics",
+        process.env.SPF_BASE_URL + "metrics",
         { json: metricsDataPayload },
         function (error, response, body) {
           context.log('API call completed: ');
