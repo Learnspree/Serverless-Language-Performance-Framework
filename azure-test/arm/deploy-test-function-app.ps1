@@ -35,7 +35,7 @@ $loggerstoragecontainername = "perfmetrics"
 $loggerstorageaccount = "spfmetricsstorage${environment}"
 $loggerrg = "spf-azure-logger-east-us-${environment}-rg"
 $subid = (Get-AzSubscription).Id
-$storConnectionString = (Get-AzResourceGroupDeployment -ResourceGroupName spf-azure-logger-east-us-rg).Outputs.loggerStorageConnectionString.value
+$storConnectionString = (Get-AzResourceGroupDeployment -ResourceGroupName $loggerrg).Outputs.loggerStorageConnectionString.value
 $storagecontext = New-AzStorageContext -ConnectionString $storConnectionString
 
 # generate access token for logger storage account
