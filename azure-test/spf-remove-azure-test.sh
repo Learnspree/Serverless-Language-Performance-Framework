@@ -3,7 +3,7 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -r region -p deploy_password -l runtime -e environment [-v runtime-version]"
+   echo "Usage: $0 -r region -p deploy_password -l runtime -e environment -v runtime-version"
    exit 1 # Exit script after printing help
 }
 
@@ -20,7 +20,7 @@ do
 done
 
 # Print helpFunction in case parameters are empty
-if [ -z "$region" ] || [ -z "$servicePrincipalPassword" ] || [ -z "$languageRuntime" ] || [ -z "$environment" ]
+if [ -z "$region" ] || [ -z "$servicePrincipalPassword" ] || [ -z "$languageRuntime" ] || [ -z "$environment" ] || [ -z "$runtimeVersion" ]
 then
    echo "Some or all of the parameters are empty";
    helpFunction
@@ -30,9 +30,9 @@ remove_azure_function_app () {
 
     echo ""
     echo "****************************************************"
-    echo "***** SPF: running remove - runtime: $1, region: $2, environment: $3, state $4, runtimeVersion: $5 .... *****"
+    echo "***** SPF: running remove - runtime: $1, region: $2, environment: $3, runtimeVersion: $4, state $5 .... *****"
     echo ""
-    pwsh -f remove-test-function-app.ps1 -runtime "$1" -region "$2" -environment ${3:-"dev"} -teststate ${4:-"all"}  -runtimeVersion ${5:-"10"}
+    pwsh -f remove-test-function-app.ps1 -runtime "$1" -region "$2" -environment "$3" -runtimeVersion "$4" -teststate ${5:-"all"}
 }
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -51,8 +51,8 @@ pwsh -f login-with-service-principal.ps1 -servicePrincipalPass $servicePrincipal
 if [ "$languageRuntime" == "node" ]
 then
    # node is deployed in two separate function apps for cold/warm due to how it detects whether it's a cold or warm start state
-   remove_azure_function_app "$languageRuntime" "$region" "$environment" "warm" "$runtimeVersion"
-   remove_azure_function_app "$languageRuntime" "$region" "$environment" "cold" "$runtimeVersion"
+   remove_azure_function_app "$languageRuntime" "$region" "$environment" "$runtimeVersion" "warm"
+   remove_azure_function_app "$languageRuntime" "$region" "$environment" "$runtimeVersion" "cold" 
 else
    remove_azure_function_app "$languageRuntime" "$region" "$environment" "$runtimeVersion"
 fi

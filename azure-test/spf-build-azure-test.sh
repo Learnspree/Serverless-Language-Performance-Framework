@@ -3,7 +3,7 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -r region -p deploy_password -l runtime -e environment [-v runtime-version]"
+   echo "Usage: $0 -r region -p deploy_password -l runtime -e environment -v runtime-version"
    exit 1 # Exit script after printing help
 }
 
@@ -22,7 +22,7 @@ do
 done
 
 # Print helpFunction in case parameters are empty
-if [ -z "$region" ] || [ -z "$servicePrincipalPassword" ] || [ -z "$languageRuntime" ] || [ -z "$environment" ]
+if [ -z "$region" ] || [ -z "$servicePrincipalPassword" ] || [ -z "$languageRuntime" ] || [ -z "$environment" ] || [ -z "$runtimeVersion" ]
 then
    echo "Some or all of the required parameters are empty";
    helpFunction
@@ -33,12 +33,12 @@ deploy_azure_function_app () {
 
     echo ""
     echo "****************************************************"
-    echo "***** SPF: running deploy - runtime: $1, region: $2, sourcepath: $3, environment: $4, state: $5, runtimeVersion: $6 ... *****"
+    echo "***** SPF: running deploy - runtime: $1, region: $2, sourcepath: $3, environment: $4, runtimeVersion: $5, state: $6 ... *****"
     echo ""
     echo "***** SPF: deploy function app *****"
-    pwsh -f deploy-test-function-app.ps1 -runtime "$1" -region "$2" -environment "$4" -teststate ${5:-"all"} -runtimeVersion ${6:-"10"}
+    pwsh -f deploy-test-function-app.ps1 -runtime "$1" -region "$2" -environment "$4" -runtimeVersion "$5" -teststate ${6:-"all"} 
     echo "***** SPF: deploy functions to function app *****"
-    pwsh -f deploy-test-functions-to-function-app.ps1 -runtime "$1" -region "$2" -sourcepath "$3" -environment "$4" -teststate ${5:-"all"} -runtimeVersion ${6:-"10"}
+    pwsh -f deploy-test-functions-to-function-app.ps1 -runtime "$1" -region "$2" -sourcepath "$3" -environment "$4" -runtimeVersion "$5" -teststate ${6:-"all"} 
 }
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -57,10 +57,10 @@ pwsh -f login-with-service-principal.ps1 -servicePrincipalPass $servicePrincipal
 if [ "$languageRuntime" == "node" ]
 then
    # node is deployed in two separate function apps for cold/warm due to how it detects whether it's a cold or warm start state
-   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-warmstart-$languageRuntime" "$environment" "warm" "$runtimeVersion"
-   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-coldstart-$languageRuntime" "$environment" "cold" "$runtimeVersion"
+   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-warmstart-$languageRuntime" "$environment" "$runtimeVersion" "warm"
+   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-coldstart-$languageRuntime" "$environment" "$runtimeVersion" "cold"
 else
-   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-$languageRuntime" "$environment"
+   deploy_azure_function_app "$languageRuntime" "$region" "../azure-service-$languageRuntime" "$environment" "$runtimeVersion"
 fi
 
 echo "***** SPF: finished deploy stage for Azure Test Functions *****"
