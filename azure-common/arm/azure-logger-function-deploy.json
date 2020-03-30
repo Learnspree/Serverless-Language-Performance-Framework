@@ -39,7 +39,7 @@
       "functionAppName": "[parameters('appName')]",
       "hostingPlanName": "[parameters('appName')]",
       "applicationInsightsName": "[parameters('appName')]",
-      "storageAccountName": "[concat('spfazuremetricsstorage-', parameters('spfenvironment'))]",
+      "storageAccountName": "[concat('spfmetricsstorage', parameters('spfenvironment'))]",
       "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
     },
     "resources": [

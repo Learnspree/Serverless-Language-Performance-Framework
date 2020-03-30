@@ -32,7 +32,7 @@ New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile "azure-te
 
 # Setup continuous export to logger storage account for metrics delivery
 $loggerstoragecontainername = "perfmetrics"
-$loggerstorageaccount = "spfazuremetricsstorage-${environment}"
+$loggerstorageaccount = "spfmetricsstorage${environment}"
 $loggerrg = "spf-azure-logger-east-us-${environment}-rg"
 $subid = (Get-AzSubscription).Id
 $storConnectionString = (Get-AzResourceGroupDeployment -ResourceGroupName spf-azure-logger-east-us-rg).Outputs.loggerStorageConnectionString.value
