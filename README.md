@@ -247,14 +247,14 @@ Start a scheduled test by enabling the appropriate cloudwatch events on the test
 
 ```bash
 cd /bin
-./enable-all-rules.sh -e dev
+./enable-all-aws-rules.sh -e dev
 ```
 ## Cancel Scheduled Testing - AWS
 Do not forget to cancel testing or else they will continue to run indefinitely. Depending on the frequency of your test scenario, this could amount to a lot of function calls incurring cost. Be careful! 
 
 ```bash
 cd /bin
-./disable-all-rules.sh -e dev
+./disable-all-aws-rules.sh -e dev
 ```
 
 ## Cleanup - AWS
@@ -328,21 +328,29 @@ Also *coming soon*:
 ## Initiate Full Schedule Test - Azure Functions
 See commands below to check status of existing function apps and also start/stop the "azure-service-\<runtime\>" functionapps (one per runtime tested) which will enable and disable the warm/cold test functions and their associated timers.
 
+### Start
+
 ```bash
-# Get list of functions (look for those named 'spf-azure-test...')
-az functionapp list | grep -i '"name"' | grep -v azurewebsites
+cd /bin
+./enable-all-azure-rules.sh -e dev
+```
 
-# Start Test
-az functionapp start --name '<test-function-app-name>' --resource-group '<test-function-app-name>-rg'
+### Stop
 
-# Stop Test
-az functionapp stop --name '<test-function-app-name>' --resource-group '<test-function-app-name>-rg'
+```bash
+cd /bin
+./disable-all-azure-rules.sh -e dev
+```
+
+### Verify
+
+```bash
 
 # Verify results (example for csx runtime)
 aws dynamodb query --table-name ServerlessFunctionMetrics-dev \
     --index-name "duration-index" \
     --key-condition-expression "LanguageRuntime = :runtime" \
-    --expression-attribute-values "{\":runtime\": {\"S\": \"csx\"}}"    
+    --expression-attribute-values "{\":runtime\": {\"S\": \"dotnet31csx\"}}"    
 
 ```
 
