@@ -15,7 +15,21 @@ def getMemoryFromQueryString(eventQueryParams):
         return Decimal(128)         
     except Exception as e:
         print("Error getting memory from query string: %s" % e) 
-        raise           
+        raise  
+
+def getPlatformFromQueryString(eventQueryParams):
+    try:
+        if eventQueryParams is None:
+            # default to AWS Lambda
+            return "AWS Lambda"
+        
+        return eventQueryParams['platform']
+    except KeyError as keyError:
+        # if platform missing, default to lambda (AWS)
+        return "AWS Lambda"         
+    except Exception as e:
+        print("Error getting platform from query string: %s" % e) 
+        raise               
 
 def getDynamoFilterExpression(eventQueryParams):
     try:
