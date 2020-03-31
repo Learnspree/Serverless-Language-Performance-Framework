@@ -114,6 +114,7 @@ def getSummaryStats(event, context):
     try:
         meanBilledDuration = int(math.ceil((totalDurationForBilling / totalRowCount) / Decimal(100.0))) * 100
         memoryAllocationForCostCalc = queryfilter.getMemoryFromQueryString(event['queryStringParameters'])
+        serverlessPlatformName = queryfilter.getPlatformFromQueryString(event['queryStringParameters'])
 
         returnValue = { 
                         "meanDuration" : totalDuration / totalRowCount,
@@ -121,8 +122,8 @@ def getSummaryStats(event, context):
                         "maxExecution" : maxExecutionRow,
                         "minExecution" : minExecutionRow,
                         "count" : totalRowCount,
-                        "cost" : calculatecost.getCostForFunctionDuration("AWS Lambda", Decimal(meanBilledDuration), memoryAllocationForCostCalc),
-                        "costPerMillion" : calculatecost.getCostPerMillionForBilledDuration("AWS Lambda", Decimal(meanBilledDuration), memoryAllocationForCostCalc)
+                        "cost" : calculatecost.getCostForFunctionDuration(serverlessPlatformName, Decimal(meanBilledDuration), memoryAllocationForCostCalc),
+                        "costPerMillion" : calculatecost.getCostPerMillionForBilledDuration(serverlessPlatformName, Decimal(meanBilledDuration), memoryAllocationForCostCalc)
                         } 
     except Exception as e:
         print("Error calculating totals: %s" % e)  
