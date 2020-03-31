@@ -74,13 +74,14 @@ def getMeanDuration(event, context):
             meanDuration = totalDuration / allMatchingRows['Count']
             meanBilledDuration = int(math.ceil(meanDuration / Decimal(100.0))) * 100
             memoryAllocationForCostCalc = queryfilter.getMemoryFromQueryString(event['queryStringParameters'])
+            serverlessPlatformName = queryfilter.getPlatformFromQueryString(event['queryStringParameters'])
 
             returnValue = { 
                             "meanDuration" : totalDuration / allMatchingRows['Count'],
                             "meanBilledDuration" : meanBilledDuration,
                             "count" : allMatchingRows['Count'],
-                            "cost" : calculatecost.getCostForFunctionDuration("AWS Lambda", Decimal(meanBilledDuration), memoryAllocationForCostCalc),
-                            "costPerMillion" : calculatecost.getCostPerMillionForBilledDuration("AWS Lambda", Decimal(meanBilledDuration), memoryAllocationForCostCalc)
+                            "cost" : calculatecost.getCostForFunctionDuration(serverlessPlatformName, Decimal(meanBilledDuration), memoryAllocationForCostCalc),
+                            "costPerMillion" : calculatecost.getCostPerMillionForBilledDuration(serverlessPlatformName, Decimal(meanBilledDuration), memoryAllocationForCostCalc)
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  
