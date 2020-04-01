@@ -12,9 +12,22 @@ from getruntime import queryfilter
 from getruntime import calculatecost
 
 from boto3.dynamodb.conditions import Key, Attr
+from botocore.config import Config
 from botocore.exceptions import ClientError, ParamValidationError
 
-dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+# TODO - parameterize timeouts/retries so we can increase for prod. Also look at timeout in serverless.yml
+config = Config(connect_timeout=1, read_timeout=1, retries={'max_attempts': 1})
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1', config=config)
+
+# setup pre-canned application error response
+errorResponse = {
+    "statusCode": 500,
+    "headers": {
+        "Access-Control-Allow-Origin": "*", # Required for CORS support to work
+        "Access-Control-Allow-Credentials": "false", # Required for cookies, authorization headers with HTTPS
+    },
+    "body": { "message" : "An error occurred" }
+}
 
 # TotalDuration (and InitDuration which is part of TotalDuration) were added after initial data gathering commenced.
 # Handle both scenarios here - if TotalDuration is present, use it.
@@ -51,11 +64,14 @@ def getMeanDuration(event, context):
                 FilterExpression = queryFilterExpression
             )
     except ParamValidationError as e:
-        print("Parameter validation error: %s" % e)        
+        print("Parameter validation error: %s" % e)
+        return errorResponse
     except ClientError as e:
-        print("Unexpected error: %s" % e)
+        print("Unexpected error (e.g. ProvisionedThroughputExceededException): %s" % e)
+        return errorResponse
     except Exception as e:
         print("Generic error: %s" % e)
+        return errorResponse
         
     returnValue = { 
                     "meanDuration" : Decimal('-1.0'),
@@ -85,6 +101,7 @@ def getMeanDuration(event, context):
                           } 
     except Exception as e:
         print("Generic error: %s" % e)  
+        return errorResponse
     
     # create a response
     response = {
