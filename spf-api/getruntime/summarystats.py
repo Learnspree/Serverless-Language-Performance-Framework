@@ -15,8 +15,9 @@ from boto3.dynamodb.conditions import Key, Attr
 from botocore.config import Config
 from botocore.exceptions import ClientError, ParamValidationError
 
-# TODO - parameterize timeouts/retries so we can increase for prod. Also look at timeout in serverless.yml
-config = Config(connect_timeout=1, read_timeout=1, retries={'max_attempts': 1})
+readTimeoutSeconds = int(os.environ['DYNAMODB_READ_TIMEOUT_SECONDS'])
+readRetries = int(os.environ['DYNAMODB_READ_RETRY_ATTEMPT_LIMIT'])
+config = Config(read_timeout=readTimeoutSeconds, retries={'max_attempts': readRetries})
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1', config=config)
 
 # setup pre-canned application error response
