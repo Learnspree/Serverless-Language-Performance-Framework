@@ -31,7 +31,7 @@ custom:
     # make sure you set the 'domainName' with the domain name that you've configured your certificate for (see readme)
     domainName: ${opt:domain,'api.serverlessperformance.net'}
     basePath: ${opt:stage,'dev'}
-    createRoute53Record: true
+    createRoute53Record: false
     # using regional API type (as opposed to edge) so that API Gateway does not automatically create a cloudfront distribution which we 
     # cannot configure to have query-param and path-param caching. We will create our own distribution.
     # see https://medium.com/yld-blog/caching-in-with-cloudfront-using-serverless-5a174651ab14 and the 'resources'
@@ -277,3 +277,19 @@ resources:
               OriginPath: /${self:provider.stage}
               CustomOriginConfig:
                 OriginProtocolPolicy: https-only 
+    Route53RecordSetA:
+      Type: AWS::Route53::RecordSet
+      Properties: 
+        AliasTarget: !GetAtt CloudFrontDistribution.DomainName
+        Comment: DNS for CloudFront distribution for SPF API
+        HostedZoneName: ${opt:hostedzone,'serverlessperformance.net'}
+        Name: ${opt:domain,'api.serverlessperformance.net'}
+        Type: A   
+    Route53RecordSetAAAA:
+      Type: AWS::Route53::RecordSet
+      Properties: 
+        AliasTarget: !GetAtt CloudFrontDistribution.DomainName
+        Comment: DNS for CloudFront distribution for SPF API
+        HostedZoneName: ${opt:hostedzone,'serverlessperformance.net'}
+        Name: ${opt:domain,'api.serverlessperformance.net'}
+        Type: AAAA  
