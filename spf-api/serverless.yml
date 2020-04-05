@@ -7,9 +7,9 @@
 
 service: spf-api
 
-plugins:
-  # serverless-domain-manager plugin used to hook API up to the Route53 DNS domain
-  - serverless-domain-manager
+# plugins:
+#   # serverless-domain-manager plugin used to hook API up to the Route53 DNS domain
+#   - serverless-domain-manager
 
 custom:
   environmentConfiguration:
@@ -27,16 +27,16 @@ custom:
       dynamoReadTimeoutSeconds: 3
       dynamoReadRetryLimit: 1
       readAPIFunctionTimeout: 10
-  customDomain:
-    # make sure you set the 'domainName' with the domain name that you've configured your certificate for (see readme)
-    domainName: ${opt:domain,'api.serverlessperformance.net'}
-    basePath: ${opt:stage,'dev'}
-    createRoute53Record: false
-    # using regional API type (as opposed to edge) so that API Gateway does not automatically create a cloudfront distribution which we 
-    # cannot configure to have query-param and path-param caching. We will create our own distribution.
-    # see https://medium.com/yld-blog/caching-in-with-cloudfront-using-serverless-5a174651ab14 and the 'resources'
-    # section below which creates the new cloudfront distribution on sls deploy
-    endpointType: 'regional' 
+  # customDomain:
+  #   # make sure you set the 'domainName' with the domain name that you've configured your certificate for (see readme)
+  #   domainName: ${opt:domain,'api.serverlessperformance.net'}
+  #   basePath: ${opt:stage,'dev'}
+  #   createRoute53Record: false
+  #   # using regional API type (as opposed to edge) so that API Gateway does not automatically create a cloudfront distribution which we 
+  #   # cannot configure to have query-param and path-param caching. We will create our own distribution.
+  #   # see https://medium.com/yld-blog/caching-in-with-cloudfront-using-serverless-5a174651ab14 and the 'resources'
+  #   # section below which creates the new cloudfront distribution on sls deploy
+  #   endpointType: 'regional' 
 
 provider:
   name: aws
@@ -44,6 +44,7 @@ provider:
   timeout: 12
   stage: ${opt:stage,'dev'}
   region: ${opt:region,'us-east-1'}
+  endpointType: REGIONAL
   environment:
     AWS_LAMBDA_GBSECOND_COST: "0.00001667"
     AWS_LAMBDA_INVOKE_COST: "0.0000002"
