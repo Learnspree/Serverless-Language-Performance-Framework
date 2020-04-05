@@ -3,16 +3,16 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -e environment"
-   echo -e "\t-e target environment (dev or prod) [-b] (-b creates a base-path mapping in api custom domain"
+   echo "Usage: $0 -e environment [-b create-base-path-mapping] [-d api.gateway.custom.domain.com]"
    exit 1 # Exit script after printing help
 }
 
-while getopts "be:" opt
+while getopts "be:d:" opt
 do
    case "$opt" in
       e ) environment="$OPTARG" ;;
       b ) createbasepathmapping="yes" ;;
+      d ) apicustomdomainname="$OPTARG" ;;
    esac
 done
 
@@ -57,11 +57,24 @@ cd $DIR
 # (like 'api.serverlessperformance.net') to API Gateway AWS URL
 if [ -n "$createbasepathmapping" ]
 then
+   if [ -z "$apicustomdomainname" ] 
+   then
+      echo "Missing domain for creation of base path mapping";
+      helpFunction
+   fi
+
+   echo "***** SPF API ($environment): running create_domain for $apicustomdomainname *****"
    npm install serverless-domain-manager --save-dev
-   serverless create_domain --stage $environment
+   serverless create_domain --stage $environment --domain $apicustomdomainname
 fi
 
 # do the deploy
-serverless deploy -v --stage $environment
+if [ -z "$apicustomdomainname" ] 
+then
+   serverless deploy -v --stage $environment
+else
+   serverless deploy -v --stage $environment --domain $apicustomdomainname
+fi
+
 
 echo "***** SPF API ($environment): finished sls deploy stage *****"

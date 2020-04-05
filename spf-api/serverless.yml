@@ -253,10 +253,8 @@ resources:
       Properties:
         DistributionConfig:
           Comment: CloudFront for SPF API
-          #Aliases: ....
           ViewerCertificate:
             AcmCertificateArn: arn:aws:acm:us-east-1:662198257344:certificate/564a004a-c993-4f05-a47d-0b7a0a09f5e8
-            CloudFrontDefaultCertificate: false
             MinimumProtocolVersion: TLSv1.2_2018
             SslSupportMethod: sni-only
           DefaultCacheBehavior:
@@ -274,10 +272,8 @@ resources:
               DomainName:
                 Fn::Join:
                   - ""
-                  - - "https://"
-                    - Ref: ApiGatewayRestApi
-                    - ".execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}"  
+                  - - Ref: ApiGatewayRestApi
+                    - ".execute-api.${self:provider.region}.amazonaws.com"
               OriginPath: /${self:provider.stage}
               CustomOriginConfig:
-                OriginProtocolPolicy: https-only          
-
+                OriginProtocolPolicy: https-only 
