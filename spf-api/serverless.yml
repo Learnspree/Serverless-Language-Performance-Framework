@@ -246,9 +246,9 @@ resources:
           DefaultCacheBehavior:
             TargetOriginId: OriginSPFAPI${self:provider.stage}
             ViewerProtocolPolicy: 'redirect-to-https'
-            DefaultTTL: 30
-            MaxTTL: 30
-            MinTTL: 30
+            DefaultTTL: 31536000
+            MaxTTL: 31536000
+            MinTTL: 0
             ForwardedValues:
               # note by not specifying QueryStringCacheKeys, we ensure cloudfront caches based on all combined query strings which we want
               QueryString: true
@@ -261,7 +261,6 @@ resources:
                   - ""
                   - - Ref: ApiGatewayRestApi
                     - ".execute-api.${self:provider.region}.amazonaws.com"
-              OriginPath: /${self:provider.stage}
               CustomOriginConfig:
                 OriginProtocolPolicy: https-only 
     Route53RecordSetA:
