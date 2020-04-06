@@ -1,15 +1,6 @@
 # Serverless Performance Test Framework
 # Config file for Lambda Service to store provided lambda metrics data into Dynamo DB
-
-# Cost calculations service based on provided performance data
-# This function is de-coupled from the lambda-metrics-service so that re-calculation of costs is 
-# possible if pricing models change
-
 service: spf-api
-
-plugins:
-  # serverless-domain-manager plugin used to hook API up to the Route53 DNS domain
-  - serverless-domain-manager
 
 custom:
   environmentConfiguration:
@@ -27,16 +18,6 @@ custom:
       dynamoReadTimeoutSeconds: 3
       dynamoReadRetryLimit: 1
       readAPIFunctionTimeout: 10
-  customDomain:
-    # make sure you set the 'domainName' with the domain name that you've configured your certificate for (see readme)
-    domainName: ${opt:domain,'api.serverlessperformance.net'}
-    basePath: ${opt:stage,'dev'}
-    createRoute53Record: false
-    # using regional API type (as opposed to edge) so that API Gateway does not automatically create a cloudfront distribution which we 
-    # cannot configure to have query-param and path-param caching. We will create our own distribution.
-    # see https://medium.com/yld-blog/caching-in-with-cloudfront-using-serverless-5a174651ab14 and the 'resources'
-    # section below which creates the new cloudfront distribution on sls deploy
-    endpointType: 'regional' 
 
 provider:
   name: aws
@@ -254,12 +235,16 @@ resources:
       Properties:
         DistributionConfig:
           Comment: CloudFront for SPF API
+          Aliases:
+            # alias must match that specified for the R53 record set (see below)
+            - ${opt:domain,'api.serverlessperformance.net'}
           ViewerCertificate:
+            # see pre-requisites for Route53 setup (optional) in readme and update ARN here
             AcmCertificateArn: arn:aws:acm:us-east-1:662198257344:certificate/564a004a-c993-4f05-a47d-0b7a0a09f5e8
             MinimumProtocolVersion: TLSv1.2_2018
             SslSupportMethod: sni-only
           DefaultCacheBehavior:
-            TargetOriginId: OriginSPFAPI
+            TargetOriginId: OriginSPFAPI${self:provider.stage}
             ViewerProtocolPolicy: 'redirect-to-https'
             DefaultTTL: 30
             MaxTTL: 30
@@ -268,8 +253,9 @@ resources:
               # note by not specifying QueryStringCacheKeys, we ensure cloudfront caches based on all combined query strings which we want
               QueryString: true
           Enabled: true
+          PriceClass: PriceClass_100
           Origins:
-            - Id: OriginSPFAPI
+            - Id: OriginSPFAPI${self:provider.stage}
               DomainName:
                 Fn::Join:
                   - ""
@@ -283,9 +269,11 @@ resources:
       Properties: 
         AliasTarget: 
           DNSName: !GetAtt CloudFrontDistribution.DomainName
-          HostedZoneId: XXXTODO  https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-aliastarget-1.html        
+          # HostedZoneId is always Z2FDTNDATAQYW2 for cloudfront
+          # See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-aliastarget-1.html 
+          HostedZoneId: Z2FDTNDATAQYW2
         Comment: DNS for CloudFront distribution for SPF API
-        HostedZoneName: ${opt:hostedzone,'serverlessperformance.net'}
+        HostedZoneName: ${opt:hostedzone,'serverlessperformance.net.'}
         Name: ${opt:domain,'api.serverlessperformance.net'}
         Type: A   
     Route53RecordSetAAAA:
@@ -293,8 +281,9 @@ resources:
       Properties: 
         AliasTarget:
           DNSName: !GetAtt CloudFrontDistribution.DomainName
-          HostedZoneId: XXXTODO https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-aliastarget-1.html
+          # HostedZoneId is always Z2FDTNDATAQYW2 for cloudfront 
+          HostedZoneId: Z2FDTNDATAQYW2 
         Comment: DNS for CloudFront distribution for SPF API
-        HostedZoneName: ${opt:hostedzone,'serverlessperformance.net'}
+        HostedZoneName: ${opt:hostedzone,'serverlessperformance.net.'}
         Name: ${opt:domain,'api.serverlessperformance.net'}
-        Type: AAAA  
+        Type: AAAA

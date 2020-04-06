@@ -44,7 +44,6 @@ See table above for versions and links
 3. Install AWS CLI 
 4. Configure AWS Credentials for AWS CLI *(see links above)*
 5. Install Serverless Framework *(via `npm install -g serverless`)*
-6. Install Serverless Domain Manager plugin *(via `npm install serverless-domain-manager --save-dev`)*
 6. Configure AWS Credentials for Serverless Framework *(see links above)*
 7. Install .NET Core *(see links above)* (Note - for upgrade of existing .NET Core (if necessary) see https://docs.microsoft.com/en-us/dotnet/core/versions/remove-runtime-sdk-versions?tabs=macos)
 8. Install Java JDK 8 and Java JDK 11 `brew cask install java8` and `brew cask install java11`. See below java setup details for more. 
@@ -119,24 +118,20 @@ Alternatively, you can build/deploy invidual framework components as described i
 
 ## SPF API - Route53 / DNS *(Optional)*
 
+Optionally, you can setup Route53 DNS and a Cloudfront distribution to cache API responses for retrieval of metrics data. By default, this is turned off and you just get the typical AWS API Gateway URL to access the API (e.g. `*.execute-api.us-east-1.amazonaws.com`)
+
 Pre-requisites: *(there are many guides from AWS to show how to do this)*:
-* Use AWS Route53 to register your new domain using AWS.
-* Create SSL certificate using ACM to match your domain. Use DNS verification.
+* Use AWS Route53 to register your new domain (e.g. `mynewdomainexample.com`).
+* Create SSL certificate using ACM (AWS Certificate Manager) to match your domain. Use DNS verification mode.
+* Update the `AcmCertificateArn` for the cloud-front distibution resource in `/spf-api/serverless.yml` to your new certificate's ARN.
 
-See [serverless api gateway domain setup](https://serverless.com/blog/serverless-api-gateway-domain/) and [serverless framework domain plugin setup](https://seed.run/blog/how-to-set-up-a-custom-domain-name-for-api-gateway-in-your-serverless-app.html) for instructions on using domain setup plugin for serverless. 
+### What you now have
+* A cloudfront distribution to your regional API which is set up with a HTTPS certificate for your domain
+* You also see new Route53 recordsets added to your existing PHZ (Private Hosted Zone) to map to the custom domain's cloudfront distribution for both IPv4 and IPv6 (A and AAAA respectively).
 
-Summary of steps:
-* cd `<spf-api directory>`
-* npm install serverless-domain-manager --save-dev
-* serverless create_domain --stage dev
-  * Now should see new custom domain added to "Custom Domains" list in API Gateway. However there are as yet no base path mappings.
-* serverless deploy --stage dev
-  * Now you see a /dev base path mapping on the new custom domain above.
-  * You also see new Route53 recordsets added to your existing PHZ (Private Hosted Zone) to map to the custom domain's cloudfront distribution.
+Test new domain link to API Gateway via Route53/Cloudfront (for example):
 
-Test new domain link to API Gateway:
-
-`curl https://api.<domain>/dev/runtimes/java8/mean`
+`curl -v "https://api.<domain>/dev/runtimes/java8/mean"`
 
 ## Build and Deploy - AWS Test Functions
 This section describes how to re-build and re-deploy the individual target test functions only. These are contained in the folder "/aws-test/". For example, the AWS test for nodejs12x is located in "/aws-test/aws-service-nodejs12x". There is a single serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions in the "aws-test" directory. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
