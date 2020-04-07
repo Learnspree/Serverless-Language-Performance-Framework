@@ -26,7 +26,14 @@
         "metadata": {
           "description": "Environment (dev or prod) to save data in SPF (Serverless Performance Framework)"
         }
-      },      
+      },  
+      "spfdomain": {
+        "type": "string",
+        "defaultValue": "api-dev.serverlessperformance.net",
+        "metadata": {
+          "description": "Domain of the API to send data to SPF (Serverless Performance Framework)"
+        }
+      },          
       "location": {
         "type": "string",
         "defaultValue": "[resourceGroup().location]",
@@ -136,7 +143,7 @@
               {
                 // The SPF URL to send saved metrics to
                 "name": "SPF_BASE_URL",
-                "value": "[concat('https://api.serverlessperformance.net/', parameters('spfenvironment'), '/')]"
+                "value": "[concat('https://', parameters('spfdomain'), '/', parameters('spfenvironment'), '/')]"
               }
             ]
           }
