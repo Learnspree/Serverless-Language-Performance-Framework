@@ -3,22 +3,23 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -r region -p deploy_password -e environment (dev/prod)"
+   echo "Usage: $0 -r region -p deploy_password -e environment (dev/prod) -d mydomain.example.com"
    exit 1 # Exit script after printing help
 }
 
-while getopts "r:p:e:" opt
+while getopts "r:p:e:d:" opt
 do
    case "$opt" in
       r ) region="$OPTARG" ;;
       p ) servicePrincipalPassword="$OPTARG" ;;
       e ) environment="$OPTARG" ;;
+      d ) domain="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
 
 # Print helpFunction in case parameters are empty
-if [ -z "$region" ] || [ -z "$servicePrincipalPassword" ] || [ -z "$environment" ]
+if [ -z "$region" ] || [ -z "$servicePrincipalPassword" ] || [ -z "$environment" ] || [ -z "$domain" ]
 then
    echo "Some or all of the parameters are empty";
    helpFunction
@@ -29,10 +30,10 @@ deploy_azure_logger_app () {
 
     echo ""
     echo "****************************************************"
-    echo "***** SPF: running azure logger deploy - region: $1, env: $2 ... *****"
+    echo "***** SPF: running azure logger deploy - region: $1, env: $2, domain: $3 ... *****"
     echo ""
     echo "***** SPF: deploy logger function app *****"
-    pwsh -f deploy-logger-function-app.ps1 -region "$1" -environment "$2"
+    pwsh -f deploy-logger-function-app.ps1 -region "$1" -environment "$2" -spfdomain "$3"
 }
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -52,7 +53,7 @@ pwsh -f login-with-service-principal.ps1 -servicePrincipalPass $servicePrincipal
 
 # deploy the logger app
 cd $DIR/arm
-deploy_azure_logger_app "$region" "$environment"
+deploy_azure_logger_app "$region" "$environment" "$domain"
 
 echo "***** SPF: finished deploy stage for Azure Logger Function *****"
 

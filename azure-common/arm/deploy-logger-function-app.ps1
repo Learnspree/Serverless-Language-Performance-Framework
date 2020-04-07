@@ -1,9 +1,12 @@
 # Example usage:
-# [pwsh] ./deploy-logger-function-app.ps1 -region "East US" [-environment "dev"]
+# [pwsh] ./deploy-logger-function-app.ps1 -region "East US" [-environment "dev"] [-spfdomain "my-spf-api-domain.example.com"]
 # Note - param() must be the first statement in the script
 param(
     [Parameter(Mandatory=$True)]
     [string]$region,
+
+    [Parameter(Mandatory=$False)]
+    [string]$spfdomain = "api-dev.serverlessperformance.net",
 
     [Parameter(Mandatory=$False)]
     [string]$environment = "dev"
@@ -18,7 +21,7 @@ New-AzResourceGroup -Name $rgName -Location "${region}" -Force
 
 # Create the parameters for the file
 $appName = "spf-azure-logger-${regionLowercase}-${environment}"
-$TemplateParams = @{"appName" = "${appName}"; "spfenvironment" = "${environment}"}
+$TemplateParams = @{"appName" = "${appName}"; "spfenvironment" = "${environment}"; "spfdomain" = "${spfdomain}"}
 
 # Deploy the function app ARM template
 New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile "azure-logger-function-deploy.json" -TemplateParameterObject $TemplateParams -Verbose -Force
