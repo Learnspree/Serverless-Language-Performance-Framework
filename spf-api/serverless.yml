@@ -8,15 +8,18 @@ custom:
       dynamoDeletionPolicy: Retain
       dynamoReadCapacityUnits: 2
       dynamoWriteCapacityUnits: 2
-      dynamoReadTimeoutSeconds: 1
+      dynamoDBBillingMode: PROVISIONED
+      dynamoReadTimeoutSeconds: 3
       dynamoReadRetryLimit: 1
       readAPIFunctionTimeout: 5
     prod:
       dynamoDeletionPolicy: Retain
-      dynamoReadCapacityUnits: 8
-      dynamoWriteCapacityUnits: 8
-      dynamoReadTimeoutSeconds: 3
-      dynamoReadRetryLimit: 1
+      # note - RCU/WCU only used if set dynamoDBBillingMode to PROVISIONED, otherwise ignored
+      dynamoReadCapacityUnits: 8 
+      dynamoWriteCapacityUnits: 8 
+      dynamoDBBillingMode: PAY_PER_REQUEST
+      dynamoReadTimeoutSeconds: 5
+      dynamoReadRetryLimit: 2
       readAPIFunctionTimeout: 10
 
 provider:
@@ -227,9 +230,14 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+        BillingMode: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoDBBillingMode}
+        # note - RCU/WCU only used if set dynamoDBBillingMode to PROVISIONED, otherwise ignored (on-demand scaling/pricing)
         ProvisionedThroughput:
-          ReadCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoReadCapacityUnits}
-          WriteCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoWriteCapacityUnits}
+          Fn::If:
+          - Fn::Equals: ["Provisioned", !Ref BillingMode]
+          - ReadCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoReadCapacityUnits}
+            WriteCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoWriteCapacityUnits}
+          - Ref: AWS::NoValue          
     CloudFrontDistribution:
       Type: AWS::CloudFront::Distribution
       Properties:
