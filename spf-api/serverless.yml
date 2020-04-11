@@ -203,6 +203,10 @@ resources:
       Export:
         Name: "SpfApiUrl-${self:provider.stage}"
 
+  Conditions:
+    IsProvisionedCapacity:
+      Fn::Equals: ["PROVISIONED", '${self:custom.environmentConfiguration.${self:provider.stage}.dynamoDBBillingMode}']
+
   Resources:
     LambdaMetricsTable:
       Type: AWS::DynamoDB::Table
@@ -233,11 +237,12 @@ resources:
         BillingMode: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoDBBillingMode}
         # note - RCU/WCU only used if set dynamoDBBillingMode to PROVISIONED, otherwise ignored (on-demand scaling/pricing)
         ProvisionedThroughput:
-          Fn::If:
-          - Fn::Equals: ["Provisioned", !Ref BillingMode]
-          - ReadCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoReadCapacityUnits}
-            WriteCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoWriteCapacityUnits}
-          - Ref: AWS::NoValue          
+          !If
+            - IsProvisionedCapacity
+            -
+              ReadCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoReadCapacityUnits}
+              WriteCapacityUnits: ${self:custom.environmentConfiguration.${self:provider.stage}.dynamoWriteCapacityUnits}
+            - !Ref "AWS::NoValue"
     CloudFrontDistribution:
       Type: AWS::CloudFront::Distribution
       Properties:
