@@ -29,7 +29,7 @@
       },  
       "spfdomain": {
         "type": "string",
-        "defaultValue": "api-dev.serverlessperformance.net",
+        "defaultValue": "dummy.mydomain.net",
         "metadata": {
           "description": "Domain of the API to send data to SPF (Serverless Performance Framework)"
         }
