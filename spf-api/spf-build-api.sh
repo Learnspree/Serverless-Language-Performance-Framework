@@ -53,7 +53,10 @@ echo "***** SPF API ($environment): running sls deploy stage *****"
 
 cd $DIR
 
-# do the deploy
-serverless deploy -v --stage $environment --domain $apicustomdomainname --acmcertarn $acmcertarn
+# do the deploy (assuming the api domain is something like 'api.example.com')
+# by default hosted zone will be 'example.com.' - note trailing .
+domain="$(cut -d'.' -f3 <<<"$apicustomdomainname")"
+subdomain="$(cut -d'.' -f2 <<<"$apicustomdomainname")"
+serverless deploy -v --stage $environment --domain $apicustomdomainname --acmcertarn $acmcertarn --hostedzone $subdomain.$domain.
 
 echo "***** SPF API ($environment): finished sls deploy stage *****"
