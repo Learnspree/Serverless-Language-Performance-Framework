@@ -104,34 +104,34 @@ Notes:
 * The service principal created here has general 'Contributor' access to the entire subscription - so it's very permissive. This should be restricted somewhat in future releases.
 
 
-# Setting up SPF API and AWS Testing
+## SPF API - Setting up Route53 / DNS & CloudFront Caching Pre-requisites
 
-The easiest way to deploy the common SPF API and all the AWS test function components is to run the single aggregator script (which has dev and prod versions). For example:
-
-
-```bash
-cd /bin
-./spf-build-aws.sh
-```
-
-Alternatively, you can build/deploy invidual framework components as described in the sections that follow below.
-
-## SPF API - Route53 / DNS *(Optional)*
-
-Optionally, you can setup Route53 DNS and a Cloudfront distribution to cache API responses for retrieval of metrics data. By default, this is turned off and you just get the typical AWS API Gateway URL to access the API (e.g. `*.execute-api.us-east-1.amazonaws.com`)
+By default you must setup Route53 DNS and a Cloudfront distribution to cache API responses for retrieval of metrics data. In future, this will be turned off by default and you will just get the typical AWS API Gateway URL to access the API (e.g. `*.execute-api.us-east-1.amazonaws.com`).
 
 Pre-requisites: *(there are many guides from AWS to show how to do this)*:
 * Use AWS Route53 to register your new domain (e.g. `mynewdomainexample.com`).
 * Create SSL certificate using ACM (AWS Certificate Manager) to match your domain. Use DNS verification mode.
-* Update the `AcmCertificateArn` for the cloud-front distibution resource in `/spf-api/serverless.yml` to your new certificate's ARN.
+* Note the `AcmCertificateArn` value of the cert created in the previou step. This will be passed to the spf-build script to specify your new certificate's ARN (e.g. `arn:aws:acm:us-east-1:<account-number>:certificate/<cert-id>`)
 
-### What you now have
+### What you will have after deployment (see next section)
 * A cloudfront distribution to your regional API which is set up with a HTTPS certificate for your domain
 * You also see new Route53 recordsets added to your existing PHZ (Private Hosted Zone) to map to the custom domain's cloudfront distribution for both IPv4 and IPv6 (A and AAAA respectively).
 
 Test new domain link to API Gateway via Route53/Cloudfront (for example):
 
 `curl -v "https://api.<domain>/dev/runtimes/java8/mean"`
+
+# Setting up SPF API and AWS Testing
+
+The easiest way to deploy the common SPF API and all the AWS test function components is to run the single aggregator script. For example:
+
+
+```bash
+cd /bin
+./spf-build-aws.sh -e dev -c <acm-cert-arn-created-above> -d <api-domain-registered-above>
+```
+
+Alternatively, you can build/deploy invidual framework components as described in the sections that follow below.
 
 ## Build and Deploy - AWS Test Functions
 This section describes how to re-build and re-deploy the individual target test functions only. These are contained in the folder "/aws-test/". For example, the AWS test for nodejs12x is located in "/aws-test/aws-service-nodejs12x". There is a single serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions in the "aws-test" directory. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
@@ -180,18 +180,19 @@ View "/aws-common/serverless.yml" to view the list of source cloud-watch-logs th
 
 ## Build and Deploy - SPF API
 
-Build & Deploy the metrics persistance function (saves given metrics in DynamoDB table) which is exposed via API Gateway as a RESTful endpoing. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
+Build & Deploy the metrics persistance function (saves given metrics in DynamoDB table) which is exposed via API Gateway as a RESTful endpoing. Note you will need the ACM Cert ARN and Domain URL you manually created in pre-requisite steps (see previous details in this readme).
+
 ```bash
 cd /spf-api
-./spf-build-api.sh -e dev
+./spf-build-api.sh -e dev -c <acm-cert-arn-created-earlier> -d <domain-registered-earlier>
 ```
 
 ## Build and Deploy - AWS Logger Functions
-Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
+Note there is also a "-prod" version to deploy the prod-stage tables/functions/api.
 
 ```bash
 cd /aws-common
-./spf-build-aws-logger.sh
+./spf-build-aws-logger-dev.sh
 ```
 
 ## End-to-End Test - AWS Lambda
@@ -257,9 +258,8 @@ To remove all cloud-formation stacks created in your AWS account (by the serverl
 
 ```bash
 # removes default "dev" environment
-# (a prod version of the script is also in /bin)
 cd /bin
-./spf-remove-aws.sh 
+./spf-remove-aws.sh -e dev
 ```
 ### Dynamo DB Table Removal (Optional)
 Optionally, you can manually remove the dynamodb metrics table. Note: this will happen automatically when you run the "/bin/spf-remove-aws.sh" script which removes the "dev" environment (but not when running the production version of the script - the table is protected there).

@@ -3,20 +3,21 @@
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -e environment [-d api.mycustomdomain.com]"
+   echo "Usage: $0 -e environment -c acmcertarn -d api.mycustomdomain.com"
    exit 1 # Exit script after printing help
-}
+}TODO - arn:aws:acm:us-east-1:662198257344:certificate/564a004a-c993-4f05-a47d-0b7a0a09f5e8
 
-while getopts "e:d:" opt
+while getopts "e:d:c:" opt
 do
    case "$opt" in
       e ) environment="$OPTARG" ;;
       d ) apicustomdomainname="$OPTARG" ;;
+      c ) acmcertarn="$OPTARG" ;;
    esac
 done
 
 # Print helpFunction in case parameters are empty
-if [ -z "$environment" ] 
+if [ -z "$environment" ] || [ -z "$acmcertarn"] || [ -z "$apicustomdomainname"]
 then
    echo "Some or all of the parameters are empty";
    helpFunction
@@ -53,12 +54,6 @@ echo "***** SPF API ($environment): running sls deploy stage *****"
 cd $DIR
 
 # do the deploy
-if [ -z "$apicustomdomainname" ] 
-then
-   serverless deploy -v --stage $environment
-else
-   serverless deploy -v --stage $environment --domain $apicustomdomainname
-fi
-
+serverless deploy -v --stage $environment --domain $apicustomdomainname --acmcertarn $acmcertarn
 
 echo "***** SPF API ($environment): finished sls deploy stage *****"

@@ -253,7 +253,7 @@ resources:
             - ${opt:domain,'api-dev.serverlessperformance.net'}
           ViewerCertificate:
             # see pre-requisites for Route53 setup (optional) in readme and update ARN here
-            AcmCertificateArn: ${opt:acmcertarn,'arn:aws:acm:us-east-1:662198257344:certificate/564a004a-c993-4f05-a47d-0b7a0a09f5e8'}
+            AcmCertificateArn: ${opt:acmcertarn,'default-arn'}
             MinimumProtocolVersion: TLSv1.2_2018
             SslSupportMethod: sni-only
           DefaultCacheBehavior:
