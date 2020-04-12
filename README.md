@@ -112,6 +112,7 @@ Pre-requisites: *(there are many guides from AWS to show how to do this)*:
 * Use AWS Route53 to register your new domain (e.g. `mynewdomainexample.com`).
 * Create SSL certificate using ACM (AWS Certificate Manager) to match your domain. Use DNS verification mode.
 * Note the `AcmCertificateArn` value of the cert created in the previou step. This will be passed to the spf-build script to specify your new certificate's ARN (e.g. `arn:aws:acm:us-east-1:<account-number>:certificate/<cert-id>`)
+* You can also use the AWS CLI to retrieve your certifcate's ARN details: `aws acm list-certificates`
 
 ### What you will have after deployment (see next section)
 * A cloudfront distribution to your regional API which is set up with a HTTPS certificate for your domain

@@ -17,7 +17,7 @@ do
 done
 
 # Print helpFunction in case parameters are empty
-if [ -z "$environment" ] || [ -z "$acmcertarn"] || [ -z "$apicustomdomainname"]
+if [ -z "$environment" ] || [ -z "$acmcertarn" ] || [ -z "$apicustomdomainname" ]
 then
    echo "Some or all of the parameters are empty";
    helpFunction
