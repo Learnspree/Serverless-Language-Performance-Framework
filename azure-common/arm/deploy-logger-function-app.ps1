@@ -6,7 +6,7 @@ param(
     [string]$region,
 
     [Parameter(Mandatory=$False)]
-    [string]$spfdomain = "api-dev.serverlessperformance.net",
+    [string]$spfdomain = "dummy.mydomain.net",
 
     [Parameter(Mandatory=$False)]
     [string]$environment = "dev"
