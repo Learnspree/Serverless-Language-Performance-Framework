@@ -5,7 +5,7 @@ helpFunction()
    echo ""
    echo "Usage: $0 -e environment -c acmcertarn -d api.mycustomdomain.com"
    exit 1 # Exit script after printing help
-}TODO - arn:aws:acm:us-east-1:662198257344:certificate/564a004a-c993-4f05-a47d-0b7a0a09f5e8
+}
 
 while getopts "e:d:c:" opt
 do
