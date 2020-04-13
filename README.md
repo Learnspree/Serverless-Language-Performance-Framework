@@ -132,7 +132,7 @@ cd /bin
 ./spf-build-aws.sh -e dev -c <acm-cert-arn-created-above> -d <api-domain-registered-above>
 ```
 
-Alternatively, you can build/deploy invidual framework components as described in the sections that follow below.
+This script will build the three main components for AWS in parallel (so expect a mix of output during the build): SPF API, AWS Test Functions and AWS Logger (the glue between the test functions and the SPF API which stores the results). Additionally, you can (re)build/deploy invidual framework components as described in the sections that follow below.
 
 ## Build and Deploy - AWS Test Functions
 This section describes how to re-build and re-deploy the individual target test functions only. These are contained in the folder "/aws-test/". For example, the AWS test for nodejs12x is located in "/aws-test/aws-service-nodejs12x". There is a single serverless yml file and associated build/remove shell scripts that are used to define and deploy all the aws empty test functions in the "aws-test" directory. Note, as with all build/remove scripts, there is also a "-prod" version to deploy the prod-stage tables/functions/api.
