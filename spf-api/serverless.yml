@@ -257,6 +257,15 @@ resources:
             MinimumProtocolVersion: TLSv1.2_2018
             SslSupportMethod: sni-only
           DefaultCacheBehavior:
+            # must allow all methods in order to allow posts from Azure to SPF API via cloudfront distribution URL
+            AllowedMethods:
+            - DELETE
+            - GET
+            - HEAD
+            - OPTIONS
+            - PATCH
+            - POST
+            - PUT
             TargetOriginId: OriginSPFAPI${self:provider.stage}
             ViewerProtocolPolicy: 'redirect-to-https'
             DefaultTTL: 31536000
